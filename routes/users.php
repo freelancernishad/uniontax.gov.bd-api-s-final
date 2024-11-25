@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Auth\User\AuthUserController;
 use App\Http\Controllers\Api\Auth\User\VerificationController;
 use App\Http\Controllers\Api\User\Package\UserPackageController;
 use App\Http\Controllers\Api\Auth\User\UserPasswordResetController;
+use App\Http\Controllers\Api\User\SonodName\UserSonodFeeController;
 use App\Http\Controllers\Api\User\Uniouninfo\UserUniouninfoController;
 use App\Http\Controllers\Api\User\UserManagement\UserProfileController;
 use App\Http\Controllers\Api\User\Package\UserPurchasedHistoryController;
@@ -54,6 +55,16 @@ Route::prefix('user')->group(function () {
 
 
         Route::get('/union-info', [UserUniouninfoController::class, 'getUserUnionInfo']);
+
+
+
+        Route::prefix('/sonodfees')->group(function () {
+            Route::post('/', [UserSonodFeeController::class, 'store']); // Create multiple SonodFees
+            Route::put('/', [UserSonodFeeController::class, 'update']); // Update multiple SonodFees
+        });
+        Route::get('sonodnamelists/with-fees', [UserSonodFeeController::class, 'getSonodnamelistsWithFees']);
+
+
 
     });
 

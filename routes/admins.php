@@ -8,9 +8,9 @@ use App\Http\Controllers\Api\Admin\Users\UserController;
 use App\Http\Controllers\Api\Auth\Admin\AdminAuthController;
 use App\Http\Controllers\Api\Admin\Package\AdminPackageController;
 use App\Http\Controllers\Api\SystemSettings\SystemSettingController;
-use App\Http\Controllers\Api\Auth\Admin\AdminResetPasswordController;
 use App\Http\Controllers\Api\Admin\Transitions\AdminPaymentController;
 use App\Http\Controllers\Api\Admin\Uniouninfo\AdminUniouninfoController;
+use App\Http\Controllers\Api\Admin\SonodName\AdminSonodnamelistController;
 use App\Http\Controllers\Api\Admin\Package\AdminPurchasedHistoryController;
 use App\Http\Controllers\Api\Admin\PackageAddon\AdminPackageAddonController;
 use App\Http\Controllers\Api\Admin\SocialMedia\AdminSocialMediaLinkController;
@@ -107,6 +107,14 @@ Route::prefix('admin')->group(function () {
         Route::post('uniouninfo/{id}', [AdminUniouninfoController::class, 'update']);     // Update union info
         Route::delete('uniouninfo/{id}', [AdminUniouninfoController::class, 'destroy']); // Delete union info
 
+
+        Route::prefix('/sonodnamelists')->group(function () {
+            Route::get('/', [AdminSonodnamelistController::class, 'index']);  // List all Sonodnamelists
+            Route::post('/', [AdminSonodnamelistController::class, 'store']);  // Create a new Sonodnamelist
+            Route::get('{id}', [AdminSonodnamelistController::class, 'show']);  // View a specific Sonodnamelist
+            Route::post('{id}', [AdminSonodnamelistController::class, 'update']);  // Update a specific Sonodnamelist
+            Route::delete('{id}', [AdminSonodnamelistController::class, 'destroy']);  // Delete a specific Sonodnamelist
+        });
 
 
 
