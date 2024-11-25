@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Admin\Package\AdminPackageController;
 use App\Http\Controllers\Api\SystemSettings\SystemSettingController;
 use App\Http\Controllers\Api\Auth\Admin\AdminResetPasswordController;
 use App\Http\Controllers\Api\Admin\Transitions\AdminPaymentController;
+use App\Http\Controllers\Api\Admin\Uniouninfo\AdminUniouninfoController;
 use App\Http\Controllers\Api\Admin\Package\AdminPurchasedHistoryController;
 use App\Http\Controllers\Api\Admin\PackageAddon\AdminPackageAddonController;
 use App\Http\Controllers\Api\Admin\SocialMedia\AdminSocialMediaLinkController;
@@ -98,6 +99,17 @@ Route::prefix('admin')->group(function () {
 
         Route::get('/package/purchased-history', [AdminPurchasedHistoryController::class, 'getAllHistory']);
         Route::get('/package/purchased-history/{id}', [AdminPurchasedHistoryController::class, 'getSingleHistory']);
+
+
+
+        Route::get('uniouninfo/{id}', [AdminUniouninfoController::class, 'show']);       // Get single union info
+        Route::post('uniouninfo', [AdminUniouninfoController::class, 'store']);          // Create new union info
+        Route::post('uniouninfo/{id}', [AdminUniouninfoController::class, 'update']);     // Update union info
+        Route::delete('uniouninfo/{id}', [AdminUniouninfoController::class, 'destroy']); // Delete union info
+
+
+
+
 
 
     });
