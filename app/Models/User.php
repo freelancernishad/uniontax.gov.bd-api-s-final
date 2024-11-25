@@ -25,6 +25,18 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         'email_verification_hash',
         'otp',
         'otp_expires_at',
+        'unioun',
+        'phone',
+        'position',
+        'full_unioun_name',
+        'gram',
+        'district',
+        'thana',
+        'word',
+        'description',
+        'image',
+        'status',
+        'role',
     ];
 
     /**
@@ -71,7 +83,6 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         return [];
     }
 
-
     public function userPackage()
     {
         return $this->hasOne(UserPackage::class);
@@ -88,7 +99,6 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         return $package && in_array($feature, $package->features);
     }
 
-
     public function saveProfilePicture($file)
     {
         $filePath = uploadFileToS3($file, 'profile_pictures'); // Define the S3 directory
@@ -97,6 +107,4 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 
         return $filePath;
     }
-
-
 }

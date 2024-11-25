@@ -55,12 +55,14 @@ class AuthUserController extends Controller
             return response()->json(['error' => 'Could not create token'], 500);
         }
 
+
         // Generate verification URL (if applicable)
         $verify_url = $request->verify_url ?? null; // Optional verify URL from the request
 
         // Notify user for email verification
         if ($verify_url) {
-            Mail::to($user->email)->send(new VerifyEmail($user, $verify_url));
+            try { Mail::to($user->email)->send(new VerifyEmail($user, $verify_url)); }catch (JWTException $e) {
+            }
         }else{
             // Generate a 6-digit numeric OTP
             $otp = random_int(100000, 999999); // Generate OTP
@@ -69,9 +71,11 @@ class AuthUserController extends Controller
             $user->save();
 
             // Notify user with the OTP
-            Mail::to($user->email)->send(new OtpNotification($otp));
+            try { Mail::to($user->email)->send(new OtpNotification($otp)); }catch (JWTException $e) {
+            }
 
         }
+
 
 
 
