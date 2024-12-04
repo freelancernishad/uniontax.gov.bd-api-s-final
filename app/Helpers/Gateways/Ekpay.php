@@ -50,7 +50,7 @@ $AKPAY_MER_PASS_KEY = $uniounDetials->AKPAY_MER_PASS_KEY;
       "ipn_info" => [
          "ipn_channel" => "3",
          "ipn_email" => "freelancernishad123@gmail.com",
-         "ipn_uri" => "$url/api/ipn"
+         "ipn_uri" => "$url/api/ekpay/ipn"
       ],
       "mac_addr" => "$whitelistip"
    ];
