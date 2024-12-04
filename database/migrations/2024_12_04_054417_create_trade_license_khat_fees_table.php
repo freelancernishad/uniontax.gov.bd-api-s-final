@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 class CreateTradeLicenseKhatFeesTable extends Migration
 {
@@ -21,10 +22,12 @@ class CreateTradeLicenseKhatFeesTable extends Migration
             $table->decimal('fee', 10, 2);  // Fee amount
             $table->timestamps();
 
-            // Foreign key constraints to reference khat_id in trade_license_khats
-            $table->foreign('khat_id_1')->references('khat_id')->on('trade_license_khats')->onDelete('cascade');
-            $table->foreign('khat_id_2')->references('khat_id')->on('trade_license_khats')->onDelete('cascade');
         });
+
+        // Call the seeder to insert data after migration
+        Artisan::call('db:seed', [
+            '--class' => 'TradeLicenseKhatFeeSeeder'
+        ]);
     }
 
     /**

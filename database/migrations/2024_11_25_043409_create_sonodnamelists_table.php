@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 class CreateSonodnamelistsTable extends Migration
 {
@@ -18,6 +19,14 @@ class CreateSonodnamelistsTable extends Migration
             $table->integer('sonod_fee');  // Regular integer column for sonod_fee
             $table->timestamps();
         });
+
+
+                // Call the seeder to insert data after migration
+                Artisan::call('db:seed', [
+                    '--class' => 'SonodnamelistSeeder'
+                ]);
+
+
     }
 
     public function down()
