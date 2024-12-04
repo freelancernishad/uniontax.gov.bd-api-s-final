@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Global\Sonod\SonodController;
+use App\Http\Controllers\Api\Gateway\Ekpay\EkpayController;
 use App\Http\Controllers\Api\Server\ServerStatusController;
 use App\Http\Controllers\Api\User\Package\UserPackageController;
 use App\Http\Controllers\Api\User\PackageAddon\UserPackageAddonController;
@@ -46,3 +47,6 @@ Route::prefix('global/')->group(function () {
 
 
 Route::post('/sonod/submit', [SonodController::class, 'sonodSubmit']);
+
+Route::post('ekpay/ipn',[EkpayController::class ,'ipn']);
+Route::post('ekpay/check/payments/ipn',[EkpayController::class ,'CheckPayment']);

@@ -42,8 +42,22 @@ class SonodController extends Controller
             'applicant_type_of_businessKhatAmount', 'orthoBchor'
         ]);
 
+        $insertData['applicant_type_of_businessKhat'] = $request->applicant_type_of_businessKhat;
+
+        if($request->applicant_type_of_businessKhatAmount){
+            $insertData['applicant_type_of_businessKhatAmount'] = $request->applicant_type_of_businessKhatAmount;
+        }else{
+            $insertData['applicant_type_of_businessKhatAmount'] = 0;
+        }
+
+
+
         $insertData['uniqeKey'] = $uniqueKey;
-        
+        $insertData['khat'] = "সনদ ফি";
+
+        $insertData['stutus'] = "Pepaid";
+        $insertData['payment_status'] = "Unpaid";
+
         $insertData = array_merge($insertData, $this->prepareSonodData($request, $sonodName, $successors, $unionName, $sonodId));
 
         // Handle file uploads securely
@@ -93,8 +107,8 @@ class SonodController extends Controller
         }
 
         // Set the orthoBchor based on current year/month
-        $insertData['orthoBchor'] = ($sonodName == 'ট্রেড লাইসেন্স') ?
-            $request->orthoBchor : $this->getOrthoBchorYear();
+        $insertData['orthoBchor'] = $this->getOrthoBchorYear();
+        // $insertData['orthoBchor'] = ($sonodName == 'ট্রেড লাইসেন্স') ? $request->orthoBchor : $this->getOrthoBchorYear();
 
         // Set additional fields from the union info
         $unionInfo = Uniouninfo::where('short_name_e', $unionName)->latest()->first();

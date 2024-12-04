@@ -36,7 +36,8 @@
             "app/Helpers/Gateways/Ekpay.php",
             "app/Helpers/FileSystem/FileHelper.php",
             "app/Helpers/Package/PackageHelpers.php",
-            "app/Helpers/Sonod/SonodHelpers.php"
+            "app/Helpers/Sonod/SonodHelpers.php",
+            "app/Helpers/SmsSystem/SmsNocHelper.php"
         ]
     },
     "autoload-dev": {
