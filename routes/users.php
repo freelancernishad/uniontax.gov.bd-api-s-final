@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\AuthenticateUser;
 use App\Http\Controllers\Api\Coupon\CouponController;
 use App\Http\Controllers\Api\Auth\User\AuthUserController;
+use App\Http\Controllers\Api\User\Sonod\UserSonodController;
 use App\Http\Controllers\Api\Auth\User\VerificationController;
 use App\Http\Controllers\Api\User\Package\UserPackageController;
 use App\Http\Controllers\Api\Auth\User\UserPasswordResetController;
@@ -34,6 +35,12 @@ Route::prefix('user')->group(function () {
     Route::middleware(AuthenticateUser::class)->group(function () {
 
 ////// auth routes
+
+        Route::get('sonod/list',[UserSonodController::class,'index']);
+        Route::post('sonod/action/{id}',[UserSonodController::class,'sonod_action']);
+
+
+
 
         Route::get('/profile', [UserProfileController::class, 'getProfile']);
         Route::post('/profile', [UserProfileController::class, 'updateProfile']);

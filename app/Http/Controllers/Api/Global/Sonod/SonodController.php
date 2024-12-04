@@ -8,7 +8,7 @@ use App\Models\Uniouninfo;
 use Illuminate\Http\Request;
 use App\Models\Sonodnamelist;
 use App\Http\Controllers\Controller;
-use Rakibhstu\Banglanumber\NumberToBangla;
+
 
 class SonodController extends Controller
 {
@@ -66,7 +66,7 @@ class SonodController extends Controller
         // Check if annual income is provided and process accordingly
         if ($request->Annual_income) {
             $insertData['Annual_income'] = $request->Annual_income;
-            $insertData['Annual_income_text'] = $this->convertAnnualIncomeToText($request->Annual_income);
+            $insertData['Annual_income_text'] = convertAnnualIncomeToText($request->Annual_income);
         }
 
         // Handle the status and charges
@@ -145,11 +145,7 @@ class SonodController extends Controller
         }
     }
 
-    private function convertAnnualIncomeToText($annualIncome)
-    {
-        $numTo = new NumberToBangla();
-        return $numTo->bnMoney(int_bn_to_en($annualIncome)) . ' মাত্র';
-    }
+
 
     private function handleCharges($request, &$insertData)
     {
@@ -176,7 +172,7 @@ class SonodController extends Controller
             $insertData['last_years_money'] = $lastYearsMoney;
             $insertData['currently_paid_money'] = $currentlyPaidMoney;
             $insertData['total_amount'] = $totalAmount;
-            $insertData['the_amount_of_money_in_words'] = $this->convertAnnualIncomeToText($totalAmount);
+            $insertData['the_amount_of_money_in_words'] = convertAnnualIncomeToText($totalAmount);
             $insertData['amount_deails'] = $amountDetails;
         }
     }
