@@ -38,6 +38,8 @@ Route::prefix('user')->group(function () {
 
         Route::get('sonod/list',[UserSonodController::class,'index']);
         Route::post('sonod/action/{id}',[UserSonodController::class,'sonod_action']);
+        Route::put('/sonod/update/{id}', [UserSonodController::class, 'update']);
+
 
 
 
