@@ -7,9 +7,11 @@
     "require": {
         "php": "^8.2",
         "aws/aws-sdk-php": "^3.327",
+        "intervention/image": "^3.9",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
         "league/flysystem-aws-s3-v3": "^3.29",
+        "rakibhstu/number-to-bangla": "^1.5",
         "stripe/stripe-php": "^16.2",
         "tymon/jwt-auth": "*"
     },
@@ -31,8 +33,10 @@
         "files": [
             "app/Helpers/functions.php",
             "app/Helpers/Gateways/Stripe.php",
+            "app/Helpers/Gateways/Ekpay.php",
             "app/Helpers/FileSystem/FileHelper.php",
-            "app/Helpers/Package/PackageHelpers.php"
+            "app/Helpers/Package/PackageHelpers.php",
+            "app/Helpers/Sonod/SonodHelpers.php"
         ]
     },
     "autoload-dev": {

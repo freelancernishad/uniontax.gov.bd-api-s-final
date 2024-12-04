@@ -10,13 +10,40 @@ class Payment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'gateway', 'transaction_id', 'currency', 'amount', 'fee',
-        'status', 'response_data', 'payment_method', 'payer_email', 'paid_at','coupon_id','payable_type','payable_id'
+        'user_id',
+        'gateway',
+        'transaction_id',
+        'currency',
+        'amount',
+        'fee',
+        'status',
+        'response_data',
+        'payment_method',
+        'payer_email',
+        'paid_at',
+        'coupon_id',
+        'payable_type',
+        'payable_id',
+        'union', // New column
+        'trxId', // New column
+        'sonodId', // New column
+        'sonod_type', // New column
+        'applicant_mobile', // New column
+        'date', // New column
+        'month', // New column
+        'year', // New column
+        'paymentUrl', // New column
+        'ipnResponse', // New column
+        'method', // New column
+        'payment_type', // New column
+        'balance', // New column
     ];
 
     protected $casts = [
         'response_data' => 'array', // Cast JSON data to an array
+        'ipnResponse' => 'array', // Cast JSON data to an array
         'paid_at' => 'datetime', // Cast as a datetime
+        'date' => 'datetime', // Cast as a datetime
     ];
 
     // Define relationship with User model
@@ -24,7 +51,6 @@ class Payment extends Model
     {
         return $this->belongsTo(User::class);
     }
-
 
     public function couponUsage()
     {
@@ -41,9 +67,7 @@ class Payment extends Model
         return $this->belongsTo(Coupon::class);
     }
 
-
-
-        /**
+    /**
      * Scope for completed payments.
      */
     public function scopeCompleted($query)
@@ -98,8 +122,4 @@ class Payment extends Model
     {
         return $query->where('payable_type', $payableType)->where('payable_id', $payableId);
     }
-
-
-
-
 }
