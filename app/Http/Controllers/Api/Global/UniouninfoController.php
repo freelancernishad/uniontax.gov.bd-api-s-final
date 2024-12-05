@@ -16,7 +16,7 @@ class UniouninfoController extends Controller
      */
     public function getByShortName(Request $request)
     {
-        $shortName = $request->query('short_name_e');
+        $shortName = $request->query('name');
 
         if (!$shortName) {
             return response()->json(['error' => 'short_name_e is required'], 400);
