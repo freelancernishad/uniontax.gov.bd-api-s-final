@@ -26,7 +26,7 @@ class UniouninfoController extends Controller
 
         $uniouninfos = Uniouninfo::where('short_name_e', $shortName)->select($columns)->first();
 
-        if ($uniouninfos) {
+        if (!$uniouninfos) {
             return response()->json(['message' => 'No data found'], 404);
         }
 
