@@ -49,7 +49,7 @@ class UniouninfoController extends Controller
             return response()->json(['error' => 'short_name_e is required'], 400);
         }
 
-        $columns = ['id', 'short_name_e', 'short_name_b', 'thana', 'district', 'web_logo', 'format', 'google_map', 'defaultColor', 'payment_type', 'nidServicestatus', 'nidService'];
+        $columns = ['id', 'short_name_e', 'short_name_b', 'thana', 'district', 'web_logo', 'format', 'google_map', 'defaultColor', 'payment_type', 'nidServicestatus', 'nidService', 'u_image', 'u_description', 'u_notice'];
 
         $uniouninfos = Uniouninfo::where('short_name_e', $shortName)->select($columns)->first();
 
