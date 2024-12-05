@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api\Global;
 
-use App\Http\Controllers\Controller;
 use App\Models\Uniouninfo;
 use Illuminate\Http\Request;
+use App\Models\TradeLicenseKhat;
+use App\Http\Controllers\Controller;
+use App\Models\Sonodnamelist;
 
 class UniouninfoController extends Controller
 {
@@ -16,6 +18,15 @@ class UniouninfoController extends Controller
      */
     public function getByShortName(Request $request)
     {
+
+
+        $type = $request->query('type');
+        if($type=='TradeLicenseKhat'){
+            $TradeLicenseKhat =  TradeLicenseKhat::with('khatFees.khat2')->get();
+            return response()->json($TradeLicenseKhat, 200);
+        }
+
+
         $shortName = $request->query('name');
 
         if (!$shortName) {
@@ -30,6 +41,20 @@ class UniouninfoController extends Controller
             return response()->json(['message' => 'No data found'], 404);
         }
 
-        return response()->json(['uniouninfos'=>$uniouninfos], 200);
+
+
+
+        $sonod_name_lists = Sonodnamelist::with(['sonodFees' => function ($query) use ($shortName) {
+            $query->where('unioun', $shortName);
+        }])->select(['id', 'service_id', 'bnname', 'enname', 'icon'])->get();
+
+        $returnData = [
+            'uniouninfos'=>$uniouninfos,
+            'sonod_name_lists'=>$sonod_name_lists,
+        ];
+
+
+
+        return response()->json($returnData, 200);
     }
 }

@@ -15,4 +15,11 @@ class TradeLicenseKhat extends Model
         'main_khat_id',
         'type',
     ];
+
+
+    public function khatFees()
+    {
+        return $this->hasMany(TradeLicenseKhatFee::class, 'khat_id_1', 'khat_id');
+    }
+
 }

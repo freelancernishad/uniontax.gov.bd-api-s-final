@@ -24,7 +24,7 @@ class Sonodnamelist extends Model
     // Relationship with SonodFee (one-to-many)
     public function sonodFees()
     {
-        return $this->hasMany(SonodFee::class, 'sonodnamelist_id');
+        return $this->hasMany(SonodFee::class, 'service_id', 'service_id');
     }
 
 
