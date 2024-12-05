@@ -22,7 +22,23 @@ class UniouninfoController extends Controller
 
         $type = $request->query('type');
         if($type=='TradeLicenseKhat'){
-            $TradeLicenseKhat =  TradeLicenseKhat::with('khatFees.khat2')->get();
+            $TradeLicenseKhat = TradeLicenseKhat::with('khatFees.khat2')->where('main_khat_id',0)
+    ->select('name', 'khat_id')
+    ->get()
+    ->map(function ($khat) {
+        return [
+            'name' => $khat->name,
+            'khat_id' => $khat->khat_id,
+            'khat_fees' => $khat->khatFees->map(function ($fee) {
+                return [
+                    'name' => $fee->khat2->name ?? null,
+                    'applicant_type_of_businessKhat' => $fee->khat_id_1,
+                    'applicant_type_of_businessKhatAmount' => $fee->khat_id_2,
+                    'fee' => $fee->fee,
+                ];
+            })
+        ];
+    });
             return response()->json($TradeLicenseKhat, 200);
         }
 
@@ -44,9 +60,22 @@ class UniouninfoController extends Controller
 
 
 
-        $sonod_name_lists = Sonodnamelist::with(['sonodFees' => function ($query) use ($shortName) {
-            $query->where('unioun', $shortName);
-        }])->select(['id', 'service_id', 'bnname', 'enname', 'icon'])->get();
+        $sonod_name_lists = Sonodnamelist::select(['id', 'service_id', 'bnname', 'enname', 'icon'])
+        ->with(['sonodFees' => function ($query) use ($shortName) {
+            $query->select('service_id', 'fees')
+                  ->where('unioun', $shortName);
+        }])
+        ->get()
+        ->map(function ($sonod) {
+            $fees = $sonod->sonodFees->pluck('fees')->implode(', ');
+            return [
+                'id' => $sonod->id,
+                'bnname' => $sonod->bnname,
+                'enname' => $sonod->enname,
+                'icon' => $sonod->icon,
+                'sonod_fees' => $fees ? (int)$fees : 0
+            ];
+        });
 
         $returnData = [
             'uniouninfos'=>$uniouninfos,
