@@ -167,3 +167,11 @@ use Rakibhstu\Banglanumber\NumberToBangla;
 
         return $sec_prottoyon;
     }
+
+
+    function getOrthoBchorYear()
+    {
+        $year = date('Y');
+        $month = date('m');
+        return $month < 7 ? ($year - 1) . "-" . date('y') : $year . "-" . (date('y') + 1);
+    }

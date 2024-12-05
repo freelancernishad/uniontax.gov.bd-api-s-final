@@ -47,6 +47,7 @@ Route::prefix('global/')->group(function () {
 
 
 Route::post('/sonod/submit', [SonodController::class, 'sonodSubmit']);
+Route::get('sonod/search', [SonodController::class, 'findSonod']);
 
 Route::post('ekpay/ipn',[EkpayController::class ,'ipn']);
 Route::post('ekpay/check/payments/ipn',[EkpayController::class ,'CheckPayment']);

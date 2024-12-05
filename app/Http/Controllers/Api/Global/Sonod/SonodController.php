@@ -32,7 +32,7 @@ class SonodController extends Controller
         } while ($existingSonod);
 
 
-        $sonodId = (string) sonodId($unionName, $sonodName, $this->getOrthoBchorYear());
+        $sonodId = (string) sonodId($unionName, $sonodName, getOrthoBchorYear());
 
         // Prepare data for insertion
         $insertData = $request->except([
@@ -57,6 +57,7 @@ class SonodController extends Controller
 
         $insertData['stutus'] = "Pepaid";
         $insertData['payment_status'] = "Unpaid";
+        $insertData['year'] = date('Y');
 
         $insertData = array_merge($insertData, $this->prepareSonodData($request, $sonodName, $successors, $unionName, $sonodId));
 
@@ -107,8 +108,8 @@ class SonodController extends Controller
         }
 
         // Set the orthoBchor based on current year/month
-        $insertData['orthoBchor'] = $this->getOrthoBchorYear();
-        // $insertData['orthoBchor'] = ($sonodName == 'ট্রেড লাইসেন্স') ? $request->orthoBchor : $this->getOrthoBchorYear();
+        $insertData['orthoBchor'] = getOrthoBchorYear();
+        // $insertData['orthoBchor'] = ($sonodName == 'ট্রেড লাইসেন্স') ? $request->orthoBchor : getOrthoBchorYear();
 
         // Set additional fields from the union info
         $unionInfo = Uniouninfo::where('short_name_e', $unionName)->latest()->first();
@@ -202,11 +203,79 @@ class SonodController extends Controller
         }
     }
 
-    private function getOrthoBchorYear()
+
+     /**
+     * Search Sonod by `sonod_Id` and `sonod_name` or retrieve by `id`.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function findSonod(Request $request)
     {
-        $year = date('Y');
-        $month = date('m');
-        return $month < 7 ? ($year - 1) . "-" . date('y') : $year . "-" . (date('y') + 1);
+        // Columns to select
+        $columns = [
+            'id',
+            'unioun_name',
+            'year',
+            'sonod_Id',
+            'sonod_name',
+            'applicant_national_id_number',
+            'applicant_birth_certificate_number',
+            'applicant_name',
+            'applicant_date_of_birth',
+            'applicant_gender',
+            'payment_status',
+            'stutus',
+            'successor_list',
+        ];
+
+        // Retrieve by ID if 'id' is provided
+        if ($request->has('id')) {
+            $sonod = Sonod::select($columns)->find($request->input('id'));
+
+            if ($sonod) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $sonod,
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Sonod not found by ID',
+            ], 404);
+        }
+
+        // Search by `sonod_Id` and `sonod_name` if both are provided
+        $sonodId = $request->input('sonod_Id');
+        $sonodName = $request->input('sonod_name');
+
+        if ($sonodId && $sonodName) {
+            $results = Sonod::select($columns)
+                ->where('sonod_Id', $sonodId)
+                ->where('sonod_name', $sonodName)
+                ->get();
+
+            if ($results->isNotEmpty()) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $results,
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Sonod not found by sonod_Id and sonod_name',
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid search parameters provided',
+        ], 400);
     }
+
+
+
 
 }
