@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api\Global\Sonod;
 
 use Exception;
 use App\Models\Sonod;
+use App\Models\SonodFee;
 use App\Models\Uniouninfo;
 use Illuminate\Http\Request;
 use App\Models\Sonodnamelist;
+use App\Models\TradeLicenseKhatFee;
 use App\Http\Controllers\Controller;
 
 
@@ -70,8 +72,9 @@ class SonodController extends Controller
             $insertData['Annual_income_text'] = convertAnnualIncomeToText($request->Annual_income);
         }
 
+
         // Handle the status and charges
-        $this->handleCharges($request, $insertData);
+        $this->handleCharges($request,$sonodEnName, $insertData);
 
         try {
             // Save the Sonod entry
@@ -148,35 +151,72 @@ class SonodController extends Controller
 
 
 
-    private function handleCharges($request, &$insertData)
+    private function handleCharges($request, $sonodnamelist, &$insertData)
     {
-        if ($request->stutus == 'Prepaid') {
-            $totalAmount = $request->charages['totalamount'];
-            $sonodFee = $request->charages['sonod_fee'];
-            $tradeVat = $request->charages['tradeVat'];
-            $pesaKor = $request->charages['pesaKor'];
-            $lastYearsMoney = $request->last_years_money;
-
-            $currentlyPaidMoney = $totalAmount - $lastYearsMoney;
-
-            $amountDetails = json_encode([
-                'total_amount' => $totalAmount,
-                'pesaKor' => $pesaKor,
-                'tredeLisenceFee' => $sonodFee,
-                'vatAykor' => $tradeVat,
-                'khat' => '',
-                'last_years_money' => $lastYearsMoney,
-                'currently_paid_money' => $currentlyPaidMoney
-            ]);
-
-            $insertData['khat'] = '';
-            $insertData['last_years_money'] = $lastYearsMoney;
-            $insertData['currently_paid_money'] = $currentlyPaidMoney;
-            $insertData['total_amount'] = $totalAmount;
-            $insertData['the_amount_of_money_in_words'] = convertAnnualIncomeToText($totalAmount);
-            $insertData['amount_deails'] = $amountDetails;
+        $tradeVat = 15;
+        $lastYearsMoney = $request->last_years_money;
+        $sonodName = $request->sonod_name;   
+        $uniounName = $request->unioun_name; 
+    
+        // Fetch the corresponding sonod fee from the SonodFee table
+        $sonodFeeRecord = SonodFee::where([
+            'service_id' => $sonodnamelist->service_id,
+            'unioun' => $uniounName
+        ])->first();
+    
+        if (!$sonodFeeRecord) {
+            return response()->json(['message' => 'Sonod fee not found.'], 404);
         }
+    
+        $sonodFee = $sonodFeeRecord->fees; // Get the fee from the SonodFee table
+    
+        // Check if it's a 'ট্রেড লাইসেন্স' and retrieve the PesaKor fee
+        if ($sonodName == 'ট্রেড লাইসেন্স') {
+            // Assuming the 'Sonod' model has fields 'applicant_type_of_businessKhat' and 'applicant_type_of_businessKhatAmount'
+            $khat_id_1 = $request->applicant_type_of_businessKhat; // Applicant type of business Khat
+            $khat_id_2 = $request->applicant_type_of_businessKhatAmount; // Applicant type of business Khat Amount
+    
+            // Retrieve the corresponding fee from the TradeLicenseKhatFee model
+            $pesaKorFee = TradeLicenseKhatFee::where([
+                'khat_id_1' => $khat_id_1,
+                'khat_id_2' => $khat_id_2
+            ])->first();
+    
+            // If a matching fee is found, use it as the PesaKor fee
+            $pesaKor = $pesaKorFee ? $pesaKorFee->fee : 0; // Default to 0 if no fee is found
+        } else {
+            $pesaKor = 0; // If it's not 'ট্রেড লাইসেন্স', no PesaKor fee
+        }
+    
+        // Calculating the VAT amount (assumed to be a percentage)
+        $tradeVatAmount = ($sonodFee * $tradeVat) / 100;
+    
+        // Add PesaKor fee if it exists, otherwise just sum the Sonod fee and VAT
+        $totalAmount = $sonodFee + $tradeVatAmount + $pesaKor;
+    
+        // Calculating the money currently paid
+        $currentlyPaidMoney = $totalAmount - $lastYearsMoney;
+    
+        // Encoding the amount details as JSON with the required structure
+        $amountDetails = json_encode([
+            'total_amount' => $totalAmount,
+            'pesaKor' => (string)$pesaKor, // Ensure it's a string for the desired format
+            'tredeLisenceFee' => (string)$sonodFee, // 'tredeLisenceFee' maps to the 'sonod_fee'
+            'vatAykor' => (string)$tradeVat, // VAT calculation as a string
+            'khat' => null, // As specified, this is null
+            'last_years_money' => (string)$lastYearsMoney, // Ensuring the fields are returned as strings
+            'currently_paid_money' => (string)$currentlyPaidMoney // Ensure it's a string
+        ]);
+    
+        // Inserting the calculated data into the insertData array
+        $insertData['last_years_money'] = $lastYearsMoney;
+        $insertData['currently_paid_money'] = $currentlyPaidMoney;
+        $insertData['total_amount'] = $totalAmount;
+        $insertData['the_amount_of_money_in_words'] = convertAnnualIncomeToText($totalAmount);
+        $insertData['amount_deails'] = $amountDetails;
     }
+    
+
 
     private function sendNotification($sonod)
     {

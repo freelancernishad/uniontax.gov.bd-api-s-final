@@ -1,10 +1,19 @@
 <?php
 
+use App\Http\Controllers\Api\Global\Sonod\SonodPdfController;
 use App\Mail\TestMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\SystemSettings\SystemSettingController;
+
+
+
+
+
+Route::get('/sonod/{name}/{id}', [SonodPdfController::class,'sonodDownload']);
+
+
 
 Route::get('/', function () {
     return view('welcome');

@@ -7,6 +7,7 @@
     "require": {
         "php": "^8.2",
         "aws/aws-sdk-php": "^3.327",
+        "carlos-meneses/laravel-mpdf": "^2.1",
         "intervention/image": "^3.9",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
@@ -37,7 +38,9 @@
             "app/Helpers/FileSystem/FileHelper.php",
             "app/Helpers/Package/PackageHelpers.php",
             "app/Helpers/Sonod/SonodHelpers.php",
-            "app/Helpers/SmsSystem/SmsNocHelper.php"
+            "app/Helpers/Sonod/SonodPdfHelpers.php",
+            "app/Helpers/SmsSystem/SmsNocHelper.php",
+            "app/Helpers/Mpdf/MpdfHelpers.php"
         ]
     },
     "autoload-dev": {

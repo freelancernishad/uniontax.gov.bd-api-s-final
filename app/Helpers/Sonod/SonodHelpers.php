@@ -175,3 +175,14 @@ use Rakibhstu\Banglanumber\NumberToBangla;
         $month = date('m');
         return $month < 7 ? ($year - 1) . "-" . date('y') : $year . "-" . (date('y') + 1);
     }
+
+
+    function changeSonodName($name){
+        if($name=='ওয়ারিশান সনদ'){
+            return 'ওয়ারিশ সনদ';
+        }elseif($name=='বিবিধ প্রত্যয়নপত্র'){
+            return 'প্রত্যয়নপত্র';
+        }else{
+            return $name;
+        }
+    }

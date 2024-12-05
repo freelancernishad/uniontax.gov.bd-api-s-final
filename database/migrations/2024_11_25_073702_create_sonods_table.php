@@ -17,7 +17,7 @@ class CreateSonodsTable extends Migration
             $table->id();
             $table->string('unioun_name', 50)->nullable();
             $table->year('year')->nullable();
-            $table->string('sonod_Id', 30)->unique();
+            $table->string('sonod_Id', 30);
             $table->string('uniqeKey', 255)->unique();
             $table->string('image', 255)->nullable();
             $table->string('sonod_name', 70)->nullable();
