@@ -42,8 +42,8 @@
                        <img src="https://api.qrserver.com/v1/create-qr-code/?data={{ $qrurl }}&size=80x80"/>
                               <br/>
                                <div class="signature text-center position-relative">
-                                  ইস্যুর তারিখ: {{ int_en_to_bn(date("d/m/Y", strtotime($row->created_at))) }} </div>
-                       </div>
+                                  ইস্যুর তারিখ: {{ int_en_to_bn(date("d/m/Y", strtotime($row->created_at))) }}
+                                </div>
 
                     </td>
                     <td style="text-align: center;" width="20%">

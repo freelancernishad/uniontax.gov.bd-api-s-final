@@ -3,6 +3,15 @@ use Mpdf\Mpdf;
 use Mccarlosen\LaravelMpdf\LaravelMpdf;
  function generatePdf($html, $header = null, $footer = null, $filename = 'document.pdf')
 {
+    $margin_header = 0;
+    $margin_footer = 0;
+    if($header){
+        $margin_header = 10;
+    }
+    if($footer){
+        $margin_footer = 10;
+    }
+
     $mpdf = new Mpdf([
         'default_font_size' => 12,
         'default_font' => 'bangla',
@@ -14,8 +23,8 @@ use Mccarlosen\LaravelMpdf\LaravelMpdf;
         'margin_right'               => 8,
         'margin_top'                 => 8,
         'margin_bottom'              => 8,
-        'margin_header'              => 0,
-        'margin_footer'              => 0,
+        'margin_header'              => $margin_header,
+        'margin_footer'              => $margin_footer,
     ]);
 
     if ($header) {
