@@ -302,7 +302,7 @@ class SonodController extends Controller
                 ->where('sonod_name', $sonodName)
                 ->first();
 
-            if ($results->isNotEmpty()) {
+            if ($results) {
                 return response()->json($results);
             }
 
