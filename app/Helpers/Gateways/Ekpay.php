@@ -13,7 +13,7 @@ function unionname($unionname){
     return  $sonodList = Uniouninfo::where(['short_name_e'=>$unionname])->first();
 
   }
-function ekpayToken($trnx_id=123456789,$trns_info=[],$cust_info=[],$path='payment',$unioun_name=''){
+function ekpayToken($trnx_id=123456789,$trns_info=[],$cust_info=[],$path='payment',$unioun_name='',$urls){
 
 
     $url = config('AKPAY_IPN_URL');
@@ -41,9 +41,9 @@ $AKPAY_MER_PASS_KEY = $uniounDetials->AKPAY_MER_PASS_KEY;
       ],
       "req_timestamp" => "$req_timestamp GMT+6",
       "feed_uri" => [
-         "c_uri" => url("$path/cancel"),
-         "f_uri" => url("$path/fail"),
-         "s_uri" => url("$path/success")
+         "c_uri" => $urls['c_uri'],
+         "f_uri" => $urls['f_uri'],
+         "s_uri" => $urls['s_uri']
       ],
       "cust_info" => $cust_info,
       "trns_info" =>$trns_info,
@@ -94,7 +94,7 @@ $AKPAY_MER_PASS_KEY = $uniounDetials->AKPAY_MER_PASS_KEY;
 
 
 
- function sonodpayment($id)
+ function sonodpayment($id,$urls)
 {
     $sonod = Sonod::findOrFail($id);
     $applicant_mobile = int_bn_to_en($sonod->applicant_mobile);
@@ -154,7 +154,8 @@ $AKPAY_MER_PASS_KEY = $uniounDetials->AKPAY_MER_PASS_KEY;
         "trnx_id" => $trnx_id
     ];
 
-    $redirectUrl = ekpayToken($trnx_id, $trns_info, $cust_info, 'payment', $unioun_name);
+
+    $redirectUrl = ekpayToken($trnx_id, $trns_info, $cust_info, 'payment', $unioun_name,$urls);
 
     $req_timestamp = now();
 

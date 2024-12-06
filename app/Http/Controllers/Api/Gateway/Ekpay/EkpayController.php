@@ -67,7 +67,7 @@ class EkpayController extends Controller
     private function updateHoldingTaxStatus($payment, &$Insertdata)
     {
         $hosdingBokeya = HoldingBokeya::find($payment->sonodId);
-        $hosdingBokeya->update(['status' => 'Paid', 'payYear' => date('Y'), 'payOB' => COB(1)]);  // Update Holding Bokeya
+        $hosdingBokeya->update(['status' => 'Paid', 'payYear' => date('Y'), 'payOB' => CurrentOrthoBochor(1)]);  // Update Holding Bokeya
     }
 
     // Update Tender Form payment status

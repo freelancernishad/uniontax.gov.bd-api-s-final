@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Global\Sonod\SonodController;
 use App\Http\Controllers\Api\Gateway\Ekpay\EkpayController;
 use App\Http\Controllers\Api\Server\ServerStatusController;
 use App\Http\Controllers\Api\User\Package\UserPackageController;
+use App\Http\Controllers\Api\User\Holdingtax\HoldingtaxController;
 use App\Http\Controllers\Api\User\PackageAddon\UserPackageAddonController;
 
 // Load users and admins route files
@@ -48,6 +49,9 @@ Route::prefix('global/')->group(function () {
 
 Route::get('global/uniouninfo', [UniouninfoController::class, 'getByShortName']);
 
+
+
+Route::post('/pay/holding/tax/{id}', [HoldingtaxController::class,'holding_tax_pay_Online']);
 
 
 

@@ -80,8 +80,14 @@ class SonodController extends Controller
             // Save the Sonod entry
             $sonod = Sonod::create($insertData);
 
+
+            $urls = [
+                "s_uri"=>$request->s_uri,
+                "f_uri"=>$request->f_uri,
+                "c_uri"=>$request->c_uri
+            ];
           // Call sonodpayment to handle payment process
-          $redirectUrl = sonodpayment($sonod->id);
+          $redirectUrl = sonodpayment($sonod->id,$urls);
 
           // Send notification if the status is Pending
           if ($request->stutus == 'Pending') {

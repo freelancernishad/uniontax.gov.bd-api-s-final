@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api\User\Holdingtax;
 
+use App\Models\Payment;
 use App\Models\Holdingtax;
+use App\Models\Uniouninfo;
 use Illuminate\Http\Request;
 use App\Models\HoldingBokeya;
 use App\Http\Controllers\Controller;
@@ -330,6 +332,74 @@ class HoldingtaxController extends Controller
         // Paginate the results, and return the response
         return response()->json($query->paginate(20));
     }
+
+
+
+    public function holding_tax_pay_Online(Request $request,$id)
+    {
+        $holdingBokeya = HoldingBokeya::find($id);
+
+
+       $holdingTax = Holdingtax::where(['id'=>$holdingBokeya->holdingTax_id])->first();
+      $unioninfos = Uniouninfo::where(['short_name_e' => $holdingTax->unioun])->first();
+      $u_code = $unioninfos->u_code;
+
+    //   $holdingBokeyasAmount = HoldingBokeya::where(['holdingTax_id'=>$holdingBokeya->holdingTax_id,'status'=>'Unpaid'])->sum('price');
+
+        $trnx_id = $u_code.'-'.time();
+        $cust_info = [
+            "cust_email" => "",
+            "cust_id" => "$holdingBokeya->id",
+            "cust_mail_addr" => "Address",
+            "cust_mobo_no" => "01909756552",
+            "cust_name" => "Customer Name"
+        ];
+
+        $trns_info = [
+            "ord_det" => 'sonod',
+            "ord_id" => "$holdingBokeya->id",
+            "trnx_amt" => $holdingBokeya->price,
+            "trnx_currency" => "BDT",
+            "trnx_id" => "$trnx_id"
+        ];
+
+        $urls = [
+            "s_uri"=>$request->s_uri,
+            "f_uri"=>$request->f_uri,
+            "c_uri"=>$request->c_uri
+        ];
+
+        $redirectutl = ekpayToken($trnx_id, $trns_info, $cust_info,'payment',$holdingTax->unioun,$urls);
+
+
+        $req_timestamp = date('Y-m-d H:i:s');
+        $customerData = [
+            'union' => $holdingTax->unioun,
+            'trxId' => $trnx_id,
+            'transaction_id' => $trnx_id,
+            'sonodId' => $id,
+            'sonod_type' => 'holdingtax',
+            'amount' => $holdingBokeya->price,
+            'mob' => "01909756552",
+            'status' => "Pending",
+            'paymentUrl' => $redirectutl,
+            'method' => 'ekpay',
+            'payment_type' => 'online',
+            'date' => date('Y-m-d'),
+            'created_at' => $req_timestamp,
+            'gateway' => 'upcoming',
+        ];
+        Payment::create($customerData);
+
+        //  $redirectutl =  ekpayToken($trnx_id, $holdingBokeya->price, $cust_info,'holdingPay');
+
+
+        return response()->json($redirectutl);
+
+
+    }
+
+
 
 
 
