@@ -50,6 +50,8 @@ Route::prefix('global/')->group(function () {
 Route::get('global/uniouninfo', [UniouninfoController::class, 'getByShortName']);
 
 
+Route::get('holdingtax/search', [HoldingtaxController::class, 'holdingSearch']);
+Route::get('holdingtax/boketas/{id}', [HoldingtaxController::class, 'getSingleHoldingTaxWithBokeyas']);
 
 Route::post('/pay/holding/tax/{id}', [HoldingtaxController::class,'holding_tax_pay_Online']);
 

@@ -252,10 +252,18 @@ class HoldingtaxController extends Controller
         return fileupload($image, "holding/image/", 250, 300);
     }
 
-    public function getSingleHoldingTaxWithBokeyas($id)
+    public function getSingleHoldingTaxWithBokeyas(Request $r,$id)
     {
         // Get the authenticated user's union
-        $userUnion = Auth::user()->unioun; // Assuming the 'unioun' field is in the users table
+
+        $auth = Auth::user();
+        $userUnion = $r->unioun;
+        if($auth){
+            $userUnion = $auth->unioun;
+        }
+
+
+
 
         // Find the holding tax by its id and eager load the holding bokeyas with specific columns
         $holdingTax = Holdingtax::select(['unioun', 'id', 'holding_no', 'category', 'maliker_name', 'father_or_samir_name', 'gramer_name', 'word_no', 'nid_no', 'mobile_no', 'griher_barsikh_mullo', 'jomir_vara', 'barsikh_vara'])
@@ -272,8 +280,11 @@ class HoldingtaxController extends Controller
             ], 404);
         }
 
+
+
+
         // Check if the union of the holding tax matches the authenticated user's union
-        if ($holdingTax->unioun !== $userUnion) {
+        if ($holdingTax->unioun !== $userUnion && $auth) {
             return response()->json([
                 'message' => 'You are not authorized to view this Holding Tax'
             ], 403);
@@ -301,7 +312,9 @@ class HoldingtaxController extends Controller
     public function holdingSearch(Request $r)
     {
         // Get the authenticated user's union
-        $userUnion = Auth::user()->unioun;
+
+        $auth = Auth::user();
+
 
         // Get the search parameters from the request
         $search = $r->search;
@@ -311,6 +324,11 @@ class HoldingtaxController extends Controller
         $query = Holdingtax::query();
         $query->select(['id','maliker_name','nid_no','mobile_no']);
 
+
+        $userUnion = $r->unioun;
+        if($auth){
+            $userUnion = $auth->unioun;
+        }
         // Apply union filter based on the authenticated user's union
         $query->where('unioun', $userUnion);
 
