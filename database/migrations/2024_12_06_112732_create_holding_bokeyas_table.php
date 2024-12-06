@@ -10,12 +10,12 @@ class CreateHoldingbokeyasTable extends Migration
     {
         Schema::create('holding_bokeyas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('holdingTax_id')->constrained('holdingtaxes');
-            $table->integer('year');
-            $table->decimal('price', 15, 2);
-            $table->integer('payYear');
-            $table->decimal('payOB', 15, 2);
-            $table->string('status');
+            $table->foreignId('holdingTax_id')->nullable()->constrained('holdingtaxes');
+            $table->string('year')->nullable();
+            $table->string('price')->nullable();
+            $table->string('payYear')->nullable();
+            $table->string('payOB')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }

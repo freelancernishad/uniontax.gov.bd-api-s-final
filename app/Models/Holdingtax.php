@@ -46,6 +46,6 @@ class Holdingtax extends Model
 
     public function holdingBokeyas()
     {
-        return $this->hasMany(HoldingBokeya::class, 'holdingTax_id');
+        return $this->hasMany(HoldingBokeya::class, 'holdingTax_id','id');
     }
 }

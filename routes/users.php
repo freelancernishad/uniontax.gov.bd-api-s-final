@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Auth\User\AuthUserController;
 use App\Http\Controllers\Api\User\Sonod\UserSonodController;
 use App\Http\Controllers\Api\Auth\User\VerificationController;
 use App\Http\Controllers\Api\User\Package\UserPackageController;
+use App\Http\Controllers\Api\User\Holdingtax\HoldingtaxController;
 use App\Http\Controllers\Api\Auth\User\UserPasswordResetController;
 use App\Http\Controllers\Api\User\SonodName\UserSonodFeeController;
 use App\Http\Controllers\Api\User\Uniouninfo\UserUniouninfoController;
@@ -39,6 +40,10 @@ Route::prefix('user')->group(function () {
         Route::get('sonod/list',[UserSonodController::class,'index']);
         Route::post('sonod/action/{id}',[UserSonodController::class,'sonod_action']);
         Route::put('/sonod/update/{id}', [UserSonodController::class, 'update']);
+
+        Route::post('holdingtax', [HoldingtaxController::class, 'store']);
+        Route::get('holdingtax/{id}', [HoldingtaxController::class, 'getSingleHoldingTaxWithBokeyas']);
+
 
 
 
