@@ -122,4 +122,25 @@ class Payment extends Model
     {
         return $query->where('payable_type', $payableType)->where('payable_id', $payableId);
     }
+
+    public function sonod()
+    {
+        // Defines a belongsTo relationship with the Sonod model using the sonodId as the foreign key
+        return $this->belongsTo(Sonod::class, 'sonodId', 'id');
+    }
+
+    public function tax()
+    {
+        // Defines a belongsTo relationship with the HoldingBokeya model using sonodId as the foreign key
+        // Ensure HoldingBokeya is related to sonodId or change to appropriate foreign key if needed
+        return $this->belongsTo(HoldingBokeya::class, 'sonodId', 'id');
+    }
+
+    public function tenderinvoice()
+    {
+        // Defines a belongsTo relationship with the TanderInvoice model using sonodId as the foreign key
+        return $this->belongsTo(TanderInvoice::class, 'sonodId', 'id');
+    }
+
+
 }

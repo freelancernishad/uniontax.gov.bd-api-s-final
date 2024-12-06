@@ -176,6 +176,18 @@ use Rakibhstu\Banglanumber\NumberToBangla;
         return $month < 7 ? ($year - 1) . "-" . date('y') : $year . "-" . (date('y') + 1);
     }
 
+    function CurrentOrthoBochor($full = 0, $month = '')
+    {
+        $year = date('Y');
+        $month = $month ?: date('m'); // Use the current month if none is provided
+
+        // Determine the year range based on the month
+        $startYear = $month < 7 ? $year - 1 : $year;
+        $endYear = $month < 7 ? $year : $year + 1;
+
+        // Return the formatted year range based on the $full flag
+        return $full ? "{$startYear}-{$endYear}" : "{$startYear}-" . substr($endYear, -2);
+    }
 
     function changeSonodName($name){
         if($name=='ওয়ারিশান সনদ'){
