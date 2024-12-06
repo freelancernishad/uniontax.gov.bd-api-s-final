@@ -20,7 +20,7 @@ class SonodPdfController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response|string
      */
-    public function sonodDownload(Request $request, $name, $id)
+    public function sonodDownload(Request $request, $id)
     {
         ini_set('max_execution_time', '60000');
         ini_set("pcre.backtrack_limit", "50000000000000000");

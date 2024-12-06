@@ -12,8 +12,11 @@ use App\Http\Controllers\Api\SystemSettings\SystemSettingController;
 
 
 
-Route::get('/sonod/{name}/{id}', [SonodPdfController::class,'sonodDownload']);
-Route::get('/document/{name}/{id}', [DocumentPdfController::class,'userDocument']);
+Route::get('/sonod/d/{id}', [SonodPdfController::class,'sonodDownload']);
+Route::get('/sonod/download/{id}', [SonodPdfController::class,'sonodDownload']);
+
+Route::get('/document/d/{id}', [DocumentPdfController::class,'userDocument']);
+Route::get('/applicant/copy/download/{id}', [DocumentPdfController::class,'userDocument']);
 
 
 

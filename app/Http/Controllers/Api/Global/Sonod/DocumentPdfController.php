@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class DocumentPdfController extends Controller
 {
-    public function userDocument(Request $request, $name, $id)
+    public function userDocument(Request $request, $id)
     {
         // Set memory and execution limits
         ini_set('max_execution_time', '60000');
