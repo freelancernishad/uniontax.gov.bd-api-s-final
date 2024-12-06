@@ -58,7 +58,7 @@ Route::post('/pay/holding/tax/{id}', [HoldingtaxController::class,'holding_tax_p
 
 
 Route::post('/sonod/submit', [SonodController::class, 'sonodSubmit']);
-Route::get('sonod/search', [SonodController::class, 'findSonod']);
+Route::post('sonod/search', [SonodController::class, 'findSonod']);
 
 Route::post('ekpay/ipn',[EkpayController::class ,'ipn']);
 Route::post('ekpay/check/payments/ipn',[EkpayController::class ,'CheckPayment']);
