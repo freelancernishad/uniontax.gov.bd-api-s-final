@@ -64,6 +64,7 @@ Route::prefix('user')->group(function () {
 
 
         Route::get('/union-info', [UserUniouninfoController::class, 'getUserUnionInfo']);
+        Route::post('/union-info', [UserUniouninfoController::class, 'updateUserUnionInfo']);
 
 
 
