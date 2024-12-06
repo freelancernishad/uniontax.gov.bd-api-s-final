@@ -1,7 +1,7 @@
 <?php
 use Mpdf\Mpdf;
 use Mccarlosen\LaravelMpdf\LaravelMpdf;
- function generatePdf($html, $header = null, $footer = null, $filename = 'document.pdf')
+ function generatePdf($html, $header = null, $footer = null, $filename = 'document.pdf',$page_format='A4')
 {
     $margin_header = 0;
     $margin_footer = 0;
@@ -16,7 +16,7 @@ use Mccarlosen\LaravelMpdf\LaravelMpdf;
         'default_font_size' => 12,
         'default_font' => 'bangla',
         'mode' => 'utf-8',
-        'format' => 'A4',
+        'format' => $page_format,
         'setAutoTopMargin' => 'stretch',
         'setAutoBottomMargin' => 'stretch',
         'margin_left'               => 8,

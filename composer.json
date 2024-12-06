@@ -41,7 +41,8 @@
             "app/Helpers/Sonod/SonodPdfHelpers.php",
             "app/Helpers/Sonod/InvoicePdfHelpers.php",
             "app/Helpers/SmsSystem/SmsNocHelper.php",
-            "app/Helpers/Mpdf/MpdfHelpers.php"
+            "app/Helpers/Mpdf/MpdfHelpers.php",
+            "app/Helpers/HoldingTax/HoldingTaxInvoice.php"
         ]
     },
     "autoload-dev": {

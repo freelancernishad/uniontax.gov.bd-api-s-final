@@ -281,7 +281,7 @@ class HoldingtaxController extends Controller
         foreach ($holdingTax->holdingBokeyas as $bokeya) {
             // Add the invoice URL if status is 'Paid'
             if ($bokeya->status === 'Paid') {
-                $bokeya->invoice_url = url('invoices/' . $bokeya->id);
+                $bokeya->invoice_url = url('holding/tax/invoice/' . $bokeya->id);
                 $bokeya->certificate_of_honor_url = url('invoices/' . $bokeya->id);
             } else {
                 $bokeya->invoice_url = '';

@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Global\Sonod\InvoicePdfController;
 use App\Http\Controllers\Api\Global\Sonod\DocumentPdfController;
 use App\Http\Controllers\Api\User\Reports\PaymentReportsController;
 use App\Http\Controllers\Api\SystemSettings\SystemSettingController;
+use App\Http\Controllers\Api\Global\HoldingTax\HoldingTaxPdfController;
 
 
 
@@ -23,6 +24,9 @@ Route::get('/applicant/copy/download/{id}', [DocumentPdfController::class,'userD
 Route::get('/sonod/invoice/download/{id}', [InvoicePdfController::class,'invoice']);
 
 Route::get('payment/report/download', [PaymentReportsController::class,'PaymentReports']);
+
+
+Route::get('holding/tax/invoice/{id}', [HoldingTaxPdfController::class,'holdingPaymentInvoice']);
 
 
 
