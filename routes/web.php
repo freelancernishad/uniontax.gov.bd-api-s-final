@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\Global\Sonod\SonodPdfController;
+use App\Http\Controllers\Api\Global\Sonod\InvoicePdfController;
 use App\Http\Controllers\Api\Global\Sonod\DocumentPdfController;
 use App\Http\Controllers\Api\SystemSettings\SystemSettingController;
 
@@ -17,6 +18,8 @@ Route::get('/sonod/download/{id}', [SonodPdfController::class,'sonodDownload']);
 
 Route::get('/document/d/{id}', [DocumentPdfController::class,'userDocument']);
 Route::get('/applicant/copy/download/{id}', [DocumentPdfController::class,'userDocument']);
+
+Route::get('/sonod/invoice/download/{id}', [InvoicePdfController::class,'invoice']);
 
 
 

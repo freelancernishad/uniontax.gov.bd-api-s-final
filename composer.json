@@ -39,6 +39,7 @@
             "app/Helpers/Package/PackageHelpers.php",
             "app/Helpers/Sonod/SonodHelpers.php",
             "app/Helpers/Sonod/SonodPdfHelpers.php",
+            "app/Helpers/Sonod/InvoicePdfHelpers.php",
             "app/Helpers/SmsSystem/SmsNocHelper.php",
             "app/Helpers/Mpdf/MpdfHelpers.php"
         ]
