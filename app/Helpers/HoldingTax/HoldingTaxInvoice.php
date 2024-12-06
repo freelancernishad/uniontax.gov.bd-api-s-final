@@ -86,7 +86,7 @@ function HoldingTaxInvoiceBody($unions, $HoldingBokeya, $customers, $previousamo
                                     তারিখ: " . int_en_to_bn(date('d/m/Y', strtotime($payment->date ?? now()))) . "
                                 </td>
                                 <td>
-                                    <img src='https://chart.apis.google.com/chart?cht=qr&chl=" . url("/holding/tax/invoice/{$HoldingBokeya->id}") . "&chs=100' />
+                                    <img src='https://api.qrserver.com/v1/create-qr-code/?data=" . url("/holding/tax/invoice/{$HoldingBokeya->id}") . "&size=80x80' />
                                 </td>
                                 <td style='text-align: right' width='130px'>
                                     ইউপি চেয়ারম্যানের স্বাক্ষর
