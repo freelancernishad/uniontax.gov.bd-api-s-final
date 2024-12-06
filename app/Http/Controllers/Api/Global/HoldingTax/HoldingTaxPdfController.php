@@ -20,7 +20,7 @@ class HoldingTaxPdfController extends Controller
             return response()->json(['error'=>'Invoice generation is only available for paid entries.'],404);
         }
         $payment = Payment::where(['sonod_type'=>'holdingtax','sonodId'=>$id,'status'=>'Paid'])->first();
-        
+
         $COB = getOrthoBchorYear(1);
 
         if ($holdingBokeya->payOB) {
@@ -105,5 +105,34 @@ class HoldingTaxPdfController extends Controller
             ->pluck('year') // Retrieve only the 'year' column
             ->toArray(); // Convert to an array
     }
+
+
+    public function holdingCertificate_of_honor(Request $request, $id)
+    {
+        // Retrieve the HoldingBokeya, HoldingTax, and UniounInfo data
+        $holdingBokeya = HoldingBokeya::find($id);
+        $holdingTax = Holdingtax::find($holdingBokeya->holdingTax_id);
+        $uniouninfo = Uniouninfo::where('short_name_e', $holdingTax->unioun)->first();
+
+        // Generate the file name
+        $fileName = 'Certificate_of_Honor-' . date('Y-m-d_H:m:s');
+
+        // Prepare the view data
+        $htmlView = view('HoldingTaxCertificate.certificate_of_honor', compact('uniouninfo', 'holdingTax', 'holdingBokeya'))->render();
+
+        // Optional header and footer (could be passed as null for simplicity)
+        $header = null;
+        $footer = null;
+
+        // Generate the PDF using the generatePdf function
+        generatePdf($htmlView, $header, $footer, "$fileName-$holdingBokeya->holdingTax_id.pdf", 'A4');
+
+        // The PDF will be generated and saved or streamed automatically by the generatePdf function
+        // Optionally, you can return a response after this process if needed.
+    }
+
+
+
+
 
 }

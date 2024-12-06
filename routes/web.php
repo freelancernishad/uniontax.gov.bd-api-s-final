@@ -27,7 +27,7 @@ Route::get('payment/report/download', [PaymentReportsController::class,'PaymentR
 
 
 Route::get('holding/tax/invoice/{id}', [HoldingTaxPdfController::class,'holdingPaymentInvoice']);
-
+Route::get('/holding/tax/certificate_of_honor/{id}', [HoldingTaxPdfController::class,'holdingCertificate_of_honor']);
 
 
 Route::get('/', function () {
