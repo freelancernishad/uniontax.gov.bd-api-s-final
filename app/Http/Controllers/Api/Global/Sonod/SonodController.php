@@ -300,24 +300,19 @@ class SonodController extends Controller
             $results = Sonod::select($columns)
                 ->where('sonod_Id', $sonodId)
                 ->where('sonod_name', $sonodName)
-                ->get();
+                ->first();
 
             if ($results->isNotEmpty()) {
-                return response()->json([
-                    'success' => true,
-                    'data' => $results,
-                ]);
+                return response()->json($results);
             }
 
             return response()->json([
-                'success' => false,
-                'message' => 'Sonod not found by sonod_Id and sonod_name',
+                'error' => 'Sonod not found by sonod_Id and sonod_name',
             ], 404);
         }
 
         return response()->json([
-            'success' => false,
-            'message' => 'Invalid search parameters provided',
+            'error' => 'Invalid search parameters provided',
         ], 400);
     }
 
