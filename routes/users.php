@@ -41,6 +41,7 @@ Route::prefix('user')->group(function () {
         Route::post('sonod/action/{id}',[UserSonodController::class,'sonod_action']);
         Route::put('/sonod/update/{id}', [UserSonodController::class, 'update']);
 
+        Route::get('holdingtax', [HoldingtaxController::class, 'holdingSearch']);
         Route::post('holdingtax', [HoldingtaxController::class, 'store']);
         Route::get('holdingtax/{id}', [HoldingtaxController::class, 'getSingleHoldingTaxWithBokeyas']);
 

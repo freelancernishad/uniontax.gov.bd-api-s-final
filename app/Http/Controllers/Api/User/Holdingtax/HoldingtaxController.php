@@ -250,45 +250,86 @@ class HoldingtaxController extends Controller
         return fileupload($image, "holding/image/", 250, 300);
     }
 
-
     public function getSingleHoldingTaxWithBokeyas($id)
-{
-    // Get the authenticated user's union
-    $userUnion = Auth::user()->unioun; // Assuming the 'unioun' field is in the users table
+    {
+        // Get the authenticated user's union
+        $userUnion = Auth::user()->unioun; // Assuming the 'unioun' field is in the users table
 
-    // Find the holding tax by its id and eager load the holding bokeyas
-    $holdingTax = Holdingtax::with('holdingBokeyas')->find($id);
+        // Find the holding tax by its id and eager load the holding bokeyas with specific columns
+        $holdingTax = Holdingtax::select(['unioun', 'id', 'holding_no', 'category', 'maliker_name', 'father_or_samir_name', 'gramer_name', 'word_no', 'nid_no', 'mobile_no', 'griher_barsikh_mullo', 'jomir_vara', 'barsikh_vara'])
+            ->with(['holdingBokeyas' => function ($query) {
+                // Select only required columns for holdingBokeyas
+                $query->select(['id', 'year', 'price', 'status', 'holdingTax_id']);
+            }])
+            ->find($id);
 
-    // Check if the holding tax exists
-    if (!$holdingTax) {
-        return response()->json([
-            'message' => 'Holding Tax not found'
-        ], 404);
-    }
-
-    // Check if the union of the holding tax matches the authenticated user's union
-    if ($holdingTax->unioun !== $userUnion) {
-        return response()->json([
-            'message' => 'You are not authorized to view this Holding Tax'
-        ], 403);
-    }
-
-    // Add invoice_url to each holdingBokeya if status is 'Paid'
-    foreach ($holdingTax->holdingBokeyas as $bokeya) {
-        if ($bokeya->status === 'Paid') {
-            $bokeya->invoice_url = url('invoices/' . $bokeya->id);
-            $bokeya->certificate_of_honor_url = url('invoices/' . $bokeya->id);
-        }else{
-            $bokeya->invoice_url = '';
-            $bokeya->certificate_of_honor_url = '';
+        // Check if the holding tax exists
+        if (!$holdingTax) {
+            return response()->json([
+                'message' => 'Holding Tax not found'
+            ], 404);
         }
+
+        // Check if the union of the holding tax matches the authenticated user's union
+        if ($holdingTax->unioun !== $userUnion) {
+            return response()->json([
+                'message' => 'You are not authorized to view this Holding Tax'
+            ], 403);
+        }
+
+        // Add invoice_url to each holdingBokeya if status is 'Paid'
+        foreach ($holdingTax->holdingBokeyas as $bokeya) {
+            // Add the invoice URL if status is 'Paid'
+            if ($bokeya->status === 'Paid') {
+                $bokeya->invoice_url = url('invoices/' . $bokeya->id);
+                $bokeya->certificate_of_honor_url = url('invoices/' . $bokeya->id);
+            } else {
+                $bokeya->invoice_url = '';
+                $bokeya->certificate_of_honor_url = '';
+            }
+        }
+
+        return response()->json($holdingTax);
     }
 
-    return response()->json($holdingTax);
-}
 
 
 
+
+    public function holdingSearch(Request $r)
+    {
+        // Get the authenticated user's union
+        $userUnion = Auth::user()->unioun;
+
+        // Get the search parameters from the request
+        $search = $r->search;
+        $word = $r->word;
+
+        // Query the Holdingtax model and apply filters
+        $query = Holdingtax::query();
+        $query->select(['id','maliker_name','nid_no','mobile_no']);
+
+        // Apply union filter based on the authenticated user's union
+        $query->where('unioun', $userUnion);
+
+        // Apply search conditions for various fields (holding_no, maliker_name, etc.)
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->orWhere('holding_no', 'like', "%$search%")
+                ->orWhere('maliker_name', 'like', "%$search%")
+                ->orWhere('nid_no', 'like', "%$search%")
+                ->orWhere('mobile_no', 'like', "%$search%");
+            });
+        }
+
+        // If `word` is provided, apply the word filter
+        if ($word) {
+            $query->where('word_no', $word);
+        }
+
+        // Paginate the results, and return the response
+        return response()->json($query->paginate(20));
+    }
 
 
 
