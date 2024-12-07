@@ -2,7 +2,6 @@
 
 use App\Mail\TestMail;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\Global\Sonod\SonodPdfController;
@@ -13,18 +12,6 @@ use App\Http\Controllers\Api\SystemSettings\SystemSettingController;
 use App\Http\Controllers\Api\Global\HoldingTax\HoldingTaxPdfController;
 
 
-
-Route::get('/test-redis', function () {
-
-    // Update the cached value with a new value
-    Cache::put('test_key', 'Redis is working! Updated at ' . now(), 5); // Cache for 5 minutes
-
-    // Retrieve the updated cached value
-    $data = Cache::get('test_key'); // Get the cached value
-
-    // Return the updated cached value in the response
-    return response()->json($data);
-});
 
 
 
