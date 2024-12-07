@@ -112,6 +112,18 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        'redis' => [
+            'client' => 'predis', // Use 'phpredis' if you installed the PHP extension
+            'default' => [
+                'host' => env('REDIS_HOST', '127.0.0.1'),
+                'password' => env('REDIS_PASSWORD', null),
+                'port' => env('REDIS_PORT', 6379),
+                'database' => env('REDIS_DB', 0),
+            ],
+        ],
+
+
+
     ],
 
     /*
