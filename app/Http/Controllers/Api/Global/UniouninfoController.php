@@ -102,20 +102,20 @@ class UniouninfoController extends Controller
                     ->where('stutus', $stutus)
                     ->count();
 
-                $approvedCount = Sonod::where('unioun_name', $shortName)
-                    ->where('sonod_name', $sonod->bnname)
-                    ->where('stutus', 'approved')
-                    ->count();
+                // $approvedCount = Sonod::where('unioun_name', $shortName)
+                //     ->where('sonod_name', $sonod->bnname)
+                //     ->where('stutus', 'approved')
+                //     ->count();
 
-                $cancelCount = Sonod::where('unioun_name', $shortName)
-                    ->where('sonod_name', $sonod->bnname)
-                    ->where('stutus', 'cancel')
-                    ->count();
+                // $cancelCount = Sonod::where('unioun_name', $shortName)
+                //     ->where('sonod_name', $sonod->bnname)
+                //     ->where('stutus', 'cancel')
+                //     ->count();
 
                 }else{
                     $pendingCount = 0;
-                    $approvedCount = 0;
-                    $cancelCount = 0;
+                    // $approvedCount = 0;
+                    // $cancelCount = 0;
                 }
 
 
@@ -129,8 +129,8 @@ class UniouninfoController extends Controller
                     'icon' => $sonod->icon,
                     'sonod_fees' => $fees ? (int)$fees : 0,
                     'pendingCount' => $pendingCount,
-                    'approvedCount' => $approvedCount,
-                    'cancelCount' => $cancelCount,
+                    // 'approvedCount' => $approvedCount,
+                    // 'cancelCount' => $cancelCount,
                 ];
             });
     });
