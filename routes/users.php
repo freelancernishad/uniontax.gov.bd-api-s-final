@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Coupon\CouponController;
 use App\Http\Controllers\Api\Auth\User\AuthUserController;
 use App\Http\Controllers\Api\User\Sonod\UserSonodController;
 use App\Http\Controllers\Api\Auth\User\VerificationController;
+use App\Http\Controllers\Api\User\Tender\TenderListController;
 use App\Http\Controllers\Api\User\Package\UserPackageController;
 use App\Http\Controllers\Api\User\Holdingtax\HoldingtaxController;
 use App\Http\Controllers\Api\Auth\User\UserPasswordResetController;
@@ -47,6 +48,7 @@ Route::prefix('user')->group(function () {
 
 
 
+        Route::post('tender-lists', [TenderListController::class, 'store']);
 
 
 
