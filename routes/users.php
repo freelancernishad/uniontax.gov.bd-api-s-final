@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\User\SonodName\UserSonodFeeController;
 use App\Http\Controllers\Api\User\Uniouninfo\UserUniouninfoController;
 use App\Http\Controllers\Api\User\UserManagement\UserProfileController;
 use App\Http\Controllers\Api\User\Package\UserPurchasedHistoryController;
+use App\Http\Controllers\Api\User\Dashboard\UserDashboardMatricsController;
 use App\Http\Controllers\Api\User\SupportTicket\SupportTicketApiController;
 use App\Http\Controllers\Api\User\SocialMedia\UserSocialMediaLinkController;
 use App\Http\Controllers\Api\Admin\SupportTicket\AdminSupportTicketApiController;
@@ -36,6 +37,10 @@ Route::prefix('auth/user')->group(function () {
 Route::prefix('user')->group(function () {
     Route::middleware(AuthenticateUser::class)->group(function () {
 
+        Route::get('/dashboard/metrics', [UserDashboardMatricsController::class, 'getSonodMetrics']);
+
+
+
 ////// auth routes
 
         Route::get('sonod/list',[UserSonodController::class,'index']);
@@ -47,8 +52,6 @@ Route::prefix('user')->group(function () {
         Route::get('holdingtax/{id}', [HoldingtaxController::class, 'getSingleHoldingTaxWithBokeyas']);
 
 
-
-        Route::post('tender-lists', [TenderListController::class, 'store']);
 
 
 
