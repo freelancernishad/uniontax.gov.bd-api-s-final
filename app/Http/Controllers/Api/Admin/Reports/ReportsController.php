@@ -23,18 +23,34 @@ class ReportsController extends Controller
             'division_name' => 'nullable|string',
             'district_name' => 'nullable|string',
             'upazila_name' => 'nullable|string',
+            'auth' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
         }
 
+
+        if($request->auth){
+
+            $admin = auth('admin')->user();
+
+            $unionName = $admin->union_name ?? null;
+            $sonodName = $admin->sonod_name ?? null;
+            $divisionName = $admin->division_name ?? null;
+            $districtName = $admin->district_name ?? null;
+            $upazilaName = $admin->upazila_name ?? null;
+
+        }else{
+            $unionName = $request->input('union_name');
+            $sonodName = $request->input('sonod_name');
+            $divisionName = $request->input('division_name');
+            $districtName = $request->input('district_name');
+            $upazilaName = $request->input('upazila_name');
+        }
+
         // Extract input values
-        $unionName = $request->input('union_name');
-        $sonodName = $request->input('sonod_name');
-        $divisionName = $request->input('division_name');
-        $districtName = $request->input('district_name');
-        $upazilaName = $request->input('upazila_name');
+
 
         // If a specific union_name is provided, use it to filter
         if ($unionName) {
