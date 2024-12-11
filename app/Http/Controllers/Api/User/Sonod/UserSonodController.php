@@ -21,13 +21,7 @@ class UserSonodController extends Controller
      */
     public function index(Request $request)
     {
-        // Retrieve the authenticated user from the Bearer token
-        $user = Auth::user();
 
-        // Check if the user is authenticated
-        if (!$user) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
 
         // Retrieve request parameters
         $sonod_name = $request->sonod_name;
@@ -45,13 +39,30 @@ class UserSonodController extends Controller
         // Filter by union name if provided
 
 
-        $query->where('unioun_name', $user->unioun);
+
+        if(Auth::guard('user')->check()){
+            // Retrieve the authenticated user from the Bearer token
+            $user = Auth::user();
+
+            // Check if the user is authenticated
+            if (!$user) {
+                return response()->json(['message' => 'Unauthorized'], 401);
+            }
+            $union = $user->unioun;
+            $position = $user->position;
+        }else{
+            $union = $request->union;
+            $position = '';
+        }
+
+        $query->where('unioun_name', $union);
+
 
 
         // If the user is a Secretary and stutus is "Pending", filter the results
-        if ($user->position == 'Secretary' && $stutus === 'Pending') {
+        if ($position == 'Secretary' && $stutus === 'Pending') {
             $query->where('stutus', 'Pending');
-        }elseif ($user->position == 'Chairman' && $stutus === 'Pending') {
+        }elseif ($position == 'Chairman' && $stutus === 'Pending') {
             $query->where('stutus', 'sec_approved');
         }else {
             $query->where('stutus', $stutus);

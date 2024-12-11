@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\AllowedOriginController;
 use App\Http\Controllers\Api\Coupon\CouponController;
 use App\Http\Controllers\Api\Admin\Users\UserController;
 use App\Http\Controllers\Api\Auth\Admin\AdminAuthController;
+use App\Http\Controllers\Api\User\Sonod\UserSonodController;
+use App\Http\Controllers\Api\Admin\Reports\ReportsController;
 use App\Http\Controllers\Api\Admin\Package\AdminPackageController;
 use App\Http\Controllers\Api\SystemSettings\SystemSettingController;
 use App\Http\Controllers\Api\Admin\Transitions\AdminPaymentController;
@@ -31,6 +33,14 @@ Route::prefix('auth/admin')->group(function () {
 
 Route::prefix('admin')->group(function () {
     Route::middleware(AuthenticateAdmin::class)->group(function () { // Applying admin middleware
+
+
+
+        Route::post('reports/get-reports', [ReportsController::class, 'getReports']);
+        Route::get('sonod/list',[UserSonodController::class,'index']);
+
+
+
         Route::post('/system-setting', [SystemSettingController::class, 'storeOrUpdate']);
         Route::get('/allowed-origins', [AllowedOriginController::class, 'index']);
         Route::post('/allowed-origins', [AllowedOriginController::class, 'store']);

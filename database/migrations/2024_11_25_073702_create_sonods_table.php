@@ -58,7 +58,7 @@ class CreateSonodsTable extends Migration
             $table->string('applicant_tax_id_number', 30)->nullable();
             $table->string('applicant_type_of_business', 100)->nullable();
             $table->string('applicant_type_of_businessKhat', 20)->nullable();
-            $table->decimal('applicant_type_of_businessKhatAmount', 10, 2)->nullable();
+            $table->string('applicant_type_of_businessKhatAmount', 20)->nullable();
             $table->string('applicant_father_name', 150)->nullable();
             $table->string('applicant_mother_name', 150)->nullable();
             $table->string('applicant_occupation', 50)->nullable();

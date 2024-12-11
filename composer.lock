@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e5146dfb21cb7775d34c11793898968f",
+    "content-hash": "72417d670cb01d7f37929909972f3eb0",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -342,6 +342,66 @@
                 }
             ],
             "time": "2023-09-01T15:09:05+00:00"
+        },
+        {
+            "name": "devfaysal/laravel-bangladesh-geocode",
+            "version": "2.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/devfaysal/laravel-bangladesh-geocode.git",
+                "reference": "7f7db0de3ba20a029f682e5844d4b93a6b180726"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/devfaysal/laravel-bangladesh-geocode/zipball/7f7db0de3ba20a029f682e5844d4b93a6b180726",
+                "reference": "7f7db0de3ba20a029f682e5844d4b93a6b180726",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^8.0|^9.0|^10.0|^11.0",
+                "php": "^7.3|^8.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^6.0|^7.0|^8.0|^9.0",
+                "phpunit/phpunit": "^9.0|^10.5"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "BangladeshGeocode": "Devfaysal\\BangladeshGeocode\\BangladeshGeocodeFacade"
+                    },
+                    "providers": [
+                        "Devfaysal\\BangladeshGeocode\\BangladeshGeocodeServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Devfaysal\\BangladeshGeocode\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Faysal Ahamed",
+                    "email": "devfaysal@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "homepage": "https://github.com/devfaysal/laravel-bangladesh-geocode",
+            "keywords": [
+                "bangladesh-geocode",
+                "devfaysal"
+            ],
+            "support": {
+                "issues": "https://github.com/devfaysal/laravel-bangladesh-geocode/issues",
+                "source": "https://github.com/devfaysal/laravel-bangladesh-geocode/tree/2.3.0"
+            },
+            "time": "2024-11-06T09:38:35+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -3293,67 +3353,6 @@
                 }
             ],
             "time": "2024-07-20T21:41:07+00:00"
-        },
-        {
-            "name": "predis/predis",
-            "version": "v2.3.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/predis/predis.git",
-                "reference": "bac46bfdb78cd6e9c7926c697012aae740cb9ec9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/predis/predis/zipball/bac46bfdb78cd6e9c7926c697012aae740cb9ec9",
-                "reference": "bac46bfdb78cd6e9c7926c697012aae740cb9ec9",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.2 || ^8.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.3",
-                "phpstan/phpstan": "^1.9",
-                "phpunit/phpunit": "^8.0 || ^9.4"
-            },
-            "suggest": {
-                "ext-relay": "Faster connection with in-memory caching (>=0.6.2)"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Predis\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Till Krüss",
-                    "homepage": "https://till.im",
-                    "role": "Maintainer"
-                }
-            ],
-            "description": "A flexible and feature-complete Redis client for PHP.",
-            "homepage": "http://github.com/predis/predis",
-            "keywords": [
-                "nosql",
-                "predis",
-                "redis"
-            ],
-            "support": {
-                "issues": "https://github.com/predis/predis/issues",
-                "source": "https://github.com/predis/predis/tree/v2.3.0"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/sponsors/tillkruss",
-                    "type": "github"
-                }
-            ],
-            "time": "2024-11-21T20:00:02+00:00"
         },
         {
             "name": "psr/clock",
