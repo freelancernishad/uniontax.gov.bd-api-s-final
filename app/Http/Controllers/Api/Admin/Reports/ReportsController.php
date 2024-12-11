@@ -23,7 +23,7 @@ class ReportsController extends Controller
             'division_name' => 'nullable|string',
             'district_name' => 'nullable|string',
             'upazila_name' => 'nullable|string',
-            'auth' => 'nullable|string',
+            'auth' => 'nullable',
         ]);
 
         if ($validator->fails()) {
