@@ -43,6 +43,11 @@ class AdminAuthController extends Controller
         $payload = [
             'email' => $admin->email,
             'name' => $admin->name,
+            'position' => $admin->position,
+            'division_name' => $admin->division_name,
+            'district_name' => $admin->district_name,
+            'upazila_name' => $admin->upazila_name,
+            'union_name' => $admin->union_name,
             'email_verified' => $admin->hasVerifiedEmail(),
             // Add additional fields as necessary
         ];
@@ -86,9 +91,15 @@ class AdminAuthController extends Controller
             $payload = [
                 'email' => $admin->email,
                 'name' => $admin->name,
+                'position' => $admin->position,
+                'division_name' => $admin->division_name,
+                'district_name' => $admin->district_name,
+                'upazila_name' => $admin->upazila_name,
+                'union_name' => $admin->union_name,
                 'email_verified' => $admin->hasVerifiedEmail(),
                 // Add additional fields as necessary
             ];
+
 
             try {
                 // Generate a JWT token with custom claims
@@ -218,7 +229,7 @@ class AdminAuthController extends Controller
                 return response()->json(['message' => 'Token is invalid or admin not found.'], 401);
             }
 
-            return response()->json(["message"=>"Token is valid"], 200);
+            return response()->json(["message"=>"Token is valid","admin"=>$admin], 200);
         } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
             return response()->json(['message' => 'Token has expired.'], 401);
         } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
