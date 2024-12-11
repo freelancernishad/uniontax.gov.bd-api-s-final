@@ -223,7 +223,8 @@ class AdminAuthController extends Controller
         }
 
         try {
-            $admin = JWTAuth::setToken($token)->authenticate();
+
+            $admin = auth('admin')->setToken($token)->user();
 
             if (!$admin) {
                 return response()->json(['message' => 'Token is invalid or admin not found.'], 401);
