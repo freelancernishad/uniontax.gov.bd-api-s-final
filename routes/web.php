@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\Reports\ReportsController;
 use App\Mail\TestMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +25,10 @@ Route::get('/applicant/copy/download/{id}', [DocumentPdfController::class,'userD
 Route::get('/sonod/invoice/download/{id}', [InvoicePdfController::class,'invoice']);
 
 Route::get('payment/report/download', [PaymentReportsController::class,'PaymentReports']);
+
+
+Route::get('/download/reports/get-reports', [ReportsController::class,'downloadReports']);
+
 
 
 Route::get('holding/tax/invoice/{id}', [HoldingTaxPdfController::class,'holdingPaymentInvoice']);

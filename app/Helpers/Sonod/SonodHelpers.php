@@ -3,6 +3,9 @@
 use App\Models\Sonod;
 use App\Models\Uniouninfo;
 use App\Models\Sonodnamelist;
+use Devfaysal\BangladeshGeocode\Models\District;
+use Devfaysal\BangladeshGeocode\Models\Division;
+use Devfaysal\BangladeshGeocode\Models\Upazila;
 use Rakibhstu\Banglanumber\NumberToBangla;
 
    function sonodId($union, $sonodname, $orthoBchor)
@@ -46,6 +49,12 @@ use Rakibhstu\Banglanumber\NumberToBangla;
    {
        $data =  str_replace("_", " ", $data);
        return Sonodnamelist::where('enname', $data)->first();
+   }
+
+    function UnionenBnName($data)
+   {
+
+       return Uniouninfo::where('short_name_e', $data)->select('short_name_b')->first()->short_name_b;
    }
 
     function convertAnnualIncomeToText($annualIncome)
@@ -196,5 +205,19 @@ use Rakibhstu\Banglanumber\NumberToBangla;
             return 'প্রত্যয়নপত্র';
         }else{
             return $name;
+        }
+    }
+
+
+
+    function addressEnToBn($name,$which=''){
+        if($which=='division'){
+            return Division::where('name',$name)->select('bn_name')->firstOrFail()->bn_name;
+        }elseif($which=='district'){
+            return District::where('name',$name)->select('bn_name')->firstOrFail()->bn_name;
+        }elseif($which=='upazila'){
+            return Upazila::where('name',$name)->select('bn_name')->firstOrFail()->bn_name;
+        }else{
+            return '';
         }
     }

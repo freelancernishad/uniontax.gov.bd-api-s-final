@@ -13,6 +13,68 @@ use Devfaysal\BangladeshGeocode\Models\Division;
 
 class ReportsController extends Controller
 {
+
+
+    function downloadReports(Request $request) {
+
+
+        $unionName = $request->input('union_name');
+        $sonodName = $request->input('sonod_name');
+        $divisionName = $request->input('division_name');
+        $districtName = $request->input('district_name');
+        $upazilaName = $request->input('upazila_name');
+
+
+
+        // Generate the title dynamically
+        if (!empty($unionName)) {
+            $reportTitle = UnionenBnName($unionName) . ' ইউনিয়নের প্রতিবেদন';
+        } elseif (!empty($upazilaName)) {
+            $reportTitle = addressEnToBn($upazilaName,'upazila') . ' উপজেলার সকল ইউনিয়নের প্রতিবেদন';
+        } elseif (!empty($districtName)) {
+            $reportTitle = addressEnToBn($districtName,'district') . ' জেলার সকল ইউনিয়নের প্রতিবেদন';
+        } elseif (!empty($divisionName)) {
+            $reportTitle = addressEnToBn($divisionName,'division') . ' বিভাগের সকল ইউনিয়নের প্রতিবেদন';
+        } else {
+            $reportTitle = ' প্রতিবেদন';
+        }
+
+        // If a specific union_name is provided, use it to filter
+        if ($unionName) {
+            $data =  $this->getReportsByUnion([$unionName], $sonodName);
+        }
+
+        // If upazila is provided, fetch unions by upazila and call the report generation
+        if ($upazilaName) {
+            $data =  $this->getReportsByUpazila($upazilaName, $sonodName);
+        }
+
+        // If a district is provided, fetch unions by district and call the report generation
+        if ($districtName) {
+            $data =  $this->getReportsByDistrict($districtName, $sonodName);
+        }
+
+        // If a division is provided, fetch districts by division and call the report generation
+        if ($divisionName) {
+            $data =  $this->getReportsByDivision($divisionName, $sonodName);
+        }
+
+        // Generate HTML view for PDF
+        $htmlView = view('Reports.DownloadReports', compact('data','reportTitle'))->render();
+
+        // Define header and footer if needed
+        $header = null; // Add HTML for header if required
+        $footer = null; // Add HTML for footer if required
+        // File name
+        $filename = "Reports_" . now()->format('Ymd_His') . ".pdf";
+
+        // Generate and stream the PDF
+        return generatePdf($htmlView, $header, $footer, $filename);
+    }
+
+
+
+
     // Main function that decides which sub-function to call
     public function getReports(Request $request)
     {
@@ -54,22 +116,26 @@ class ReportsController extends Controller
 
         // If a specific union_name is provided, use it to filter
         if ($unionName) {
-            return $this->getReportsByUnion([$unionName], $sonodName);
+            $datas =  $this->getReportsByUnion([$unionName], $sonodName);
+            return response()->json($datas);
         }
 
         // If upazila is provided, fetch unions by upazila and call the report generation
         if ($upazilaName) {
-            return $this->getReportsByUpazila($upazilaName, $sonodName);
+            $datas =  $this->getReportsByUpazila($upazilaName, $sonodName);
+            return response()->json($datas);
         }
 
         // If a district is provided, fetch unions by district and call the report generation
         if ($districtName) {
-            return $this->getReportsByDistrict($districtName, $sonodName);
+            $datas =  $this->getReportsByDistrict($districtName, $sonodName);
+            return response()->json($datas);
         }
 
         // If a division is provided, fetch districts by division and call the report generation
         if ($divisionName) {
-            return $this->getReportsByDivision($divisionName, $sonodName);
+            $datas =  $this->getReportsByDivision($divisionName, $sonodName);
+            return response()->json($datas);
         }
 
 
@@ -121,7 +187,7 @@ class ReportsController extends Controller
         $totalAmount = $paymentReports->sum('total_amount');
 
         // Format response
-        return response()->json([
+        return [
             'sonod_reports' => $sonodReports,
             'payment_reports' => $paymentReports,
             'totals' => [
@@ -131,7 +197,8 @@ class ReportsController extends Controller
                 'total_payments' => $totalPayments,
                 'total_amount' => $totalAmount,
             ],
-        ], 200);
+           
+        ];
     }
 
    // Function to get reports by District
