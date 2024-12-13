@@ -36,6 +36,20 @@ class UserSonodController extends Controller
         // Initialize the query
         $query = Sonod::query()->where('sonod_name', $sonod_name);
 
+        $query->select(
+            'id',
+            'sonod_name',
+            'unioun_name',
+            'applicant_name',
+            'applicant_father_name',
+            'applicant_present_word_number',
+            'created_at',
+            'stutus',
+            'payment_status',
+            'sonod_Id',
+            'created_at',
+            'updated_at'
+        );
         // Filter by union name if provided
 
 
