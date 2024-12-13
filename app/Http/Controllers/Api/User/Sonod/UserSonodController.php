@@ -31,7 +31,7 @@ class UserSonodController extends Controller
 
         // Process the sonod_name for searching
     //    return $sonod_name = enBnName($sonod_name)->bnname;
-        $Sonodnamelist = Sonodnamelist::where('bnname', $sonod_name)->first();
+        // $Sonodnamelist = Sonodnamelist::where('bnname', $sonod_name)->first();
 
         // Initialize the query
         $query = Sonod::query()->where('sonod_name', $sonod_name);
@@ -100,7 +100,7 @@ class UserSonodController extends Controller
         // Return the data
         return response()->json([
             'sonods' => $sonods,
-            'sonod_name' => $Sonodnamelist,
+            // 'sonod_name' => $Sonodnamelist,
         ]);
     }
 
