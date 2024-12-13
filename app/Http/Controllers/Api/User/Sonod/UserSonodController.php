@@ -288,6 +288,10 @@ class UserSonodController extends Controller
     }
 
 
+    function show($id){
+        $sonod = Sonod::find($id);
+        return response()->json($sonod);
+    }
 
 
 }

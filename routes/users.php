@@ -44,6 +44,7 @@ Route::prefix('user')->group(function () {
 ////// auth routes
 
         Route::get('sonod/list',[UserSonodController::class,'index']);
+        Route::get('sonod/single/{id}',[UserSonodController::class,'show']);
         Route::post('sonod/action/{id}',[UserSonodController::class,'sonod_action']);
         Route::put('/sonod/update/{id}', [UserSonodController::class, 'update']);
 

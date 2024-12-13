@@ -38,6 +38,7 @@ Route::prefix('admin')->group(function () {
 
         Route::post('reports/get-reports', [ReportsController::class, 'getReports']);
         Route::get('sonod/list',[UserSonodController::class,'index']);
+        Route::get('sonod/single/{id}',[UserSonodController::class,'show']);
 
 
 
