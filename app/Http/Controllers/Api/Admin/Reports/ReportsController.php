@@ -149,64 +149,75 @@ class ReportsController extends Controller
     }
 
     // Function to get reports by Union
-    private function getReportsByUnion(array $unionNames, $sonodName = null)
-    {
-        // Define base queries with union_name filter
-        $sonodQuery = Sonod::whereIn('unioun_name', $unionNames)
-            ->selectRaw("
-                sonod_name,
-                COUNT(CASE WHEN stutus = 'Pending' THEN 1 END) as pending_count,
-                COUNT(CASE WHEN stutus = 'approved' THEN 1 END) as approved_count,
-                COUNT(CASE WHEN stutus = 'cancel' THEN 1 END) as cancel_count
-            ")
-            ->groupBy('sonod_name');
-    
-        $paymentQuery = Payment::whereIn('union', $unionNames)->where('status', 'Paid')
-            ->selectRaw("
-                sonod_type,
-                COUNT(*) as total_payments,
-                SUM(amount) as total_amount
-            ")
-            ->groupBy('sonod_type');
-    
-        // Apply optional sonod_name filter
-        if ($sonodName) {
-            $sonodQuery->where('sonod_name', $sonodName);
-            $paymentQuery->where('sonod_type', $sonodName);
-        }
-    
-        // Fetch results
-        $sonodReports = $sonodQuery->get();
-        $paymentReports = $paymentQuery->get();
-    
-        // Calculate totals with proper decimal formatting
-        $totalPending = $sonodReports->sum('pending_count');
-        $totalApproved = $sonodReports->sum('approved_count');
-        $totalCancel = $sonodReports->sum('cancel_count');
-        $totalPayments = $paymentReports->sum('total_payments');
-        $totalAmount = $paymentReports->sum('total_amount');
-    
-        // Format amounts to two decimal places
-        $totalAmount = number_format((float) $totalAmount, 2, '.', '');
-    
-        // Format individual amounts in payment reports
-        $paymentReports->each(function ($report) {
-            $report->total_amount = number_format((float) $report->total_amount, 2, '.', '');
-        });
-    
-        // Format response
-        return [
-            'sonod_reports' => $sonodReports,
-            'payment_reports' => $paymentReports,
-            'totals' => [
-                'total_pending' => $totalPending,
-                'total_approved' => $totalApproved,
-                'total_cancel' => $totalCancel,
-                'total_payments' => $totalPayments,
-                'total_amount' => $totalAmount,
-            ],
-        ];
+    public function getReportsByUnion(array $unionNames, $sonodName = null)
+{
+    // Define base queries with union_name filter
+    $sonodQuery = Sonod::whereIn('unioun_name', $unionNames)
+        ->selectRaw("
+            sonod_name,
+            COUNT(CASE WHEN stutus = 'Pending' THEN 1 END) as pending_count,
+            COUNT(CASE WHEN stutus = 'approved' THEN 1 END) as approved_count,
+            COUNT(CASE WHEN stutus = 'cancel' THEN 1 END) as cancel_count
+        ")
+        ->groupBy('sonod_name');
+
+    $paymentQuery = Payment::whereIn('union', $unionNames)->where('status', 'Paid')
+        ->selectRaw("
+            sonod_type,
+            COUNT(*) as total_payments,
+            SUM(amount) as total_amount
+        ")
+        ->groupBy('sonod_type');
+
+    // Apply optional sonod_name filter
+    if ($sonodName) {
+        $sonodQuery->where('sonod_name', $sonodName);
+
+        $paymentQuery->where('sonod_type', $sonodName);
     }
+
+    // Fetch results
+    $sonodReports = $sonodQuery->get();
+    $paymentReports = $paymentQuery->get();
+
+    // Handle null holdingTax for each payment report
+    $paymentReports->each(function ($report) {
+        if ($report->holdingTax) {
+            // Safe to access holdingTax properties
+            $report->holdingTaxName = $report->holdingTax->name;  // Example of accessing holdingTax property
+        } else {
+            // Handle null case
+            $report->holdingTaxName = null; // Or handle accordingly
+        }
+
+        // Format amount
+        $report->total_amount = number_format((float) $report->total_amount, 2, '.', '');
+    });
+
+    // Calculate totals with proper decimal formatting
+    $totalPending = $sonodReports->sum('pending_count');
+    $totalApproved = $sonodReports->sum('approved_count');
+    $totalCancel = $sonodReports->sum('cancel_count');
+    $totalPayments = $paymentReports->sum('total_payments');
+    $totalAmount = $paymentReports->sum('total_amount');
+
+    // Format amounts to two decimal places
+    $totalAmount = number_format((float) $totalAmount, 2, '.', '');
+
+    // Format response
+    return [
+        'sonod_reports' => $sonodReports,
+        'payment_reports' => $paymentReports,
+        'totals' => [
+            'total_pending' => $totalPending,
+            'total_approved' => $totalApproved,
+            'total_cancel' => $totalCancel,
+            'total_payments' => $totalPayments,
+            'total_amount' => $totalAmount,
+        ],
+    ];
+}
+
 
    // Function to get reports by District
     private function getReportsByDistrict($district, $sonodName = null)

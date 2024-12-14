@@ -135,7 +135,7 @@ class Payment extends Model
         return $this->belongsTo(HoldingBokeya::class, 'sonodId', 'id');
     }
 
-    protected $appends = ['sonods','holding_tax']; // Ensure snake_case naming
+    protected $appends = ['sonods','holding_tax'];
 
     public function getHoldingTaxAttribute()
     {
