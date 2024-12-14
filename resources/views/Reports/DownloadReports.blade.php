@@ -44,7 +44,7 @@
 
         .summary-table tr {
             border: none;
- 
+
         }
         .summary-table td {
             border: none;
@@ -185,7 +185,7 @@
 
                 @foreach($data['payment_reports'] as $value)
                 <tr>
-                    <td>{{ $value->sonod_type }}</td>
+                    <td>{{ translateToBangla($value->sonod_type) }}</td>
                     <td>{{ int_en_to_bn($value->total_payments) }}</td>
                     <td>{{ int_en_to_bn($value->total_amount) }}</td>
                 </tr>
