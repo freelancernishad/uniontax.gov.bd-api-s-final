@@ -16,6 +16,7 @@
                     <tr>
                         <th>#</th>
                         <th>ইউনিয়ন নাম</th>
+                        <th>সনদের নাম</th>
                         <th class="text-center">পেন্ডিং</th>
                         <th class="text-center">অনুমোদিত</th>
                         <th class="text-center">বাতিল</th>
@@ -27,6 +28,7 @@
                     <tr>
                         <td>{{ int_en_to_bn($index + 1) }}</td>
                         <td>{{ UnionenBnName($report->unioun_name) }}</td>
+                        <td>{{ $report->sonod_name }}</td>
                         <td class="text-center">{{ int_en_to_bn($report->pending_count) }}</td>
                         <td class="text-center">{{ int_en_to_bn($report->approved_count) }}</td>
                         <td class="text-center">{{ int_en_to_bn($report->cancel_count) }}</td>
