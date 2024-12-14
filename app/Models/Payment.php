@@ -135,14 +135,18 @@ class Payment extends Model
         return $this->belongsTo(HoldingBokeya::class, 'sonodId', 'id');
     }
 
-    // protected $appends = ['sonods','holding_tax'];
+    protected $appends = ['sonods','holding_tax'];
 
     public function getHoldingTaxAttribute()
     {
-        if ($this->sonod_type === 'holdingtax') {
+        // Check if the tax relationship is not null
+        if ($this->sonod_type === 'holdingtax' && $this->tax) {
+            // If tax exists, safely call holdingTax
             return $this->tax->holdingTax()->select('id', 'maliker_name', 'gramer_name', 'mobile_no', 'holding_no')->first();
         }
-
+    
+        // Return null or some default value if tax is null
+        return null;
     }
     public function getSonodsAttribute()
     {
