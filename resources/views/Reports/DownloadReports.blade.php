@@ -81,19 +81,27 @@
             color: #777;
             margin-bottom: 20px;
         }
+        .gov-logo {
+            width: 80px; /* Adjust the size as needed */
+            height: auto;
+        }
+        .text-center {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
 
 
-    <h1>
-{{ $reportTitle }}
-    </h1>
-        <!-- Footer Section -->
-        <h2 class="footer">
+    <div class="text-center mb-4">
+        <img src="{{ base64('backend/bd-logo.png') }}" alt="Government Logo" class="gov-logo">
+        <h1 style="font-size: 25px" class="mt-3">{{ $reportTitle }}</h1>
+        <h2 class="footer mt-2">
             রিপোর্ট জেনারেট তারিখ: {{ int_en_to_bn(now()->format('d-m-Y')) }}
         </h2>
+    </div>
+
 
     <!-- Summary Section -->
     <table class="summary-table">

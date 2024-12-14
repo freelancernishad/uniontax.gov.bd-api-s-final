@@ -16,13 +16,12 @@ class ReportsController extends Controller
 
 
     function downloadReports(Request $request) {
-
-
         $unionName = $request->input('union_name');
         $sonodName = $request->input('sonod_name');
         $divisionName = $request->input('division_name');
         $districtName = $request->input('district_name');
         $upazilaName = $request->input('upazila_name');
+        $detials = $request->input('detials');
 
 
 
@@ -41,34 +40,41 @@ class ReportsController extends Controller
 
         // If a specific union_name is provided, use it to filter
         if ($unionName) {
-            $data =  $this->getReportsByUnion([$unionName], $sonodName);
-            return $this->genratePdf($data,$reportTitle);
+            $data =  $this->getReportsByUnion([$unionName], $sonodName,$detials);
+            return $this->genratePdf($data,$reportTitle,$detials);
         }
 
         // If upazila is provided, fetch unions by upazila and call the report generation
         if ($upazilaName) {
-            $data =  $this->getReportsByUpazila($upazilaName, $sonodName);
-            return $this->genratePdf($data,$reportTitle);
+            $data =  $this->getReportsByUpazila($upazilaName, $sonodName,$detials);
+            return $this->genratePdf($data,$reportTitle,$detials);
         }
 
         // If a district is provided, fetch unions by district and call the report generation
         if ($districtName) {
-            $data =  $this->getReportsByDistrict($districtName, $sonodName);
-            return $this->genratePdf($data,$reportTitle);
+            $data =  $this->getReportsByDistrict($districtName, $sonodName,$detials);
+            return $this->genratePdf($data,$reportTitle,$detials);
         }
 
         // If a division is provided, fetch districts by division and call the report generation
         if ($divisionName) {
-            $data =  $this->getReportsByDivision($divisionName, $sonodName);
-            return $this->genratePdf($data,$reportTitle);
+            $data =  $this->getReportsByDivision($divisionName, $sonodName,$detials);
+            return $this->genratePdf($data,$reportTitle,$detials);
         }
 
 
     }
 
-    private function genratePdf($data,$reportTitle) {
-        // Generate HTML view for PDF
-        $htmlView = view('Reports.DownloadReports', compact('data','reportTitle'))->render();
+    private function genratePdf($data,$reportTitle,$detials=null) {
+
+
+        if($detials){
+            $htmlView = view('Reports.DownloadDetailsReports', compact('data','reportTitle'))->render();
+        }else{
+            $htmlView = view('Reports.DownloadReports', compact('data','reportTitle'))->render();
+        }
+
+
         $header = null; // Add HTML for header if required
         $footer = null; // Add HTML for footer if required
         $filename = "Reports_" . now()->format('Ymd_His') . ".pdf";
