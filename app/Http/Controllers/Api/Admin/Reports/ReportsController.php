@@ -42,36 +42,38 @@ class ReportsController extends Controller
         // If a specific union_name is provided, use it to filter
         if ($unionName) {
             $data =  $this->getReportsByUnion([$unionName], $sonodName);
+            return $this->genratePdf($data,$reportTitle);
         }
 
         // If upazila is provided, fetch unions by upazila and call the report generation
         if ($upazilaName) {
             $data =  $this->getReportsByUpazila($upazilaName, $sonodName);
+            return $this->genratePdf($data,$reportTitle);
         }
 
         // If a district is provided, fetch unions by district and call the report generation
         if ($districtName) {
             $data =  $this->getReportsByDistrict($districtName, $sonodName);
+            return $this->genratePdf($data,$reportTitle);
         }
 
         // If a division is provided, fetch districts by division and call the report generation
         if ($divisionName) {
             $data =  $this->getReportsByDivision($divisionName, $sonodName);
+            return $this->genratePdf($data,$reportTitle);
         }
 
-        // Generate HTML view for PDF
-        $htmlView = view('Reports.DownloadReports', compact('data','reportTitle'))->render();
 
-        // Define header and footer if needed
-        $header = null; // Add HTML for header if required
-        $footer = null; // Add HTML for footer if required
-        // File name
-        $filename = "Reports_" . now()->format('Ymd_His') . ".pdf";
-
-        // Generate and stream the PDF
-        return generatePdf($htmlView, $header, $footer, $filename);
     }
 
+    private function genratePdf($data,$reportTitle) {
+        // Generate HTML view for PDF
+        $htmlView = view('Reports.DownloadReports', compact('data','reportTitle'))->render();
+        $header = null; // Add HTML for header if required
+        $footer = null; // Add HTML for footer if required
+        $filename = "Reports_" . now()->format('Ymd_His') . ".pdf";
+        return generatePdf($htmlView, $header, $footer, $filename);
+    }
 
 
 
@@ -197,7 +199,7 @@ class ReportsController extends Controller
                 'total_payments' => $totalPayments,
                 'total_amount' => $totalAmount,
             ],
-           
+
         ];
     }
 
