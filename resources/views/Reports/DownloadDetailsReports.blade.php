@@ -25,13 +25,13 @@
                 <tbody>
                     @foreach($data['detailed_sonod_reports'] as $index => $report)
                     <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ $report->unioun_name }}</td>
-                        <td class="text-center">{{ $report->pending_count }}</td>
-                        <td class="text-center">{{ $report->approved_count }}</td>
-                        <td class="text-center">{{ $report->cancel_count }}</td>
+                        <td>{{ int_en_to_bn($index + 1) }}</td>
+                        <td>{{ UnionenBnName($report->unioun_name) }}</td>
+                        <td class="text-center">{{ int_en_to_bn($report->pending_count) }}</td>
+                        <td class="text-center">{{ int_en_to_bn($report->approved_count) }}</td>
+                        <td class="text-center">{{ int_en_to_bn($report->cancel_count) }}</td>
                         <td class="text-center">
-                            {{ $report->pending_count + $report->approved_count + $report->cancel_count }}
+                            {{ int_en_to_bn($report->pending_count + $report->approved_count + $report->cancel_count) }}
                         </td>
                     </tr>
                     @endforeach
@@ -39,11 +39,11 @@
                 <tfoot>
                     <tr>
                         <th colspan="2" class="text-end">মোট:</th>
-                        <th class="text-center">{{ $data['totals']['total_pending'] }}</th>
-                        <th class="text-center">{{ $data['totals']['total_approved'] }}</th>
-                        <th class="text-center">{{ $data['totals']['total_cancel'] }}</th>
+                        <th class="text-center">{{ int_en_to_bn($data['totals']['total_pending']) }}</th>
+                        <th class="text-center">{{ int_en_to_bn($data['totals']['total_approved']) }}</th>
+                        <th class="text-center">{{ int_en_to_bn($data['totals']['total_cancel']) }}</th>
                         <th class="text-center">
-                            {{ $data['totals']['total_pending'] + $data['totals']['total_approved'] + $data['totals']['total_cancel'] }}
+                            {{ int_en_to_bn($data['totals']['total_pending'] + $data['totals']['total_approved'] + $data['totals']['total_cancel']) }}
                         </th>
                     </tr>
                 </tfoot>
