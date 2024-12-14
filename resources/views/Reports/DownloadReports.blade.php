@@ -98,7 +98,7 @@
         <img src="{{ base64('backend/bd-logo.png') }}" alt="Government Logo" class="gov-logo">
         <h1 style="font-size: 25px" class="mt-3">{{ $reportTitle }}</h1>
         <h2 class="footer mt-2">
-            রিপোর্ট জেনারেট তারিখ: {{ int_en_to_bn(now()->format('d-m-Y')) }}
+            রিপোর্ট জেনারেট তারিখ: {{ int_en_to_bn(now()->format('d-m-Y H:i')) }}
         </h2>
     </div>
 
