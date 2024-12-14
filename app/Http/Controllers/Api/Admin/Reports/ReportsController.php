@@ -203,11 +203,17 @@ class ReportsController extends Controller
         'sonod_reports' => $sonodReports,
         'payment_reports' => $paymentReports,
         'totals' => [
-            'total_pending' => int_en_to_bn($totalPending),
-            'total_approved' => int_en_to_bn($totalApproved),
-            'total_cancel' => int_en_to_bn($totalCancel),
-            'total_payments' => int_en_to_bn($totalPayments),
-            'total_amount' => int_en_to_bn($totalAmount),
+            'total_pending' => $totalPending,
+            'total_approved' => $totalApproved,
+            'total_cancel' => $totalCancel,
+            'total_payments' => $totalPayments,
+            'total_amount' => $totalAmount,            
+            
+            // 'total_pending' => int_en_to_bn($totalPending),
+            // 'total_approved' => int_en_to_bn($totalApproved),
+            // 'total_cancel' => int_en_to_bn($totalCancel),
+            // 'total_payments' => int_en_to_bn($totalPayments),
+            // 'total_amount' => int_en_to_bn($totalAmount),
         ],
     ];
 }
