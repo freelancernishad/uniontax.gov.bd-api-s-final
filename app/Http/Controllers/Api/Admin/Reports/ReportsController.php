@@ -27,7 +27,7 @@ class ReportsController extends Controller
 
         $sonod_name = '';
         if($detials){
-            $sonod_name = $sonodName . 'এর';
+            $sonod_name = $sonodName . ' এর';
         }
 
 
