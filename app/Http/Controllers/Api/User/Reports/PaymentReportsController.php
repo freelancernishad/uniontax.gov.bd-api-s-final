@@ -37,6 +37,8 @@ class PaymentReportsController extends Controller
         'amount',
         'date',
         'union',
+        'sonodId',
+        'sonod_type',
         'created_at'
     );
         // Apply filters

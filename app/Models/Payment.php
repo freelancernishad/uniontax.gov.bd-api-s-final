@@ -140,14 +140,15 @@ class Payment extends Model
     public function getHoldingTaxAttribute()
     {
         if ($this->sonod_type === 'holdingtax') {
-            return $this->tax->holdingTax; // Load HoldingBokeya model data
+            return $this->tax->holdingTax()->select('id', 'maliker_name', 'gramer_name', 'mobile_no', 'holding_no')->first();
         }
 
     }
     public function getSonodsAttribute()
     {
         if ($this->sonod_type != 'holdingtax') {
-            return $this->sonod; // Load Sonod model data
+            return $this->sonod()->select('id', 'applicant_name', 'applicant_present_village', 'applicant_holding_tax_number', 'applicant_mobile')->first();
+            return $this->sonod;
         }
 
     }
