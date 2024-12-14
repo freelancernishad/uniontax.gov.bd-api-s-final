@@ -25,17 +25,23 @@ class ReportsController extends Controller
 
 
 
+        $sonod_name = '';
+        if($detials){
+            $sonod_name = $sonodName . 'এর';
+        }
+
+
         // Generate the title dynamically
         if (!empty($unionName)) {
-            $reportTitle = UnionenBnName($unionName) . ' ইউনিয়নের প্রতিবেদন';
+            $reportTitle = UnionenBnName($unionName) . " ইউনিয়নের $sonod_name প্রতিবেদন";
         } elseif (!empty($upazilaName)) {
-            $reportTitle = addressEnToBn($upazilaName,'upazila') . ' উপজেলার সকল ইউনিয়নের প্রতিবেদন';
+            $reportTitle = addressEnToBn($upazilaName,"upazila") . " উপজেলার সকল ইউনিয়নের $sonod_name প্রতিবেদন";
         } elseif (!empty($districtName)) {
-            $reportTitle = addressEnToBn($districtName,'district') . ' জেলার সকল ইউনিয়নের প্রতিবেদন';
+            $reportTitle = addressEnToBn($districtName,"district") . " জেলার সকল ইউনিয়নের $sonod_name প্রতিবেদন";
         } elseif (!empty($divisionName)) {
-            $reportTitle = addressEnToBn($divisionName,'division') . ' বিভাগের সকল ইউনিয়নের প্রতিবেদন';
+            $reportTitle = addressEnToBn($divisionName,"division") . " বিভাগের সকল ইউনিয়নের $sonod_name প্রতিবেদন";
         } else {
-            $reportTitle = ' প্রতিবেদন';
+            $reportTitle = " $sonod_name প্রতিবেদন";
         }
 
         // If a specific union_name is provided, use it to filter
@@ -187,6 +193,7 @@ class ReportsController extends Controller
             // Format response for detailed view
             return [
                 'detailed_sonod_reports' => $detailedSonodReports,
+                'sonodName' => $sonodName,
                 'totals' => [
                     'total_pending' => $totalPending,
                     'total_approved' => $totalApproved,
