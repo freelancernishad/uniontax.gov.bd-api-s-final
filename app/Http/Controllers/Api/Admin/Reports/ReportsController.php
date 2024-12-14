@@ -185,7 +185,7 @@ class ReportsController extends Controller
    $paymentReports->each(function ($report) {
 
         $report->sonod_type = translateToBangla($report->sonod_type);
-        $report->total_amount = int_en_to_bn(number_format((float) $report->total_amount, 2, '.', ''));
+        $report->total_amount = number_format((float) $report->total_amount, 2, '.', '');
     });
 
     // Calculate totals with proper decimal formatting
