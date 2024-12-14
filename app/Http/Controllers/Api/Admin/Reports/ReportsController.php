@@ -180,17 +180,11 @@ class ReportsController extends Controller
     $sonodReports = $sonodQuery->get();
     $paymentReports = $paymentQuery->get();
 
-    // Handle null holdingTax for each payment report
-    $paymentReports->each(function ($report) {
-        if ($report->holdingTax) {
-            // Safe to access holdingTax properties
-            $report->holdingTaxName = $report->holdingTax->name;  // Example of accessing holdingTax property
-        } else {
-            // Handle null case
-            $report->holdingTaxName = null; // Or handle accordingly
-        }
 
-        // Format amount
+
+   $paymentReports->each(function ($report) {
+
+        $report->sonod_type = translateToBangla($report->sonod_type);
         $report->total_amount = number_format((float) $report->total_amount, 2, '.', '');
     });
 
