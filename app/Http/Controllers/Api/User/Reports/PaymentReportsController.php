@@ -6,7 +6,9 @@ use Carbon\Carbon;
 use App\Models\Payment;
 use App\Models\Uniouninfo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+
 
 class PaymentReportsController extends Controller
 {
@@ -26,8 +28,8 @@ class PaymentReportsController extends Controller
         $payment_type = $request->payment_type;
 
         // Build base query
-        $query = Payment::with(['sonod', 'tax'])
-            ->where('status', 'Paid');
+        $query = Payment::where('status', 'Paid');
+
 
         // Apply filters
         if ($union !== 'all') {
@@ -54,6 +56,9 @@ class PaymentReportsController extends Controller
             $rows = array_merge($rows, $chunk->toArray());
         });
 
+
+        // return response()->json($rows);
+        // Log::info($rows);
 
         // Retrieve Union information
         $uniouninfo = Uniouninfo::where('short_name_e', $union)->first();

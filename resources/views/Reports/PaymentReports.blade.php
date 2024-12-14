@@ -151,6 +151,7 @@
             $i = 1;
         @endphp
         @foreach ($rows as $row)
+
             <tr>
                 <td class="td" style="text-align:center">{{ int_en_to_bn($i) }}</td>
                 <td class="td" style="text-align:center">{{ int_en_to_bn(date("d-m-Y", strtotime($row['created_at']))) }}</td>
@@ -161,22 +162,15 @@
                     </td>
                 @endif
 
-                @if($row['sonod_type'] == 'holdingtax')
-                    @php
-                        $holdingTax = \DB::connection()->getPdo()
-                            ->prepare("SELECT * FROM `holdingtaxes` WHERE `id` = :holdingTaxId")
-                            ->execute(['holdingTaxId' => $row['tax']->holdingTax_id])
-                            ->fetch();
-                    @endphp
-
-                    <td class="td">{{ $holdingTax['maliker_name'] }}</td>
-                    <td class="td">গ্রামঃ- {{ $holdingTax['gramer_name'] }}, হোল্ডিং নং- {{ int_en_to_bn($holdingTax['holding_no']) }}</td>
-                    <td class="td">{{ int_en_to_bn($holdingTax['mobile_no']) }}</td>
+                @if($row['holding_tax'])
+                    <td class="td">{{ $row['holding_tax']['maliker_name'] }}</td>
+                    <td class="td">গ্রামঃ- {{ $row['holding_tax']['gramer_name'] }}, হোল্ডিং নং- {{ int_en_to_bn($row['holding_tax']['holding_no']) }}</td>
+                    <td class="td">{{ int_en_to_bn($row['holding_tax']['mobile_no']) }}</td>
                 @else
-                    <td class="td">@if($row['sonod']){{ $row['sonod']['applicant_name'] }}@endif</td>
-                    <td class="td">@if($row['sonod'])গ্রামঃ- {{ $row['sonod']['applicant_present_village'] }},
-                        হোল্ডিং নং- {{ int_en_to_bn($row['sonod']['applicant_holding_tax_number']) }}@endif</td>
-                    <td class="td">@if($row['sonod']){{ int_en_to_bn($row['sonod']['applicant_mobile']) }}@endif</td>
+                    <td class="td">@if($row['sonods']){{ $row['sonods']['applicant_name'] }}@endif</td>
+                    <td class="td">@if($row['sonods'])গ্রামঃ- {{ $row['sonods']['applicant_present_village'] }},
+                        হোল্ডিং নং- {{ int_en_to_bn($row['sonods']['applicant_holding_tax_number']) }}@endif</td>
+                    <td class="td">@if($row['sonods']){{ int_en_to_bn($row['sonods']['applicant_mobile']) }}@endif</td>
                 @endif
 
                 <td class="td" style="text-align:center">{{ int_en_to_bn(round($row['amount'], 2)) }}</td>

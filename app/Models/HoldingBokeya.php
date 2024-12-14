@@ -22,4 +22,11 @@ class HoldingBokeya extends Model
     {
         return $this->hasMany(Payment::class, 'sonodId');
     }
+        /**
+     * Define the relationship with Holdingtax (belongsTo).
+     */
+    public function holdingTax()
+    {
+        return $this->belongsTo(Holdingtax::class, 'holdingTax_id', 'id');
+    }
 }

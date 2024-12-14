@@ -122,7 +122,10 @@ class Payment extends Model
     {
         return $query->where('payable_type', $payableType)->where('payable_id', $payableId);
     }
-
+    protected $hidden = [
+        'sonod',
+        'tax',
+    ];
     public function sonod()
     {
         // Defines a belongsTo relationship with the Sonod model using the sonodId as the foreign key
@@ -132,8 +135,24 @@ class Payment extends Model
     public function tax()
     {
         // Defines a belongsTo relationship with the HoldingBokeya model using sonodId as the foreign key
-        // Ensure HoldingBokeya is related to sonodId or change to appropriate foreign key if needed
         return $this->belongsTo(HoldingBokeya::class, 'sonodId', 'id');
+    }
+
+    protected $appends = ['sonods','holding_tax']; // Ensure snake_case naming
+
+    public function getHoldingTaxAttribute()
+    {
+        if ($this->sonod_type === 'holdingtax') {
+            return $this->tax->holdingTax; // Load HoldingBokeya model data
+        }
+
+    }
+    public function getSonodsAttribute()
+    {
+        if ($this->sonod_type != 'holdingtax') {
+            return $this->sonod; // Load Sonod model data
+        }
+
     }
 
     public function tenderinvoice()
