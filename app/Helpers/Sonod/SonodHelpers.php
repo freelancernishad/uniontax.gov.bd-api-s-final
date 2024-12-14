@@ -228,7 +228,7 @@ use Rakibhstu\Banglanumber\NumberToBangla;
         $translations = [
             'holdingtax' => 'হোল্ডিং ট্যাক্স',
             'tender-deposit' => 'টেন্ডার জমা',
-            'tenders_form' => 'টেন্ডার ফর্ম',
+            'Tenders_form' => 'টেন্ডার ফর্ম',
         ];
 
         // Check if the term exists in the array
