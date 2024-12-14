@@ -102,25 +102,25 @@
             <td>
                 <div class="summary-box">
                     <h3>মোট আবেদন</h3>
-                    <p>{{ $data['totals']['total_pending']+$data['totals']['total_approved']+$data['totals']['total_cancel'] }}</p>
+                    <p>{{ int_en_to_bn($data['totals']['total_pending']+$data['totals']['total_approved']+$data['totals']['total_cancel']) }}</p>
                 </div>
             </td>
             <td>
                 <div class="summary-box">
                     <h3>নতুন আবেদন</h3>
-                    <p>{{ $data['totals']['total_pending'] }}</p>
+                    <p>{{ int_en_to_bn($data['totals']['total_pending']) }}</p>
                 </div>
             </td>
             <td>
                 <div class="summary-box">
                     <h3>ইস্যুকৃত সনদ</h3>
-                    <p>{{ $data['totals']['total_approved'] }}</p>
+                    <p>{{ int_en_to_bn($data['totals']['total_approved']) }}</p>
                 </div>
             </td>
             <td>
                 <div class="summary-box">
                     <h3>বাতিলকৃত আবেদন</h3>
-                    <p>{{ $data['totals']['total_cancel'] }}</p>
+                    <p>{{ int_en_to_bn($data['totals']['total_cancel']) }}</p>
                 </div>
             </td>
         </tr>
@@ -129,7 +129,7 @@
             <td colspan="4">
                 <div class="summary-box">
                     <h3>মোট আদায়কৃত ফি এর পরিমাণ</h3>
-                    <p>{{ $data['totals']['total_amount'] }}</p>
+                    <p>{{ int_en_to_bn($data['totals']['total_amount']) }}</p>
                 </div>
             </td>
         </tr>
@@ -156,10 +156,10 @@
 
                 <tr>
                     <td>{{ $value->sonod_name }}</td>
-                    <td>{{ $value->pending_count }}</td>
-                    <td>{{ $value->approved_count }}</td>
-                    <td>{{ $value->cancel_count }}</td>
-                    <td>{{ $value->pending_count+$value->approved_count+$value->cancel_count }}</td>
+                    <td>{{ int_en_to_bn($value->pending_count) }}</td>
+                    <td>{{ int_en_to_bn($value->approved_count) }}</td>
+                    <td>{{ int_en_to_bn($value->cancel_count) }}</td>
+                    <td>{{ int_en_to_bn($value->pending_count+$value->approved_count+$value->cancel_count) }}</td>
                 </tr>
                 @endforeach
 
@@ -186,16 +186,16 @@
                 @foreach($data['payment_reports'] as $value)
                 <tr>
                     <td>{{ $value->sonod_type }}</td>
-                    <td>{{ $value->total_payments }}</td>
-                    <td>{{ $value->total_amount }}</td>
+                    <td>{{ int_en_to_bn($value->total_payments) }}</td>
+                    <td>{{ int_en_to_bn($value->total_amount) }}</td>
                 </tr>
                 @endforeach
 
 
                 <tr>
                     <td>মোট</td>
-                    <td>{{ $data['totals']['total_payments'] }}</td>
-                    <td>{{ $data['totals']['total_amount'] }}</td>
+                    <td>{{ int_en_to_bn($data['totals']['total_payments']) }}</td>
+                    <td>{{ int_en_to_bn($data['totals']['total_amount']) }}</td>
                 </tr>
 
             </tbody>
