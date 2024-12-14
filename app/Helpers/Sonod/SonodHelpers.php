@@ -238,5 +238,5 @@ use Rakibhstu\Banglanumber\NumberToBangla;
             $translatedText = $text;
         }
 
-        return $translatedText
+        return $translatedText;
     }
