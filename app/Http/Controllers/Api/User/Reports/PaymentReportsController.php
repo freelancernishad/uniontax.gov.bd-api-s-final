@@ -31,6 +31,14 @@ class PaymentReportsController extends Controller
         $query = Payment::where('status', 'Paid');
 
 
+        $query->select('id',
+        'sonod_type',
+        'payment_type',
+        'amount',
+        'date',
+        'union',
+        'sonods',
+        'holding_tax');
         // Apply filters
         if ($union !== 'all') {
             $query->where('union', $union);

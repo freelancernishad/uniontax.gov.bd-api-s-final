@@ -122,10 +122,7 @@ class Payment extends Model
     {
         return $query->where('payable_type', $payableType)->where('payable_id', $payableId);
     }
-    protected $hidden = [
-        'sonod',
-        'tax',
-    ];
+
     public function sonod()
     {
         // Defines a belongsTo relationship with the Sonod model using the sonodId as the foreign key
