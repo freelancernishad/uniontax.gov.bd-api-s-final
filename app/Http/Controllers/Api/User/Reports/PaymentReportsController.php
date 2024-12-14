@@ -36,9 +36,7 @@ class PaymentReportsController extends Controller
         'payment_type',
         'amount',
         'date',
-        'union',
-        'sonods',
-        'holding_tax');
+        'union');
         // Apply filters
         if ($union !== 'all') {
             $query->where('union', $union);
