@@ -151,8 +151,6 @@ class ReportsController extends Controller
     // Function to get reports by Union
     private function getReportsByUnion(array $unionNames, $sonodName = null)
     {
-
-        // Log::info($unionNames);
         // Define base queries with union_name filter
         $sonodQuery = Sonod::whereIn('unioun_name', $unionNames)
             ->selectRaw("
@@ -162,7 +160,7 @@ class ReportsController extends Controller
                 COUNT(CASE WHEN stutus = 'cancel' THEN 1 END) as cancel_count
             ")
             ->groupBy('sonod_name');
-
+    
         $paymentQuery = Payment::whereIn('union', $unionNames)->where('status', 'Paid')
             ->selectRaw("
                 sonod_type,
@@ -170,24 +168,32 @@ class ReportsController extends Controller
                 SUM(amount) as total_amount
             ")
             ->groupBy('sonod_type');
-
+    
         // Apply optional sonod_name filter
         if ($sonodName) {
             $sonodQuery->where('sonod_name', $sonodName);
             $paymentQuery->where('sonod_type', $sonodName);
         }
-
+    
         // Fetch results
         $sonodReports = $sonodQuery->get();
         $paymentReports = $paymentQuery->get();
-
-        // Calculate totals
+    
+        // Calculate totals with proper decimal formatting
         $totalPending = $sonodReports->sum('pending_count');
         $totalApproved = $sonodReports->sum('approved_count');
         $totalCancel = $sonodReports->sum('cancel_count');
         $totalPayments = $paymentReports->sum('total_payments');
         $totalAmount = $paymentReports->sum('total_amount');
-
+    
+        // Format amounts to two decimal places
+        $totalAmount = number_format((float) $totalAmount, 2, '.', '');
+    
+        // Format individual amounts in payment reports
+        $paymentReports->each(function ($report) {
+            $report->total_amount = number_format((float) $report->total_amount, 2, '.', '');
+        });
+    
         // Format response
         return [
             'sonod_reports' => $sonodReports,
@@ -199,7 +205,6 @@ class ReportsController extends Controller
                 'total_payments' => $totalPayments,
                 'total_amount' => $totalAmount,
             ],
-
         ];
     }
 
