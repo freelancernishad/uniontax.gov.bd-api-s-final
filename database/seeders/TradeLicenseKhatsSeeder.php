@@ -8,6 +8,7 @@ use Carbon\Carbon;
 
 class TradeLicenseKhatsSeeder extends Seeder
 {
+    
     /**
      * Run the database seeds.
      *
