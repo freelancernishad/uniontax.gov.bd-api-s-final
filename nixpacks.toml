@@ -1,11 +1,11 @@
-[env]
-# Set environment variables for Laravel
-APP_ENV = "production"
-APP_KEY = "base64:yourappkey"  # Make sure to generate your app key with `php artisan key:generate`
-APP_DEBUG = "false"  # You can set to "true" during development
-APP_URL = "http://your-app-url.com"  # Replace with your actual app URL
+# nixpacks.toml
 
-# MySQL Database connection using provided connection string
+[build]
+builder = "nixpacks"
+
+[env]
+# Environment variables that you may need for your Laravel app
+
 DB_CONNECTION = "mysql"
 DB_HOST = "i8s0kkc404ccw0kcwo8w48sw"
 DB_PORT = "3306"
@@ -13,191 +13,10 @@ DB_DATABASE = "laravel_coolify"
 DB_USERNAME = "mysql"
 DB_PASSWORD = "n94m0JQVFx6X4X0kJEKDbCZyf7yBmb1v40vlNBwfYJJZpJmb0adcRLtKr8BBQXJb"
 
-# Redis connection
-REDIS_HOST = "127.0.0.1"
-REDIS_PASSWORD = "null"
-REDIS_PORT = "6379"
 
-# Application key and other configurations
-CACHE_DRIVER = "redis"
-SESSION_DRIVER = "redis"
-QUEUE_CONNECTION = "redis"
-MAIL_MAILER = "smtp"
-MAIL_HOST = "smtp.mailtrap.io"
-MAIL_PORT = "587"
-MAIL_USERNAME = "your-mailtrap-username"
-MAIL_PASSWORD = "your-mailtrap-password"
-MAIL_ENCRYPTION = "tls"
-MAIL_FROM_ADDRESS = "no-reply@yourapp.com"
-MAIL_FROM_NAME = "Your App"
-LOG_CHANNEL = "stack"
-LOG_LEVEL = "debug"
 
-[build]
-# Specify your build pack (Nixpacks)
-buildPack = "nixpacks"
+APP_KEY = "base64:U7cZtf96pnPY1KyxqEDx5wzebI1QLx4RdbqV8RhkBOU="
 
-[phases.setup]
-# You can install additional dependencies or tools here
-nixPkgs = ["python311Packages.supervisor"]
-
-[phases.build]
-cmds = [
-    "mkdir -p /etc/supervisor/conf.d/",
-    "cp /assets/worker-*.conf /etc/supervisor/conf.d/",
-    "cp /assets/supervisord.conf /etc/supervisord.conf",
-    "chmod +x /assets/start.sh",
-    "composer install --no-dev --optimize-autoloader"
-]
-
-[start]
-cmd = "/assets/start.sh"
-
-[staticAssets]
-# Define any static assets like start scripts, configurations, etc.
-"start.sh" = '''
-#!/bin/bash
-
-# Transform the nginx configuration
-node /assets/scripts/prestart.mjs /assets/nginx.template.conf /etc/nginx.conf
-
-# Start supervisor
-supervisord -c /etc/supervisord.conf -n
-'''
-
-"supervisord.conf" = '''
-[unix_http_server]
-file=/assets/supervisor.sock
-
-[supervisord]
-logfile=/var/log/supervisord.log
-logfile_maxbytes=50MB
-logfile_backups=10
-loglevel=info
-pidfile=/assets/supervisord.pid
-nodaemon=false
-silent=false
-minfds=1024
-minprocs=200
-
-[rpcinterface:supervisor]
-supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
-
-[supervisorctl]
-serverurl=unix:///assets/supervisor.sock
-
-[include]
-files = /etc/supervisor/conf.d/*.conf
-'''
-
-"worker-nginx.conf" = '''
-[program:worker-nginx]
-process_name=%(program_name)s_%(process_num)02d
-command=nginx -c /etc/nginx.conf
-autostart=true
-autorestart=true
-stdout_logfile=/var/log/worker-nginx.log
-stderr_logfile=/var/log/worker-nginx.log
-'''
-
-"worker-phpfpm.conf" = '''
-[program:worker-phpfpm]
-process_name=%(program_name)s_%(process_num)02d
-command=php-fpm -y /assets/php-fpm.conf -F
-autostart=true
-autorestart=true
-stdout_logfile=/var/log/worker-phpfpm.log
-stderr_logfile=/var/log/worker-phpfpm.log
-'''
-
-"worker-laravel.conf" = '''
-[program:worker-laravel]
-process_name=%(program_name)s_%(process_num)02d
-command=bash -c 'exec php /app/artisan queue:work --sleep=3 --tries=3 --max-time=3600'
-autostart=true
-autorestart=true
-stopasgroup=true
-killasgroup=true
-numprocs=12
-startsecs=0
-stopwaitsecs=3600
-stdout_logfile=/var/log/worker-laravel.log
-stderr_logfile=/var/log/worker-laravel.log
-'''
-
-"php-fpm.conf" = '''
-[www]
-listen = 127.0.0.1:9000
-user = www-data
-group = www-data
-listen.owner = www-data
-listen.group = www-data
-pm = dynamic
-pm.max_children = 50
-pm.min_spare_servers = 4
-pm.max_spare_servers = 32
-pm.start_servers = 18
-clear_env = no
-'''
-
-"nginx.template.conf" = '''
-user www-data www-data;
-worker_processes 5;
-daemon off;
-
-worker_rlimit_nofile 8192;
-
-events {
-  worker_connections  4096;  # Default: 1024
-}
-
-http {
-    include    $!{nginx}/conf/mime.types;
-    index    index.html index.htm index.php;
-
-    default_type application/octet-stream;
-    log_format   main '$remote_addr - $remote_user [$time_local]  $status '
-        '"$request" $body_bytes_sent "$http_referer" '
-        '"$http_user_agent" "$http_x_forwarded_for"';
-    access_log /var/log/nginx-access.log;
-    error_log /var/log/nginx-error.log;
-    sendfile     on;
-    tcp_nopush   on;
-    server_names_hash_bucket_size 128;
-
-    server {
-        listen ${PORT};
-        listen [::]:${PORT};
-        server_name localhost;
-
-        root /app;
-
-        add_header X-Content-Type-Options "nosniff";
-
-        client_max_body_size 35M;
-
-        index index.php;
-
-        charset utf-8;
-
-        location / {
-            try_files $uri $uri/ /index.php?$query_string;
-        }
-
-        error_page 404 /index.php;
-
-        location ~ \.php$ {
-            fastcgi_pass 127.0.0.1:9000;
-            fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-            include $!{nginx}/conf/fastcgi_params;
-            include $!{nginx}/conf/fastcgi.conf;
-
-            fastcgi_param PHP_VALUE "upload_max_filesize=30M \n post_max_size=35M";
-        }
-
-        location ~ /\.(?!well-known).* {
-            deny all;
-        }
-    }
-}
-'''
+[services]
+# Expose the HTTP port where Laravel will run (default is 80)
+http = { port = 80 }
