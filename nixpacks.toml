@@ -1,17 +1,26 @@
 [phases.setup]
-nixPkgs = ["...", "python311Packages.supervisor"]
+nixPkgs = [
+    "python311Packages.supervisor", # Ensure supervisor is installed
+    "nginx", # Nginx for web server
+    "php", # PHP to run Laravel
+    "phpPackages.php-fpm", # PHP-FPM for handling PHP processes
+    "nodejs", # Node for prestart script
+    "git" # Ensure git is available if needed for Composer dependencies
+]
 
 [phases.build]
 cmds = [
-    "mkdir -p /etc/supervisor/conf.d/",
-    "cp /assets/worker-*.conf /etc/supervisor/conf.d/",
-    "cp /assets/supervisord.conf /etc/supervisord.conf",
-    "chmod +x /assets/start.sh",
-    "..."
+    "mkdir -p /etc/supervisor/conf.d/", # Supervisor configuration directory
+    "cp /assets/worker-*.conf /etc/supervisor/conf.d/", # Copy worker configurations
+    "cp /assets/supervisord.conf /etc/supervisord.conf", # Copy supervisord.conf
+    "chmod +x /assets/start.sh", # Ensure start.sh is executable
+    "composer install --no-dev --optimize-autoloader", # Install dependencies for Laravel
+    "php artisan key:generate", # Generate Laravel's application key
+    "php artisan config:cache" # Cache config for better performance
 ]
 
 [start]
-cmd = '/assets/start.sh'
+cmd = '/assets/start.sh' # Start script that launches Supervisor and Nginx
 
 [staticAssets]
 "start.sh" = '''
@@ -97,9 +106,9 @@ pm.min_spare_servers = 4
 pm.max_spare_servers = 32
 pm.start_servers = 18
 clear_env = no
+'''
 
-
-"nginx.template.conf" = 
+"nginx.template.conf" = '''
 user www-data www-data;
 worker_processes 5;
 daemon off;
@@ -122,7 +131,7 @@ http {
     error_log /var/log/nginx-error.log;
     sendfile     on;
     tcp_nopush   on;
-    server_names_hash_bucket_size 128; # this seems to be required for some vhosts
+    server_names_hash_bucket_size 128;
 
     server {
         listen ${PORT};
@@ -136,11 +145,8 @@ http {
         )
 
         add_header X-Content-Type-Options "nosniff";
-
         client_max_body_size 35M;
-
         index index.php;
-
         charset utf-8;
 
         $if(IS_LARAVEL) (
@@ -150,9 +156,9 @@ http {
         ) else ()
 
         $if(NIXPACKS_PHP_FALLBACK_PATH) (
-          location / {
-            try_files $uri $uri/ ${NIXPACKS_PHP_FALLBACK_PATH}?$query_string;
-          }
+            location / {
+                try_files $uri $uri/ ${NIXPACKS_PHP_FALLBACK_PATH}?$query_string;
+            }
         ) else ()
 
         location = /favicon.ico { access_log off; log_not_found off; }
@@ -167,7 +173,6 @@ http {
             fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
             include $!{nginx}/conf/fastcgi_params;
             include $!{nginx}/conf/fastcgi.conf;
-
             fastcgi_param PHP_VALUE "upload_max_filesize=30M \n post_max_size=35M";
         }
 
@@ -176,4 +181,5 @@ http {
         }
     }
 }
+'''
 
