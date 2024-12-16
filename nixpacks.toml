@@ -97,9 +97,9 @@ pm.min_spare_servers = 4
 pm.max_spare_servers = 32
 pm.start_servers = 18
 clear_env = no
-'''
 
-"nginx.template.conf" = '''
+
+"nginx.template.conf" = 
 user www-data www-data;
 worker_processes 5;
 daemon off;
