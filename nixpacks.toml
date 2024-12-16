@@ -1,0 +1,6 @@
+[build]
+command = "composer install && php artisan optimize"
+
+[environment]
+PHP_VERSION = "8.1"
+NODE_VERSION = "16"
