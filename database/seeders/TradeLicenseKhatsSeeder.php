@@ -6,7 +6,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
-class TradeLicenseKhatSeeder extends Seeder
+class TradeLicenseKhatsSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -119,7 +119,7 @@ class TradeLicenseKhatSeeder extends Seeder
             ['id' => 101, 'khat_id' => '121', 'name' => 'পরিবহন ও লজিস্টিক সেবা', 'main_khat_id' => 0, 'type' => 'main'],
             ['id' => 102, 'khat_id' => '121101', 'name' => 'মূলধন ১ লক্ষ টাকা পর্যন্ত', 'main_khat_id' => 121, 'type' => 'sub'],
 
-     
+
         ];
 
         foreach ($data as &$entry) {
