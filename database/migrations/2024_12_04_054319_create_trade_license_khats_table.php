@@ -24,11 +24,6 @@ class CreateTradeLicenseKhatsTable extends Migration
         });
 
 
-        // Call the seeder to insert data after migration
-        // Artisan::call('db:seed', [
-        //     '--class' => 'TradeLicenseKhatsSeeder'
-
-        // ]);
 
     }
 
