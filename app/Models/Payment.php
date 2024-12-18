@@ -11,8 +11,8 @@ class Payment extends Model
 
     protected $fillable = [
         'user_id',
-        'gateway',
-        'transaction_id',
+        // 'gateway',
+        // 'transaction_id',
         'currency',
         'amount',
         'fee',
@@ -144,7 +144,7 @@ class Payment extends Model
             // If tax exists, safely call holdingTax
             return $this->tax->holdingTax()->select('id', 'maliker_name', 'gramer_name', 'mobile_no', 'holding_no')->first();
         }
-    
+
         // Return null or some default value if tax is null
         return null;
     }
