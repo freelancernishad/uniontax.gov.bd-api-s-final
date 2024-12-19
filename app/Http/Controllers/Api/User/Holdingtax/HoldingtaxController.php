@@ -30,8 +30,8 @@ class HoldingtaxController extends Controller
            'nid_no' => 'required|string',
            'mobile_no' => 'required|string',
 
-           'griher_barsikh_mullo' => 'required|numeric',
-           'jomir_vara' => 'required|numeric',
+           'griher_barsikh_mullo' => 'nullable|numeric',
+           'jomir_vara' => 'nullable|numeric',
            'barsikh_vara' => 'nullable|numeric',
            'bokeya' => 'array',
            'image' => 'nullable|string',
