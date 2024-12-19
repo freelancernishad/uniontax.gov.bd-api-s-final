@@ -6,6 +6,7 @@ use App\Models\Uniouninfo;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class UserUniouninfoController extends Controller
 {
@@ -46,24 +47,24 @@ class UserUniouninfoController extends Controller
     {
         // Get the authenticated user via JWT
         $user = Auth::guard('api')->user();
-
+    
         if (!$user || !$user->unioun) {
             return response()->json([
                 'message' => 'Authenticated user or union information not found.',
             ], 404);
         }
-
+    
         // Find the Unioninfo that matches the user's union
         $unionInfo = Uniouninfo::where('short_name_e', $user->unioun)->first();
-
+    
         if (!$unionInfo) {
             return response()->json([
                 'message' => 'Union information not found.',
             ], 404);
         }
-
-        // Validate the request data
-        $validatedData = $request->validate([
+    
+        // Validation using Validator facade
+        $validator = Validator::make($request->all(), [
             'full_name' => 'nullable|string|max:255',
             'short_name_b' => 'nullable|string|max:255',
             'thana' => 'nullable|string|max:255',
@@ -82,13 +83,22 @@ class UserUniouninfoController extends Controller
             'u_image' => 'nullable|string', // Assuming URL or base64 image string
             'portal' => 'nullable|string|max:255',
         ]);
-
+    
+        // Check for validation failure
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+    
+        // Retrieve validated data
+        $validatedData = $validator->validated();
+    
         // Update the union info
         $unionInfo->update($validatedData);
-
+    
         return response()->json([
             'message' => 'Union information updated successfully.',
             'data' => $unionInfo,
         ], 200);
     }
+    
 }
