@@ -81,7 +81,7 @@ class UserSonodFeeController extends Controller
 
             // Update the existing SonodFee
             $sonodFee->update([
-                'sonodnamelist_id' => $feeData['sonodnamelist_id'],
+                // 'sonodnamelist_id' => $feeData['sonodnamelist_id'],
                 'service_id' => $feeData['service_id'],
                 'fees' => $feeData['fees'],
                 'unioun' => $feeData['unioun'],
