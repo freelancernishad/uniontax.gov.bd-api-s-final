@@ -29,7 +29,7 @@ class FailedPaymentController extends Controller
         $sonod_type = $request->input('sonod_type');
 
         // Retrieve the pending and failed payments with filters
-        $payments = Payment::select('id', 'sonodId', 'union', 'trxId', 'sonod_type', 'date', 'method', 'paid_at')
+        $payments = Payment::select('id', 'sonodId', 'union', 'trxId', 'sonod_type', 'date', 'method')
             ->when($union, function ($query, $union) {
                 return $query->where('union', $union);
             })
