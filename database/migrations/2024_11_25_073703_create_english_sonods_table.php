@@ -15,10 +15,9 @@ class CreateEnglishSonodsTable extends Migration
     {
         Schema::create('english_sonods', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('sonod_id');
+            $table->unsignedBigInteger('sonod_Id');
             $table->string('unioun_name', 50)->nullable();
             $table->year('year')->nullable();
-            $table->string('sonod_Id', 30);
             $table->string('uniqeKey', 255)->unique();
             $table->string('image', 255)->nullable();
             $table->string('sonod_name', 70)->nullable();
@@ -114,7 +113,7 @@ class CreateEnglishSonodsTable extends Migration
             $table->softDeletes();
 
             // Foreign key relationship with the Sonod model
-            $table->foreign('sonod_id')->references('id')->on('sonods')->onDelete('cascade');
+            $table->foreign('sonod_Id')->references('id')->on('sonods')->onDelete('cascade');
         });
     }
 

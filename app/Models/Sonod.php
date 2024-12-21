@@ -125,4 +125,10 @@ class Sonod extends Model
               ];
           });
       }
+
+      public function englishSonod()
+      {
+          return $this->hasOne(EnglishSonod::class);
+      }
+
 }

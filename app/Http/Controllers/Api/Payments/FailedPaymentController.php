@@ -26,7 +26,11 @@ class FailedPaymentController extends Controller
         }
 
         $date = $request->input('date');
+
         $sonod_type = $request->input('sonod_type');
+        if($sonod_type=='all'){
+            $sonod_type = '';
+        }
 
         // Retrieve the pending and failed payments with filters
         $payments = Payment::select('id', 'sonodId', 'union', 'trxId', 'sonod_type', 'date', 'method')
@@ -36,9 +40,12 @@ class FailedPaymentController extends Controller
             ->when($date, function ($query, $date) {
                 return $query->whereDate('date', $date);
             })
+
             ->when($sonod_type, function ($query, $sonod_type) {
                 return $query->where('sonod_type', $sonod_type);
             })
+
+
             ->where(function ($query) {
                 $query->pending()->orWhere(function ($q) {
                     $q->failed();

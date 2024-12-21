@@ -6,6 +6,7 @@ use Exception;
 use App\Models\Sonod;
 use App\Models\SonodFee;
 use App\Models\Uniouninfo;
+use App\Models\EnglishSonod;
 use Illuminate\Http\Request;
 use App\Models\Sonodnamelist;
 use App\Models\TradeLicenseKhatFee;
@@ -16,8 +17,9 @@ class SonodController extends Controller
 {
     public function sonodSubmit(Request $request)
     {
-        // Return the request data for debugging
-        // return $request->all();
+
+
+
 
         // Extract necessary request data
         $sonodName = $request->sonod_name;
@@ -27,14 +29,15 @@ class SonodController extends Controller
         $filePath = str_replace(' ', '_', $sonodEnName->enname);
         $dateFolder = date("Y/m/d");
 
-        // Generate a unique key using a combination of timestamp, unionName, and sonodName
+        // Generate unique key if not provided
         do {
             $uniqueKey = md5(uniqid($unionName . $sonodName . microtime(), true));
             $existingSonod = Sonod::where('uniqeKey', $uniqueKey)->first();
         } while ($existingSonod);
 
-
-        $sonodId = (string) sonodId($unionName, $sonodName, getOrthoBchorYear());
+        $sonodId = $request->has('sonod_id')
+            ? $request->sonod_id
+            : (string) sonodId($unionName, $sonodName, getOrthoBchorYear());
 
         // Prepare data for insertion
         $insertData = $request->except([
@@ -45,18 +48,9 @@ class SonodController extends Controller
         ]);
 
         $insertData['applicant_type_of_businessKhat'] = $request->applicant_type_of_businessKhat;
-
-        if($request->applicant_type_of_businessKhatAmount){
-            $insertData['applicant_type_of_businessKhatAmount'] = $request->applicant_type_of_businessKhatAmount;
-        }else{
-            $insertData['applicant_type_of_businessKhatAmount'] = 0;
-        }
-
-
-
+        $insertData['applicant_type_of_businessKhatAmount'] = $request->applicant_type_of_businessKhatAmount ?? 0;
         $insertData['uniqeKey'] = $uniqueKey;
         $insertData['khat'] = "সনদ ফি";
-
         $insertData['stutus'] = "Pepaid";
         $insertData['payment_status'] = "Unpaid";
         $insertData['year'] = date('Y');
@@ -72,40 +66,56 @@ class SonodController extends Controller
             $insertData['Annual_income_text'] = convertAnnualIncomeToText($request->Annual_income);
         }
 
-
         // Handle the status and charges
-        $this->handleCharges($request,$sonodEnName, $insertData);
+        $this->handleCharges($request, $sonodEnName, $insertData);
 
         try {
-            // Save the Sonod entry
-            $sonod = Sonod::create($insertData);
-
 
             $urls = [
-                "s_uri"=>$request->s_uri,
-                "f_uri"=>$request->f_uri,
-                "c_uri"=>$request->c_uri
+                "s_uri" => $request->s_uri,
+                "f_uri" => $request->f_uri,
+                "c_uri" => $request->c_uri,
             ];
-          // Call sonodpayment to handle payment process
-          $redirectUrl = sonodpayment($sonod->id,$urls);
 
-          // Send notification if the status is Pending
-          if ($request->stutus == 'Pending') {
-              // $this->sendNotification($sonod);
-          }
+            // Process EnglishSonod if requested
+            $sonod = null;
+            $englishSonod = null;
+            if ($request->english) {
+                $englishSonodData = $insertData;
+                $englishSonodData['sonod_Id'] = $request->sonod_Id;
+                // return response()->json($englishSonodData);
 
-          // Return the created Sonod and the redirect URL
-          return response()->json([
-              'sonod' => $sonod,
-              'redirect_url' => $redirectUrl
-          ]);
+                // Check if EnglishSonod already exists for this Sonod
+                $existingEnglishSonod = EnglishSonod::where('sonod_Id', $request->sonod_Id)->first();
+
+                if ($existingEnglishSonod) {
+                    $existingEnglishSonod->update($englishSonodData);
+                    $englishSonod = $existingEnglishSonod;
+                } else {
+                    $englishSonod = EnglishSonod::create($englishSonodData);
+                }
+                $redirectUrl = sonodpayment($englishSonod->id, $urls);
+            }else{
+                // Save the Sonod entry
+                $sonod = Sonod::create($insertData);
+                $redirectUrl = sonodpayment($sonod->id, $urls);
+            }
 
 
+
+
+            // Return the response
+            return response()->json([
+                'sonod' => $sonod,
+                'english_sonod' => $englishSonod,
+                'redirect_url' => $redirectUrl,
+            ]);
         } catch (Exception $e) {
             // Handle errors and return a response
-            return response()->json($e->getMessage(), 400);
+            return response()->json(['error' => $e->getMessage()], 400);
         }
     }
+
 
     private function prepareSonodData($request, $sonodName, $successors, $unionName, $sonodId)
     {
