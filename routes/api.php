@@ -62,3 +62,7 @@ Route::post('sonod/search', [SonodController::class, 'findSonod']);
 
 Route::post('ekpay/ipn',[EkpayController::class ,'ipn']);
 Route::post('ekpay/check/payments/ipn',[EkpayController::class ,'CheckPayment']);
+
+
+
+

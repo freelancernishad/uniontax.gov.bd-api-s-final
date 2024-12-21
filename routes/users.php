@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Coupon\CouponController;
 use App\Http\Controllers\Api\Auth\User\AuthUserController;
 use App\Http\Controllers\Api\User\Sonod\UserSonodController;
 use App\Http\Controllers\Api\Auth\User\VerificationController;
+use App\Http\Controllers\Api\Payments\FailedPaymentController;
 use App\Http\Controllers\Api\User\Tender\TenderListController;
 use App\Http\Controllers\Api\User\Package\UserPackageController;
 use App\Http\Controllers\Api\User\Holdingtax\HoldingtaxController;
@@ -85,6 +86,9 @@ Route::prefix('user')->group(function () {
             Route::put('/', [UserSonodFeeController::class, 'update']); // Update multiple SonodFees
         });
         Route::get('sonodnamelists/with-fees', [UserSonodFeeController::class, 'getSonodnamelistsWithFees']);
+
+
+        Route::get('/failed-payments', [FailedPaymentController::class, 'index']);
 
 
 
