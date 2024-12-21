@@ -21,7 +21,7 @@ class FailedPaymentController extends Controller
             $union =  $request->input('union');
         } elseif (auth('user')->check()) {
             $user = auth()->user();
-            $union =  $user->union ?? null;
+            $union =  $user->unioun ?? null;
 
         }
 
