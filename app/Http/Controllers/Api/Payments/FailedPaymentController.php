@@ -47,10 +47,7 @@ class FailedPaymentController extends Controller
             ->get();
 
         // Return the results as JSON
-        return response()->json([
-            'status' => 'success',
-            'data' => $payments
-        ]);
+        return response()->json($payments);
     }
 
 }
