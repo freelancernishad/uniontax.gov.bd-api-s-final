@@ -45,6 +45,7 @@ class PaymentReportsController extends Controller
 
 
         $union = $request->union;
+        return response()->json($union);
 
         if ($authenticatedEntity instanceof User) {
             $union = $authenticatedEntity->unioun;
