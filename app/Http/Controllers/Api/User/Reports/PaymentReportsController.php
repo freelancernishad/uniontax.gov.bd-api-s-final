@@ -108,6 +108,7 @@ class PaymentReportsController extends Controller
         });
 
 
+        return response()->json(['union'=>$union]);
         // return response()->json($rows);
         // Log::info($rows);
 
