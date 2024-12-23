@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Api\User\Reports;
 
 use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Admin;
 use App\Models\Payment;
 use App\Models\Uniouninfo;
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
@@ -19,8 +22,45 @@ class PaymentReportsController extends Controller
         ini_set("pcre.backtrack_limit", "500000000000000000");
         ini_set('memory_limit', '512M'); // Avoid excessively high memory limits
 
-        // Extract request parameters
+
+        $token = $request->query('token');
+
+        if (!$token) {
+            return response()->json(['error' => 'No token provided.'], 400);
+        }
+        try {
+            $authenticatedEntity = JWTAuth::setToken($token)->authenticate();
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Unauthorized. Invalid token.'], 403);
+        }
+
+
+
+        if (!$authenticatedEntity) {
+            return response()->json(['error' => 'Unauthorized. Invalid token.'], 403);
+        }
+
+
+
+
+
         $union = $request->union;
+
+        if ($authenticatedEntity instanceof User) {
+            $union = $authenticatedEntity->unioun;
+        } elseif ($authenticatedEntity instanceof Admin) {
+            // return response()->json(['type' => 'admin', 'data' => $authenticatedEntity]);
+        }
+
+
+
+
+
+
+
+
+
+
         $sonod_type = $request->sonod_type ?: 'all';
         // Get values from the request or set default to the last 7 days
         $from = $request->from ?: Carbon::now()->subDays(7)->toDateString();
