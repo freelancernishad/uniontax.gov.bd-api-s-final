@@ -45,7 +45,7 @@ class PaymentReportsController extends Controller
 
 
         $union = $request->union;
-       
+
 
         if ($authenticatedEntity instanceof User) {
             $union = $authenticatedEntity->unioun;
@@ -112,8 +112,9 @@ class PaymentReportsController extends Controller
         // Log::info($rows);
 
         // Retrieve Union information
+
         $uniouninfo = Uniouninfo::where('short_name_e', $union)->first();
-        return response()->json($uniouninfo);
+        return response()->json(['union'=>$union,'uniouninfo'=>$uniouninfo]);
         if (!$uniouninfo) {
             return response()->json([
                 'message' => 'No Union information found for the given short name.'
