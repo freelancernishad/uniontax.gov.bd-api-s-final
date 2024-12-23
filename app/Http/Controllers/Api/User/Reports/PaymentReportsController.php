@@ -119,7 +119,7 @@ class PaymentReportsController extends Controller
         $uniouninfo = Uniouninfo::where('short_name_e', $union)->first();
         if (!$uniouninfo) {
             return response()->json([
-                'message' => 'No Union information found for the given short name.'
+                'error' => 'No Union information found for the given short name.'
             ], 404); // Return a 404 Not Found status
         }
 
