@@ -19,8 +19,12 @@ class ApiResponse
     {
 
         // Skip ApiResponse middleware for the /files/{path} route
-        if ($request->is('files/*')) {
 
+        if ($request->is('files/*')) {
+            return $next($request);
+        }
+
+        if ($request->is('payment/report/download')) {
             return $next($request);
         }
 
