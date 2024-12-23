@@ -26,6 +26,11 @@ class SonodController extends Controller
         $unionName = $request->unioun_name;
         $successors = json_encode($request->successor_list);
         $sonodEnName = Sonodnamelist::where('bnname', $sonodName)->first();
+        if (!$sonodEnName) {
+            return response()->json([
+                'error' => 'No data found for the given Sonod name.'
+            ], 404); // Return a 404 Not Found status
+        }
         $filePath = str_replace(' ', '_', $sonodEnName->enname);
         $dateFolder = date("Y/m/d");
 

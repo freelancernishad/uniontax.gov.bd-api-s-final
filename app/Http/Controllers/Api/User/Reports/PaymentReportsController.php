@@ -73,6 +73,12 @@ class PaymentReportsController extends Controller
         // Retrieve Union information
         $uniouninfo = Uniouninfo::where('short_name_e', $union)->first();
 
+        if (!$uniouninfo) {
+            return response()->json([
+                'message' => 'No Union information found for the given short name.'
+            ], 404); // Return a 404 Not Found status
+        }
+
         // Generate HTML view for PDF
         $htmlView = view('Reports.PaymentReports', compact('rows', 'uniouninfo', 'sonod_type', 'from', 'to', 'union'))->render();
 

@@ -314,8 +314,6 @@ class HoldingtaxController extends Controller
         // Get the authenticated user's union
 
         $auth = Auth::user();
-
-
         // Get the search parameters from the request
         $search = $r->search;
         $word = $r->word;
