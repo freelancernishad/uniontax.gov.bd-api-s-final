@@ -24,9 +24,7 @@ class ApiResponse
             return $next($request);
         }
 
-        if ($request->is('payment/report/download')) {
-            return $next($request);
-        }
+
 
         // Capture the response
         $response = $next($request);

@@ -24,12 +24,20 @@ class WhitelistOriginMiddleware
             // Check if there's an empty string '' in the allowed origins
             $allowedOrigin = AllowedOrigin::where('origin_url', 'postman')->exists();
 
+
+            if ($request->is('payment/report/download')) {
+                return $next($request);
+            }
+
             // If empty origin is not allowed in the database, return a 403 response
             if (!$allowedOrigin) {
                 return response()->json([
                     'message' => 'Access denied. Empty origin is not allowed.',
                 ], 403);
             }
+
+
+
         } else {
             // Check if the origin exists in the database for non-empty origins
             $allowedOrigin = AllowedOrigin::where('origin_url', $origin)->exists();
