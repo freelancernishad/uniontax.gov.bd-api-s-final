@@ -45,12 +45,9 @@ class PaymentReportsController extends Controller
 
 
         $union = $request->union;
-
-
-        if ($authenticatedEntity instanceof User) {
+        $isUser = auth('user')->setToken($token)->check();
+        if ($isUser) {
             $union = $authenticatedEntity->unioun;
-        } elseif ($authenticatedEntity instanceof Admin) {
-            // return response()->json(['type' => 'admin', 'data' => $authenticatedEntity]);
         }
 
 
@@ -59,6 +56,7 @@ class PaymentReportsController extends Controller
 
 
 
+ 
 
 
 
@@ -67,6 +65,7 @@ class PaymentReportsController extends Controller
         $from = $request->from ?: Carbon::now()->subDays(7)->toDateString();
         $to = $request->to ?: Carbon::now()->toDateString();
         $payment_type = $request->payment_type;
+
 
         // Build base query
         $query = Payment::where('status', 'Paid');
@@ -82,12 +81,13 @@ class PaymentReportsController extends Controller
         'sonod_type',
         'created_at'
     );
+   
         // Apply filters
         if ($union !== 'all') {
             $query->where('union', $union);
         }
 
-        return response()->json(['union'=>$union]);
+      
         
         if ($payment_type === 'menual') {
             $query->whereNull('payment_type');
@@ -117,7 +117,6 @@ class PaymentReportsController extends Controller
         // Retrieve Union information
 
         $uniouninfo = Uniouninfo::where('short_name_e', $union)->first();
-        return response()->json(['union'=>$union,'uniouninfo'=>$uniouninfo]);
         if (!$uniouninfo) {
             return response()->json([
                 'message' => 'No Union information found for the given short name.'
