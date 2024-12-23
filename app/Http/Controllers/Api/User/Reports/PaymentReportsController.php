@@ -87,6 +87,8 @@ class PaymentReportsController extends Controller
             $query->where('union', $union);
         }
 
+        return response()->json(['union'=>$union]);
+        
         if ($payment_type === 'menual') {
             $query->whereNull('payment_type');
         } elseif ($payment_type === 'online') {
@@ -108,7 +110,7 @@ class PaymentReportsController extends Controller
         });
 
 
-        return response()->json(['union'=>$union]);
+   
         // return response()->json($rows);
         // Log::info($rows);
 
