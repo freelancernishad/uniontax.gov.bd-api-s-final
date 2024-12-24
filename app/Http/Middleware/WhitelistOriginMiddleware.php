@@ -25,9 +25,11 @@ class WhitelistOriginMiddleware
             $allowedOrigin = AllowedOrigin::where('origin_url', 'postman')->exists();
 
 
-            if ($request->is('payment/report/download')) {
+            if ($request->is('payment/report/download') || $request->is('sonod/d/*') || $request->is('sonod/download/*') || $request->is('document/d/*') || $request->is('applicant/copy/download/*') || $request->is('sonod/invoice/download/*') || $request->is('download/reports/get-reports') || $request->is('holding/tax/invoice/*') || $request->is('holding/tax/certificate_of_honor/*')) {
                 return $next($request);
             }
+
+
 
             // If empty origin is not allowed in the database, return a 403 response
             if (!$allowedOrigin) {
