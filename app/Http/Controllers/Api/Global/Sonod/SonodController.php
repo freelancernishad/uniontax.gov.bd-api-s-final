@@ -24,7 +24,7 @@ class SonodController extends Controller
         // Extract necessary request data
         $sonodName = $request->sonod_name;
         $unionName = $request->unioun_name;
-        $successors = json_encode($request->successor_list);
+        $successor_list = json_encode($request->successor_list);
         $sonodEnName = Sonodnamelist::where('bnname', $sonodName)->first();
         if (!$sonodEnName) {
             return response()->json([
@@ -48,7 +48,7 @@ class SonodController extends Controller
         $insertData = $request->except([
             'sonod_Id', 'image', 'applicant_national_id_front_attachment',
             'applicant_national_id_back_attachment', 'applicant_birth_certificate_attachment',
-            'successors', 'charages', 'Annual_income', 'applicant_type_of_businessKhat',
+            'successor_list', 'charages', 'Annual_income', 'applicant_type_of_businessKhat',
             'applicant_type_of_businessKhatAmount', 'orthoBchor'
         ]);
 
@@ -60,7 +60,7 @@ class SonodController extends Controller
         $insertData['payment_status'] = "Unpaid";
         $insertData['year'] = date('Y');
 
-        $insertData = array_merge($insertData, $this->prepareSonodData($request, $sonodName, $successors, $unionName, $sonodId));
+        $insertData = array_merge($insertData, $this->prepareSonodData($request, $sonodName, $successor_list, $unionName, $sonodId));
 
         // Handle file uploads securely
         $this->handleFileUploads($request, $insertData, $filePath, $dateFolder, $sonodId);
@@ -122,7 +122,7 @@ class SonodController extends Controller
     }
 
 
-    private function prepareSonodData($request, $sonodName, $successors, $unionName, $sonodId)
+    private function prepareSonodData($request, $sonodName, $successor_list, $unionName, $sonodId)
     {
         $insertData = [];
 
@@ -143,7 +143,7 @@ class SonodController extends Controller
         $insertData['chaireman_type'] = $unionInfo->c_type;
 
         // Add successor list
-        $insertData['successor_list'] = $successors;
+        $insertData['successor_list'] = $successor_list;
 
         // Set union chairman and secretary info
         $insertData['socib_name'] = $unionInfo->socib_name;
