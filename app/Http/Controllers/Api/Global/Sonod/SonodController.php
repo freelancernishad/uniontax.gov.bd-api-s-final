@@ -10,6 +10,7 @@ use App\Models\EnglishSonod;
 use Illuminate\Http\Request;
 use App\Models\Sonodnamelist;
 use App\Models\TradeLicenseKhatFee;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
 
@@ -101,6 +102,7 @@ class SonodController extends Controller
                 }
                 $redirectUrl = sonodpayment($englishSonod->id, $urls);
             }else{
+                Log::info($insertData);
                 // Save the Sonod entry
                 $sonod = Sonod::create($insertData);
                 $redirectUrl = sonodpayment($sonod->id, $urls);
