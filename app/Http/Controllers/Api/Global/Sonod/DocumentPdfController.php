@@ -31,7 +31,7 @@ class DocumentPdfController extends Controller
         $allowedStatuses = ['Pending', 'sec_approved', 'approved'];
 
         // Check if the current status is allowed
-        if (!in_array($row->status, $allowedStatuses)) {
+        if (!in_array($row->stutus, $allowedStatuses)) {
             return response()->json([
                 'error' => 'এই সনদটি প্রক্রিয়া করা যাবে না!',
             ], 403);
