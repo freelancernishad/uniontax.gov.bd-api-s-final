@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Global\UniouninfoController;
 use App\Http\Controllers\Api\Global\Sonod\SonodController;
 use App\Http\Controllers\Api\Gateway\Ekpay\EkpayController;
 use App\Http\Controllers\Api\Server\ServerStatusController;
+use App\Http\Controllers\Api\Payments\FailedPaymentController;
 use App\Http\Controllers\Api\User\Package\UserPackageController;
 use App\Http\Controllers\Api\User\Holdingtax\HoldingtaxController;
 use App\Http\Controllers\Api\User\PackageAddon\UserPackageAddonController;
@@ -64,5 +65,7 @@ Route::post('ekpay/ipn',[EkpayController::class ,'ipn']);
 Route::post('ekpay/check/payments/ipn',[EkpayController::class ,'CheckPayment']);
 
 
+
+Route::post('payment/failed/support/ticket', [FailedPaymentController::class, 'failed_payment_record_store']);
 
 
