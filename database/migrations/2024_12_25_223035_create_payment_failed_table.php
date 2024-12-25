@@ -15,7 +15,7 @@ class CreatePaymentFailedTable extends Migration
             $table->string('payment_method');
             $table->string('account_number');
             $table->decimal('amount', 10, 2);
-            $table->string('transaction_id');
+            $table->string('bank_transaction_id');
             $table->string('sonod_id');
             $table->text('details')->nullable();
             $table->string('transId');

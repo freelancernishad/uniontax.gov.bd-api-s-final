@@ -16,7 +16,7 @@ class PaymentFailed extends Model
         'payment_method',
         'account_number',
         'amount',
-        'transaction_id',
+        'bank_transaction_id',
         'sonod_id',
         'details',
         'transId',

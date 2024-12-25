@@ -75,11 +75,10 @@ class FailedPaymentController extends Controller
         'payment_method' => 'required|string|max:255',
         'account_number' => 'required|string|max:255',
         'amount' => 'required|numeric',
-        'transaction_id' => 'required|string|max:255',
+        'bank_transaction_id' => 'required|string|max:255',
         'sonod_id' => 'required|string|max:255',
         'details' => 'nullable|string',
         'transId' => 'required|string|max:255',
-        'comment' => 'nullable|string',
     ];
 
     // Create a validator instance
