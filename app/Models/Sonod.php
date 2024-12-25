@@ -114,6 +114,12 @@ class Sonod extends Model
           return $this->hasMany(Payment::class, 'sonodId');
       }
 
+      public function payment()
+      {
+          return $this->hasOne(Payment::class, 'sonodId')
+              ->orderBy('created_at'); // Order by creation date to get the first one
+      }
+
       // Get Payment details as array
       public function getPaymentsDetailsAttribute()
       {

@@ -98,20 +98,29 @@ class FailedPaymentController extends Controller
 
 
     // Fetch union_name from Sonod table
-    $sonod  = Sonod::select('unioun_name','sonod_name')->find($request->sonod_id);
+    $sonod  = Sonod::select('unioun_name','sonod_name','id')->find($request->sonod_id);
+    $payment = Payment::select('amount')->where('trxId',$request->transId)->first();
 
-        // Check if the sonod_name matches the requested certificate
-        if ($sonod->sonod_name !== $request->certificate) {
-            return response()->json([
-                'error' => 'Certificate mismatch',
-                'message' => 'The provided certificate does not match the sonod_name for the given sonod_id.',
-            ], 400); // Return a 400 Bad Request status
-        }
+
+    if ($sonod->sonod_name !== $request->certificate) {
+        return response()->json([
+            'error' => 'Certificate mismatch',
+            'message' => 'The provided certificate does not match the sonod_name for the given sonod_id.',
+        ], 400); // Return a 400 Bad Request status
+    }
+
+    if ($payment->amount !== $request->amount) {
+        return response()->json([
+            'error' => 'amount mismatch',
+            'message' => 'The provided amount does not match.',
+        ], 400); // Return a 400 Bad Request status
+    }
 
     // Set default status if not provided
     $validatedData['status'] = "Pending";
     $validatedData['certificate'] = $sonod->sonod_name;
     $validatedData['union_name'] = $sonod->unioun_name;
+    $validatedData['amount'] = $payment->amount;
 
     // Add current datetime programmatically
     $validatedData['datetime'] = now(); // Use Laravel's `now()` helper to get the current timestamp
