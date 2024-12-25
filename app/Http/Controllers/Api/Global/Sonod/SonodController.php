@@ -25,7 +25,9 @@ class SonodController extends Controller
         // Extract necessary request data
         $sonodName = $request->sonod_name;
         $unionName = $request->unioun_name;
+        Log::info($request->successor_list);
         $successor_list = json_encode($request->successor_list);
+        Log::info($successor_list);
         $sonodEnName = Sonodnamelist::where('bnname', $sonodName)->first();
         if (!$sonodEnName) {
             return response()->json([
