@@ -92,10 +92,10 @@
                         @foreach(json_decode($row->successor_list) as $value)
                             <tr>
                                 <td>{{ int_en_to_bn($i) }}</td>
-                                <td>{{ $value->w_name }}</td>
-                                <td>{{ $value->w_relation }}</td>
-                                <td>{{ int_en_to_bn($value->w_age) }}</td>
-                                <td>{{ int_en_to_bn($value->w_nid) }}</td>
+                                <td>{{ $value->w_name ?? "" }}</td>
+                                <td>{{ $value->w_relation ?? "" }}</td>
+                                <td>{{ int_en_to_bn($value->w_age ?? 0) }}</td>
+                                <td>{{ int_en_to_bn($value->w_nid ?? '') }}</td>
                                 <td></td>
                             </tr>
                             @php
