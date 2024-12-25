@@ -99,8 +99,9 @@ class FailedPaymentController extends Controller
     $validatedData['status'] = "Pending";
 
     // Fetch union_name from Sonod table
-    $union_name = Sonod::select('unioun_name')->find($request->sonod_id)->unioun_name;
-    $validatedData['union_name'] = $union_name;
+    $sonod  = Sonod::select('unioun_name','sonod_name')->find($request->sonod_id);
+    $validatedData['certificate'] = $sonod->sonod_name;
+    $validatedData['union_name'] = $sonod->unioun_name;
 
     // Add current datetime programmatically
     $validatedData['datetime'] = now(); // Use Laravel's `now()` helper to get the current timestamp
