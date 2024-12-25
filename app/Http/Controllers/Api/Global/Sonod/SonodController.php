@@ -28,7 +28,7 @@ class SonodController extends Controller
         foreach ($request->all() as $key => $value) {
             if (strpos($key, 'successor_list') === 0) {
                 // Extract index and field name
-                preg_match('/successor_list\[(\d+)\]\.(w_name|w_relation|w_dob|w_nid)/', $key, $matches);
+                preg_match('/successor_list\[(\d+)\]\.(w_name|w_relation|w_age|w_nid|w_note)/', $key, $matches);
                 if ($matches) {
                     $index = $matches[1];
                     $field = $matches[2];
