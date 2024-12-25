@@ -96,7 +96,7 @@
                                 <td>{{ $value->w_relation ?? "" }}</td>
                                 <td>{{ int_en_to_bn($value->w_age ?? 0) }}</td>
                                 <td>{{ int_en_to_bn($value->w_nid ?? '') }}</td>
-                                <td></td>
+                                <td>{{ $value->w_note ?? "" }}</td>
                             </tr>
                             @php
                                 $i++;
