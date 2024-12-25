@@ -19,14 +19,28 @@ class SonodController extends Controller
     public function sonodSubmit(Request $request)
     {
 
-
-
-
         // Extract necessary request data
         $sonodName = $request->sonod_name;
         $unionName = $request->unioun_name;
-        Log::info($request->successor_list);
-        $successor_list = json_encode($request->successor_list);
+
+        // Process successor_list
+        $successorList = [];
+        foreach ($request->all() as $key => $value) {
+            if (strpos($key, 'successor_list') === 0) {
+                // Extract index and field name
+                preg_match('/successor_list\[(\d+)\]\.(w_name|w_relation|w_dob|w_nid)/', $key, $matches);
+                if ($matches) {
+                    $index = $matches[1];
+                    $field = $matches[2];
+                    $successorList[$index][$field] = $value;
+                }
+            }
+        }
+
+        // Convert to the desired JSON format
+        $successorListFormatted = array_values($successorList);
+
+        $successor_list = json_encode($successorListFormatted);
         Log::info($successor_list);
         $sonodEnName = Sonodnamelist::where('bnname', $sonodName)->first();
         if (!$sonodEnName) {
