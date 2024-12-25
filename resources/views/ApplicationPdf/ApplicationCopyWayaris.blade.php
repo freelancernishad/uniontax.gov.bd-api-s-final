@@ -88,22 +88,30 @@
                     @php
                         $i = 1;
                     @endphp
-                    @foreach(json_decode($row->successor_list) as $value)
+                        @if(!empty($row->successor_list) && is_array(json_decode($row->successor_list, true)))
+                        @foreach(json_decode($row->successor_list) as $value)
+                            <tr>
+                                <td>{{ int_en_to_bn($i) }}</td>
+                                <td>{{ $value->w_name }}</td>
+                                <td>{{ $value->w_relation }}</td>
+                                <td>{{ int_en_to_bn($value->w_age) }}</td>
+                                <td>{{ int_en_to_bn($value->w_nid) }}</td>
+                                <td></td>
+                            </tr>
+                            @php
+                                $i++;
+                            @endphp
+                        @endforeach
+                        @else
+                        <tr>
+                            @if($row->sonod_name=='উত্তরাধিকারী সনদ')
+                            <td colspan="6" class="text-center">কোনও উত্তরাধিকারী যোগ করা হয় নাই</td>
+                            @else
+                            <td colspan="6" class="text-center">কোনও ওয়ারিশ যোগ করা হয় নাই</td>
+                            @endif
 
-
-                    <tr>
-                        <td>{{ int_en_to_bn($i) }}</td>
-
-                        <td>{{ $value->w_name }}</td>
-                        <td>{{ $value->w_relation }}</td>
-                        <td>{{ int_en_to_bn($value->w_age) }}</td>
-                        <td>{{ int_en_to_bn($value->w_nid) }}</td>
-                        <td></td>
-                    </tr>
-                    @php
-                        $i++;
-                    @endphp
-                    @endforeach
+                        </tr>
+                        @endif
                 </table>
 
 
