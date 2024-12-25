@@ -22,7 +22,22 @@ class EkpayController extends Controller
         $data = $request->all();
         Log::info('Received IPN data: ' . json_encode($data));
 
-        // Find the Sonod by the customer ID
+        // Validate that the data is not empty
+        if (empty($data)) {
+            Log::error('IPN data is empty');
+            return response()->json(['error' => 'IPN data is empty'], 400);
+        }
+
+        // Validate that required keys exist in the data
+        $requiredKeys = ['cust_info', 'trnx_info', 'msg_code', 'pi_det_info'];
+        foreach ($requiredKeys as $key) {
+            if (!isset($data[$key])) {
+                Log::error('Missing key in IPN data: ' . $key);
+                return response()->json(['error' => 'Missing key: ' . $key], 400);
+            }
+        }
+
+        // Proceed with processing the data
         $sonod = Sonod::find($data['cust_info']['cust_id']);
         $trnx_id = $data['trnx_info']['mer_trnx_id'];  // Transaction ID
         $payment = Payment::where('trxid', $trnx_id)->first();
@@ -56,7 +71,6 @@ class EkpayController extends Controller
         }
 
         // Log the IPN response
-        // $Insertdata['ipnResponse'] = json_encode($data);
         $Insertdata['ipnResponse'] = $data;
 
         // Update the payment record with the new status and response data
@@ -188,7 +202,7 @@ class EkpayController extends Controller
 
 
 
-    
+
 
 
 
