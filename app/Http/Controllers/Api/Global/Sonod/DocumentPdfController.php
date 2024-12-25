@@ -19,8 +19,22 @@ class DocumentPdfController extends Controller
 
         // Fetch necessary data
         $row = Sonod::find($id);
+
+        // Check if the Sonod record exists
         if (!$row) {
-            return response("<h1 style='color:red;text-align:center'>সনদটি পাওয়া যায়নি!<h1>", 404);
+            return response()->json([
+                'error' => 'সনদটি পাওয়া যায়নি!',
+            ], 404);
+        }
+
+        // Define allowed statuses
+        $allowedStatuses = ['Pending', 'sec_approved', 'approved'];
+
+        // Check if the current status is allowed
+        if (!in_array($row->status, $allowedStatuses)) {
+            return response()->json([
+                'error' => 'এই সনদটি প্রক্রিয়া করা যাবে না!',
+            ], 403);
         }
 
         $sonod = Sonodnamelist::where('bnname', $row->sonod_name)->first();
