@@ -355,9 +355,28 @@ class HoldingtaxController extends Controller
     {
         $holdingBokeya = HoldingBokeya::find($id);
 
+        if (!$holdingBokeya) {
+            return response()->json([
+                'message' => 'No data found for the given ID.'
+            ], 404);
+        }
 
-       $holdingTax = Holdingtax::where(['id'=>$holdingBokeya->holdingTax_id])->first();
-      $unioninfos = Uniouninfo::where(['short_name_e' => $holdingTax->unioun])->first();
+        $holdingTax = Holdingtax::where(['id' => $holdingBokeya->holdingTax_id])->first();
+
+        if (!$holdingTax) {
+            return response()->json([
+                'message' => 'No Holding Tax data found for the given ID.'
+            ], 404);
+        }
+
+        $unioninfos = Uniouninfo::where(['short_name_e' => $holdingTax->unioun])->first();
+
+        if (!$unioninfos) {
+            return response()->json([
+                'message' => 'No Union Info data found for the given short name.'
+            ], 404);
+        }
+        
       $u_code = $unioninfos->u_code;
 
     //   $holdingBokeyasAmount = HoldingBokeya::where(['holdingTax_id'=>$holdingBokeya->holdingTax_id,'status'=>'Unpaid'])->sum('price');

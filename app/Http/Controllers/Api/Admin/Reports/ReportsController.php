@@ -169,6 +169,7 @@ class ReportsController extends Controller
     // Function to get reports by Union
     public function getReportsByUnion(array $unionNames, $sonodName = null, $detials = null)
     {
+        // Log::info($unionNames);
         if ($detials) {
             // If detials is true, fetch union-level details
             $detailedSonodReports = Sonod::whereIn('unioun_name', $unionNames)
