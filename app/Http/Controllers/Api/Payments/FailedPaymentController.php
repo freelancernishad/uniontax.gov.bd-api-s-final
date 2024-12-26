@@ -96,10 +96,22 @@ class FailedPaymentController extends Controller
     $validatedData = $validator->validated();
 
 
-
     // Fetch union_name from Sonod table
-    $sonod  = Sonod::select('unioun_name','sonod_name','id')->find($request->sonod_id);
-    $payment = Payment::select('amount')->where('trxId',$request->transId)->first();
+    $sonod = Sonod::select('unioun_name', 'sonod_name', 'id')->find($request->sonod_id);
+
+    if (!$sonod) {
+        return response()->json([
+            'message' => 'No Sonod data found for the given ID.'
+        ], 404);
+    }
+
+    $payment = Payment::select('amount')->where('trxId', $request->transId)->first();
+
+    if (!$payment) {
+        return response()->json([
+            'message' => 'No Payment data found for the given transaction ID.'
+        ], 404);
+    }
 
 
     if ($sonod->sonod_name !== $request->certificate) {
