@@ -223,12 +223,16 @@ class SonodController extends Controller
 
             // If a matching fee is found, use it as the PesaKor fee
             $pesaKor = $pesaKorFee ? $pesaKorFee->fee : 0; // Default to 0 if no fee is found
+
+                    // Calculating the VAT amount (assumed to be a percentage)
+            $tradeVatAmount = ($sonodFee * $tradeVat) / 100;
+
         } else {
             $pesaKor = 0; // If it's not 'ট্রেড লাইসেন্স', no PesaKor fee
+            $tradeVatAmount = 0;
         }
 
-        // Calculating the VAT amount (assumed to be a percentage)
-        $tradeVatAmount = ($sonodFee * $tradeVat) / 100;
+
 
         // Add PesaKor fee if it exists, otherwise just sum the Sonod fee and VAT
         $totalAmount = $sonodFee + $tradeVatAmount + $pesaKor;
