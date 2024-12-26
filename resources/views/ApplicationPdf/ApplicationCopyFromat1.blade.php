@@ -49,7 +49,7 @@
     <!-- Header Section -->
     <div class="pdfhead">
         <div>
-            <img width="70px" src="{{ base64($uniouninfo->sonod_logo) }}" />
+            <img width="70px" src="{{ base64('backend/bd-logo.png') }}" />
         </div>
         
         <div style="width:300px;margin:0 auto;" ><p style="margin-bottom:0 !important;font-size:16px">  গণপ্রজাতন্ত্রী বাংলাদেশ
