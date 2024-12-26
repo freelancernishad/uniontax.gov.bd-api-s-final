@@ -112,7 +112,7 @@ class PaymentReportsController extends Controller
 
    
         // return response()->json($rows);
-        // Log::info($rows);
+  
 
         // Retrieve Union information
 

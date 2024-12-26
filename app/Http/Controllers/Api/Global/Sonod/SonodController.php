@@ -41,7 +41,7 @@ class SonodController extends Controller
         $successorListFormatted = array_values($successorList);
 
         $successor_list = json_encode($successorListFormatted);
-        Log::info($successor_list);
+     
         $sonodEnName = Sonodnamelist::where('bnname', $sonodName)->first();
         if (!$sonodEnName) {
             return response()->json([
@@ -118,7 +118,7 @@ class SonodController extends Controller
                 }
                 $redirectUrl = sonodpayment($englishSonod->id, $urls);
             }else{
-                Log::info($insertData);
+            
                 // Save the Sonod entry
                 $sonod = Sonod::create($insertData);
                 $redirectUrl = sonodpayment($sonod->id, $urls);
