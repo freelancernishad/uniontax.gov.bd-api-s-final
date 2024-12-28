@@ -42,6 +42,11 @@ class Uniouninfo extends Model
         'nidService',
         'status',
         'type',
+        'full_name_en',
+        'c_name_en',
+        'district_en',
+        'thana_en',
+        'socib_name_en',
     ];
 
 

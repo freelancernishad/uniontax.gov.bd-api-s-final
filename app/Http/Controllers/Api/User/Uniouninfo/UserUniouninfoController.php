@@ -28,10 +28,31 @@ class UserUniouninfoController extends Controller
 
         // Find the Unioninfo that matches the user's union
         $unionInfo = Uniouninfo::where('short_name_e', $user->unioun)
-                               ->select('id', 'full_name', 'short_name_b', 'thana', 'district', 'c_name',
-                                        'c_email', 'socib_name', 'socib_email', 'u_description', 'u_notice',
-                                        'defaultColor', 'web_logo', 'sonod_logo', 'c_signture', 'socib_signture',
-                                        'u_image', 'portal') // Only select the specified columns
+                               ->select(
+                                   'id',
+                                   'full_name',
+                                   'full_name_en', // New field
+                                   'short_name_b',
+                                   'thana',
+                                   'thana_en', // New field
+                                   'district',
+                                   'district_en', // New field
+                                   'c_name',
+                                   'c_name_en', // New field
+                                   'c_email',
+                                   'socib_name',
+                                   'socib_name_en', // New field
+                                   'socib_email',
+                                   'u_description',
+                                   'u_notice',
+                                   'defaultColor',
+                                   'web_logo',
+                                   'sonod_logo',
+                                   'c_signture',
+                                   'socib_signture',
+                                   'u_image',
+                                   'portal'
+                               ) // Only select the specified columns
                                ->first();
 
         if (!$unionInfo) {
@@ -66,24 +87,21 @@ class UserUniouninfoController extends Controller
         // Validation using Validator facade
         $validator = Validator::make($request->all(), [
             'full_name' => 'nullable|string|max:255',
+            'full_name_en' => 'nullable|string|max:255', // New field
             'short_name_b' => 'nullable|string|max:255',
             'thana' => 'nullable|string|max:255',
+            'thana_en' => 'nullable|string|max:255', // New field
             'district' => 'nullable|string|max:255',
+            'district_en' => 'nullable|string|max:255', // New field
             'c_name' => 'nullable|string|max:255',
+            'c_name_en' => 'nullable|string|max:255', // New field
             'c_email' => 'nullable|email|max:255',
             'socib_name' => 'nullable|string|max:255',
+            'socib_name_en' => 'nullable|string|max:255', // New field
             'socib_email' => 'nullable|email|max:255',
             'u_description' => 'nullable|string',
             'u_notice' => 'nullable|string',
             'defaultColor' => 'nullable|string|max:7',
-
-            // 'web_logo' => 'nullable|string', // Assuming URL or base64 image string
-            // 'sonod_logo' => 'nullable|string', // Assuming URL or base64 image string
-            // 'c_signture' => 'nullable|string', // Assuming URL or base64 image string
-            // 'socib_signture' => 'nullable|string', // Assuming URL or base64 image string
-            // 'u_image' => 'nullable|string', // Assuming URL or base64 image string
-
-
             'portal' => 'nullable|string|max:255',
         ]);
 
@@ -98,9 +116,8 @@ class UserUniouninfoController extends Controller
         // Update the union info
         $unionInfo->update($validatedData);
 
-
-          // Handle file uploads using the saveFile method
-          if ($request->hasFile('web_logo')) {
+        // Handle file uploads using the saveFile method
+        if ($request->hasFile('web_logo')) {
             $unionInfo->saveFile($request->file('web_logo'), 'web_logo', 'web_logo');
         }
         if ($request->hasFile('sonod_logo')) {
@@ -115,10 +132,6 @@ class UserUniouninfoController extends Controller
         if ($request->hasFile('u_image')) {
             $unionInfo->saveFile($request->file('u_image'), 'u_image', 'u_image');
         }
-
-
-
-
 
         return response()->json([
             'message' => 'Union information updated successfully.',
