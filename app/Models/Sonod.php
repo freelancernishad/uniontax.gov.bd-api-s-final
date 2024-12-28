@@ -104,7 +104,8 @@ class Sonod extends Model
         'orthoBchor',
         'renewed',
         'renewed_id',
-        'format'
+        'format',
+        'hasEnData'
     ];
 
 

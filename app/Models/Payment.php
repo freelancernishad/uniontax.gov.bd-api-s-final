@@ -37,6 +37,7 @@ class Payment extends Model
         'method', // New column
         'payment_type', // New column
         'balance', // New column
+        'hasEnData'
     ];
 
     protected $casts = [

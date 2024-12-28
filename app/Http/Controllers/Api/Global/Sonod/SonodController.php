@@ -16,16 +16,47 @@ use App\Http\Controllers\Controller;
 
 class SonodController extends Controller
 {
+
     public function sonodSubmit(Request $request)
     {
+        try {
+            // Extract bn and en data from the request
+            $bnData = $request->bn; // Data for Sonod (Bengali)
+            // return response()->json($bnData);
+            $enData = $request->en; // Data for EnglishSonod (English)
+            // Check if enData is present and not empty
+            $hasEnData = !empty($enData);
+            // Create Sonod and EnglishSonod entries (if enData is not empty)
+            $sonod = $this->createSonod($bnData, $enData, $request);
 
-        // Extract necessary request data
-        $sonodName = $request->sonod_name;
-        $unionName = $request->unioun_name;
+            // Generate redirect URL using sonod ID
+            $urls = [
+                "s_uri" => $bnData['s_uri'],
+                "f_uri" => $bnData['f_uri'],
+                "c_uri" => $bnData['c_uri'],
+            ];
 
-        // Process successor_list
+            $redirectUrl = sonodpayment($sonod->id, $urls, $hasEnData);
+
+            // Return the response
+            return response()->json([
+                'sonod' => $sonod,
+                'redirect_url' => $redirectUrl,
+            ]);
+        } catch (Exception $e) {
+            // Handle errors and return a response
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
+    }
+
+
+
+
+    protected function createSonod($bnData, $enData, $request)
+    {
+        // Process successor_list for bnData
         $successorList = [];
-        foreach ($request->all() as $key => $value) {
+        foreach ($bnData as $key => $value) {
             if (strpos($key, 'successor_list') === 0) {
                 // Extract index and field name
                 preg_match('/successor_list\[(\d+)\]\.(w_name|w_relation|w_age|w_nid|w_note)/', $key, $matches);
@@ -39,19 +70,20 @@ class SonodController extends Controller
 
         // Convert to the desired JSON format
         $successorListFormatted = array_values($successorList);
-
         $successor_list = json_encode($successorListFormatted);
-     
+
+        // Fetch the English name of the Sonod
+        $sonodName = $bnData['sonod_name'];
         $sonodEnName = Sonodnamelist::where('bnname', $sonodName)->first();
         if (!$sonodEnName) {
-            return response()->json([
-                'error' => 'No data found for the given Sonod name.'
-            ], 404); // Return a 404 Not Found status
+            throw new Exception('No data found for the given Sonod name.');
         }
+
         $filePath = str_replace(' ', '_', $sonodEnName->enname);
         $dateFolder = date("Y/m/d");
 
         // Generate unique key if not provided
+        $unionName = $bnData['unioun_name'];
         do {
             $uniqueKey = md5(uniqid($unionName . $sonodName . microtime(), true));
             $existingSonod = Sonod::where('uniqeKey', $uniqueKey)->first();
@@ -61,21 +93,17 @@ class SonodController extends Controller
             ? $request->sonod_id
             : (string) sonodId($unionName, $sonodName, getOrthoBchorYear());
 
-        // Prepare data for insertion
-        $insertData = $request->except([
-            'sonod_Id', 'image', 'applicant_national_id_front_attachment',
-            'applicant_national_id_back_attachment', 'applicant_birth_certificate_attachment',
-            'successor_list', 'charages', 'Annual_income', 'applicant_type_of_businessKhat',
-            'applicant_type_of_businessKhatAmount', 'orthoBchor'
+        // Prepare data for insertion for Sonod (bnData)
+        $insertData = array_merge($bnData, [
+            'applicant_type_of_businessKhat' => $bnData['applicant_type_of_businessKhat'] ?? null,
+            'applicant_type_of_businessKhatAmount' => $bnData['applicant_type_of_businessKhatAmount'] ?? 0,
+            'uniqeKey' => $uniqueKey,
+            'khat' => "সনদ ফি",
+            'stutus' => "Pepaid",
+            'payment_status' => "Unpaid",
+            'year' => date('Y'),
+            'hasEnData' => !empty($enData), // Set hasEnData based on whether enData is present
         ]);
-
-        $insertData['applicant_type_of_businessKhat'] = $request->applicant_type_of_businessKhat;
-        $insertData['applicant_type_of_businessKhatAmount'] = $request->applicant_type_of_businessKhatAmount ?? 0;
-        $insertData['uniqeKey'] = $uniqueKey;
-        $insertData['khat'] = "সনদ ফি";
-        $insertData['stutus'] = "Pepaid";
-        $insertData['payment_status'] = "Unpaid";
-        $insertData['year'] = date('Y');
 
         $insertData = array_merge($insertData, $this->prepareSonodData($request, $sonodName, $successor_list, $unionName, $sonodId));
 
@@ -83,61 +111,46 @@ class SonodController extends Controller
         $this->handleFileUploads($request, $insertData, $filePath, $dateFolder, $sonodId);
 
         // Check if annual income is provided and process accordingly
-        if ($request->Annual_income) {
-            $insertData['Annual_income'] = $request->Annual_income;
-            $insertData['Annual_income_text'] = convertAnnualIncomeToText($request->Annual_income);
+        if (isset($bnData['Annual_income'])) {
+            $insertData['Annual_income'] = $bnData['Annual_income'];
+            $insertData['Annual_income_text'] = convertAnnualIncomeToText($bnData['Annual_income']);
         }
 
         // Handle the status and charges
         $this->handleCharges($request, $sonodEnName, $insertData);
 
-        try {
+        // Save the Sonod entry
+        $sonod = Sonod::create($insertData);
 
-            $urls = [
-                "s_uri" => $request->s_uri,
-                "f_uri" => $request->f_uri,
-                "c_uri" => $request->c_uri,
-            ];
-
-            // Process EnglishSonod if requested
-            $sonod = null;
-            $englishSonod = null;
-            if ($request->english) {
-                $englishSonodData = $insertData;
-                $englishSonodData['sonod_Id'] = $request->sonod_Id;
-                // return response()->json($englishSonodData);
-
-                // Check if EnglishSonod already exists for this Sonod
-                $existingEnglishSonod = EnglishSonod::where('sonod_Id', $request->sonod_Id)->first();
-
-                if ($existingEnglishSonod) {
-                    $existingEnglishSonod->update($englishSonodData);
-                    $englishSonod = $existingEnglishSonod;
-                } else {
-                    $englishSonod = EnglishSonod::create($englishSonodData);
-                }
-                $redirectUrl = sonodpayment($englishSonod->id, $urls);
-            }else{
-            
-                // Save the Sonod entry
-                $sonod = Sonod::create($insertData);
-                $redirectUrl = sonodpayment($sonod->id, $urls);
-            }
-
-
-
-
-            // Return the response
-            return response()->json([
-                'sonod' => $sonod,
-                'english_sonod' => $englishSonod,
-                'redirect_url' => $redirectUrl,
+        // Create EnglishSonod only if enData is not empty
+        if (!empty($enData)) {
+            // Prepare data for insertion for EnglishSonod (enData)
+            $englishSonodData = array_merge($enData, [
+                'sonod_Id' => $sonod->id, // Link to the Sonod entry
+                'uniqeKey' => $uniqueKey, // Same unique key as Sonod
+                'khat' => "সনদ ফি",
+                'stutus' => "Pepaid",
+                'payment_status' => "Unpaid",
+                'year' => date('Y'),
             ]);
-        } catch (Exception $e) {
-            // Handle errors and return a response
-            return response()->json(['error' => $e->getMessage()], 400);
+
+            // Check if EnglishSonod already exists for this Sonod
+            $existingEnglishSonod = EnglishSonod::where('sonod_Id', $sonod->id)->first();
+
+            if ($existingEnglishSonod) {
+                $existingEnglishSonod->update($englishSonodData);
+            } else {
+                EnglishSonod::create($englishSonodData);
+            }
         }
+
+        return $sonod; // Return only the sonod entry
     }
+
+
+
+
+
 
 
     private function prepareSonodData($request, $sonodName, $successor_list, $unionName, $sonodId)

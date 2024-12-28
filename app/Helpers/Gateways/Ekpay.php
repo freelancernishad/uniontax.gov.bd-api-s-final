@@ -94,7 +94,7 @@ $AKPAY_MER_PASS_KEY = $uniounDetials->AKPAY_MER_PASS_KEY;
 
 
 
- function sonodpayment($id,$urls)
+function sonodpayment($id, $urls, $hasEnData = false)
 {
     $sonod = Sonod::findOrFail($id);
     $applicant_mobile = int_bn_to_en($sonod->applicant_mobile);
@@ -132,6 +132,11 @@ $AKPAY_MER_PASS_KEY = $uniounDetials->AKPAY_MER_PASS_KEY;
         $total_amount = $pesaKorFee ? $pesaKorFee->fee + $sonod_fee + $tradeVatAmount : $sonod_fee;
     }
 
+    // Double the amount if hasEnData is true
+    if ($hasEnData) {
+        $total_amount *= 2;
+    }
+
     if ($total_amount < 1) {
         $total_amount = 1; // Minimum transaction amount
     }
@@ -154,11 +159,11 @@ $AKPAY_MER_PASS_KEY = $uniounDetials->AKPAY_MER_PASS_KEY;
         "trnx_id" => $trnx_id
     ];
 
-
-    $redirectUrl = ekpayToken($trnx_id, $trns_info, $cust_info, 'payment', $unioun_name,$urls);
+    $redirectUrl = ekpayToken($trnx_id, $trns_info, $cust_info, 'payment', $unioun_name, $urls);
 
     $req_timestamp = now();
 
+    // Create payment record with hasEnData
     Payment::create([
         'union' => $unioun_name,
         'trxId' => $trnx_id,
@@ -169,12 +174,12 @@ $AKPAY_MER_PASS_KEY = $uniounDetials->AKPAY_MER_PASS_KEY;
         'sonod_type' => $sonod_name,
         'applicant_mobile' => $applicant_mobile,
         'status' => 'Pending',
-        'paymentUrl' => !array($redirectUrl) ? $redirectUrl : '',
-        'ipnResponse' => array($redirectUrl) ? $redirectUrl : '',
+        'paymentUrl' => !is_array($redirectUrl) ? $redirectUrl : '',
+        'ipnResponse' => is_array($redirectUrl) ? $redirectUrl : '',
         'method' => 'ekpay',
         'payment_type' => 'online',
         'date' => $req_timestamp->format('Y-m-d'),
-
+        'hasEnData' => $hasEnData, // Add hasEnData to the payment record
     ]);
 
     return $redirectUrl;
