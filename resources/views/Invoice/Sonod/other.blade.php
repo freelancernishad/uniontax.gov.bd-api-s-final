@@ -1,11 +1,6 @@
 @php
 
-$khatlist = $row->amount_deails;
-        $khatlist = json_decode($khatlist);
-        $total = $khatlist->tredeLisenceFee;
-        $amount = ($total*$khatlist->vatAykor)/100;
 
-        $totalAmount = $khatlist->pesaKor+$total+$amount;
 
     $html = "
     <style>
