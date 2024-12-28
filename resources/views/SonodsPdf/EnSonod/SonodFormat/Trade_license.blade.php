@@ -1,6 +1,6 @@
 <table width="100%" style="margin-top:-40px">
     <tr>
-        <td width="30%">লাইসেন্স নং</td><td>: {{ int_en_to_bn($row->sonod_Id) }}</td>
+        <td width="30%">লাইসেন্স নং</td><td>: {{ int_en_to_bn($sonod_id) }}</td>
         </tr>
 
         <tr>

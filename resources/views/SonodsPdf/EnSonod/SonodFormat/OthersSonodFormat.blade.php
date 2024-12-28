@@ -1,6 +1,14 @@
-<table width="100%" style="margin-top:-40px">
+
+<style>
+.applicantDetailsTable tr td ,.detailsfontSize{
+
+    font-size: 13px;
+}
+</style>
+
+<table width="100%" style="margin-top:-40px" class="applicantDetailsTable">
     <tr>
-        <td width="30%">Certificate No</td><td>: {{ $row->sonod_Id }}</td>
+        <td width="30%">Certificate No</td><td>: {{ $sonod_id }}</td>
     </tr>
 
     @if ($row->sonod_name=='একই নামের প্রত্যয়ন' || $row->sonod_name=='বিবিধ প্রত্যয়নপত্র')
@@ -124,6 +132,11 @@
     @endif
 </table>
 
-<p>{!! $row->sec_prottoyon !!}<br></p>
 
-<p style="margin-bottom: 6px;">{!! $Sonodnamelist->template !!}<br></p>
+
+<p class="detailsfontSize">{{ $row->sec_prottoyon }}</p>
+
+
+
+<p class="detailsfontSize" style="margin-bottom: 6px;">&nbsp; &nbsp; &nbsp; I wish for his/her overall progress and well-being in future life.<br></p>
+{{-- <p style="margin-bottom: 6px;">{!! $Sonodnamelist->template !!}<br></p> --}}

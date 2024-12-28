@@ -8,6 +8,7 @@ use App\Models\Uniouninfo;
 use Illuminate\Http\Request;
 use App\Models\Sonodnamelist;
 use App\Http\Controllers\Controller;
+use App\Models\EnglishSonod;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -131,9 +132,15 @@ class UserSonodController extends Controller
 
 
         if($sonod->sonod_name=='বিবিধ প্রত্যয়নপত্র'){
+            $sec_prottoyon_en = $request->sec_prottoyon;
             $sec_prottoyon = $request->sec_prottoyon;
         }else{
-            $sec_prottoyon = generateSecProttoyon($sonod);
+
+                $sec_prottoyon_en = generateSecProttoyon($sonod,true);
+
+                $sec_prottoyon = generateSecProttoyon($sonod);
+
+
 
         }
 
@@ -158,6 +165,7 @@ class UserSonodController extends Controller
         $unioninfo = Uniouninfo::where('short_name_e', $sonod->unioun_name)->latest()->first();
         $isPostpaid = $unioninfo && $unioninfo->payment_type == 'Postpaid';
 
+
         // Initialize the update data with common fields
         $updateData = [
             'sec_prottoyon' => $sec_prottoyon,
@@ -165,25 +173,49 @@ class UserSonodController extends Controller
         ];
 
 
+            $updateData_en = [
+                'sec_prottoyon' => $sec_prottoyon_en,
+            ];
+
+
+
         // If Secretary is updating the Sonod, include socib_name, socib_signture, and socib_email
         if ($user->position == 'Secretary' && $unioninfo) {
+
             $updateData = array_merge($updateData, [
                 'socib_name' => $unioninfo->socib_name ?? 'N/A',
                 'socib_signture' => $unioninfo->socib_signture ?? 'N/A',
                 'socib_email' => $unioninfo->socib_email ?? 'N/A',
             ]);
+
+            $updateData_en = array_merge($updateData_en, [
+                'socib_name' => $unioninfo->socib_name_en ?? 'N/A',
+                'socib_signture' => $unioninfo->socib_signture ?? 'N/A',
+                'socib_email' => $unioninfo->socib_email ?? 'N/A',
+            ]);
+
+
         }
 
 
 
         // If the user is Chairman, add Chairman-specific information
         if ($user->position == 'Chairman' && $unioninfo) {
+
             $updateData = array_merge($updateData, [
                 'chaireman_name' => $unioninfo->c_name ?? 'N/A',
                 'chaireman_type' => $unioninfo->c_type ?? 'N/A',
                 'c_email' => $unioninfo->c_email ?? 'N/A',
                 'chaireman_sign' => $unioninfo->c_signture ?? 'N/A',
             ]);
+
+            $updateData_en = array_merge($updateData_en, [
+                'chaireman_name' => $unioninfo->c_name_en ?? 'N/A',
+                'chaireman_type' => $unioninfo->c_type ?? 'N/A',
+                'c_email' => $unioninfo->c_email ?? 'N/A',
+                'chaireman_sign' => $unioninfo->c_signture ?? 'N/A',
+            ]);
+
         }
 
         // If the user is Secretary and payment type is Postpaid, include additional fields
@@ -214,7 +246,15 @@ class UserSonodController extends Controller
         }
 
         // Perform the update based on the user position
+
+
         $sonod->update($updateData);
+
+        if($sonod->hasEnData){
+            $enSonod = EnglishSonod::where('sonod_Id',$sonod->id)->first();
+            $enSonod->update($updateData_en);
+        }
+
 
         // If Secretary updated the Sonod, send notification to the Chairman
         if ($user->position == 'Secretary') {

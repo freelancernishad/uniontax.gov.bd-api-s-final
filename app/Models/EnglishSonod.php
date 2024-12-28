@@ -114,6 +114,6 @@ class EnglishSonod extends Model
     // Defining the relationship with the Sonod model
     public function sonod()
     {
-        return $this->belongsTo(Sonod::class);
+        return $this->belongsTo(Sonod::class,'sonod_Id','id');
     }
 }

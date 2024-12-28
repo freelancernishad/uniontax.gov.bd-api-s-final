@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\EnglishSonod;
 use App\Models\Sonod;
 use App\Models\Uniouninfo;
 use App\Models\Sonodnamelist;
@@ -7,7 +8,22 @@ use Illuminate\Support\Facades\Log;
 
 
 function sonodView($id,$en=false){
-    $row = Sonod::find($id);
+
+
+    if($en){
+        $row = EnglishSonod::with(['sonod' => function ($query) {
+            $query->select('id', 'sonod_id'); // Select only 'id' and 'sonod_id' from the sonod table
+        }])->find($id);
+        $sonod_id = $row->sonod->sonod_id;
+    }else{
+
+        $row = Sonod::find($id);
+        $sonod_id = $row->sonod_id;
+    }
+
+
+    Log::info("row = ".$row);
+
     if($row->sonod_name=='বিবিধ প্রত্যয়নপত্র'){
         if($row->alive_status=='0'){
             $Sonodnamelist = Sonodnamelist::where('bnname',$row->sonod_name)->first();
@@ -32,10 +48,10 @@ function sonodView($id,$en=false){
     $sonodFolder = 'BnSonod';
     if($en){
         $sonodFolder = 'EnSonod';
-
     }
 
-    return view("SonodsPdf.$sonodFolder.SonodFormat.$blade",compact('row','Sonodnamelist','uniouninfo'));
+    Log::info($sonodFolder);
+    return view("SonodsPdf.$sonodFolder.SonodFormat.$blade",compact('row','Sonodnamelist','uniouninfo','sonod_id'));
 
 };
 

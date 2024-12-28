@@ -54,6 +54,8 @@ class SonodPdfController extends Controller
 
 
 
+
+
         if ($stutus == 'cancel') {
             return response("<h1 style='color:red;text-align:center'>সনদটি বাতিল করা হয়েছে!<h1>", 403);
         }
