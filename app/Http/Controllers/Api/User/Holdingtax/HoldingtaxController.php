@@ -52,16 +52,18 @@ class HoldingtaxController extends Controller
         // Process new holding tax
         $calculationResults = $this->calculateHoldingTax(
             $r->category,
-            int_bn_to_en($r->griher_barsikh_mullo),
-            int_bn_to_en($r->jomir_vara),
+            int_bn_to_en($r->griher_barsikh_mullo ?? 0),
+            int_bn_to_en($r->jomir_vara ?? 0),
             int_bn_to_en($r->barsikh_vara ?? 0)
         );
 
         $currentYearKor = $calculationResults['current_year_kor'];
         // Process bokeya
-        $totalBokeya = array_reduce($r->bokeya, function ($carry, $item) {
+        $bokeya = is_array($r->bokeya) ? $r->bokeya : []; // Ensure $bokeya is always an array
+        $totalBokeya = array_reduce($bokeya, function ($carry, $item) {
             return $carry + $item['price'];
         }, 0);
+
         $totalBokeya += $currentYearKor;
 
         // Prepare data for holding tax
@@ -96,7 +98,16 @@ class HoldingtaxController extends Controller
             case 'আংশিক ভাড়া':
                 return $this->calculatePartialRentTax($griherBarsikhMullo, $jomirVara, $barsikhVara);
             default:
-                throw new \Exception("Invalid category provided.");
+                // throw new \Exception("Invalid category provided.");
+                return response()->json([
+                    'message' => "Invalid category provided: '{$category}'.",
+                    'valid_categories' => [
+                        'মালিক নিজে বসবাসকারী',
+                        'প্রতিষ্ঠান',
+                        'ভাড়া',
+                        'আংশিক ভাড়া'
+                    ]
+                ], 400);
         }
     }
 
@@ -376,7 +387,7 @@ class HoldingtaxController extends Controller
                 'message' => 'No Union Info data found for the given short name.'
             ], 404);
         }
-        
+
       $u_code = $unioninfos->u_code;
 
     //   $holdingBokeyasAmount = HoldingBokeya::where(['holdingTax_id'=>$holdingBokeya->holdingTax_id,'status'=>'Unpaid'])->sum('price');
