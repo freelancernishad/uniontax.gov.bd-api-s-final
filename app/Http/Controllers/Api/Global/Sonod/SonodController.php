@@ -13,19 +13,18 @@ use App\Models\TradeLicenseKhatFee;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
-
 class SonodController extends Controller
 {
-
     public function sonodSubmit(Request $request)
     {
         try {
             // Extract bn and en data from the request
             $bnData = $request->bn; // Data for Sonod (Bengali)
-            // return response()->json($bnData);
             $enData = $request->en; // Data for EnglishSonod (English)
+
             // Check if enData is present and not empty
             $hasEnData = !empty($enData);
+
             // Create Sonod and EnglishSonod entries (if enData is not empty)
             $sonod = $this->createSonod($bnData, $enData, $request);
 
@@ -48,9 +47,6 @@ class SonodController extends Controller
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }
-
-
-
 
     protected function createSonod($bnData, $enData, $request)
     {
@@ -117,7 +113,7 @@ class SonodController extends Controller
         }
 
         // Handle the status and charges
-        $this->handleCharges($request, $sonodEnName, $insertData);
+        $this->handleCharges($bnData, $enData, $sonodEnName, $insertData);
 
         // Save the Sonod entry
         $sonod = Sonod::create($insertData);
@@ -142,16 +138,13 @@ class SonodController extends Controller
             } else {
                 EnglishSonod::create($englishSonodData);
             }
+
+            // Double the price if both Sonod and EnglishSonod are created
+            $this->doublePriceForBoth($sonod);
         }
 
         return $sonod; // Return only the sonod entry
     }
-
-
-
-
-
-
 
     private function prepareSonodData($request, $sonodName, $successor_list, $unionName, $sonodId)
     {
@@ -164,7 +157,6 @@ class SonodController extends Controller
 
         // Set the orthoBchor based on current year/month
         $insertData['orthoBchor'] = getOrthoBchorYear();
-        // $insertData['orthoBchor'] = ($sonodName == 'ট্রেড লাইসেন্স') ? $request->orthoBchor : getOrthoBchorYear();
 
         // Set additional fields from the union info
         $unionInfo = Uniouninfo::where('short_name_e', $unionName)->latest()->first();
@@ -201,14 +193,20 @@ class SonodController extends Controller
         }
     }
 
-
-
-    private function handleCharges($request, $sonodnamelist, &$insertData)
+    private function handleCharges($bnData, $enData, $sonodnamelist, &$insertData)
     {
         $tradeVat = 15;
-        $lastYearsMoney = $request->last_years_money;
-        $sonodName = $request->sonod_name;
-        $uniounName = $request->unioun_name;
+
+        // Fetch last_years_money from bnData or enData
+        $lastYearsMoney = $bnData['last_years_money'] ?? $enData['last_years_money'] ?? 0;
+
+        // Fetch sonod_name and unioun_name from bnData or enData
+        $sonodName = $bnData['sonod_name'] ?? $enData['sonod_name'] ?? null;
+        $uniounName = $bnData['unioun_name'] ?? $enData['unioun_name'] ?? null;
+
+        if (!$sonodName || !$uniounName) {
+            throw new Exception('Sonod name or union name is missing.');
+        }
 
         // Fetch the corresponding sonod fee from the SonodFee table
         $sonodFeeRecord = SonodFee::where([
@@ -217,54 +215,44 @@ class SonodController extends Controller
         ])->first();
 
         if (!$sonodFeeRecord) {
-            return response()->json(['message' => 'Sonod fee not found.'], 404);
+            throw new Exception('Sonod fee not found.');
         }
 
-        $sonodFee = $sonodFeeRecord->fees; // Get the fee from the SonodFee table
+        $sonodFee = $sonodFeeRecord->fees;
 
         // Check if it's a 'ট্রেড লাইসেন্স' and retrieve the PesaKor fee
         if ($sonodName == 'ট্রেড লাইসেন্স') {
-            // Assuming the 'Sonod' model has fields 'applicant_type_of_businessKhat' and 'applicant_type_of_businessKhatAmount'
-            $khat_id_1 = $request->applicant_type_of_businessKhat; // Applicant type of business Khat
-            $khat_id_2 = $request->applicant_type_of_businessKhatAmount; // Applicant type of business Khat Amount
+            $khat_id_1 = $bnData['applicant_type_of_businessKhat'] ?? $enData['applicant_type_of_businessKhat'] ?? null;
+            $khat_id_2 = $bnData['applicant_type_of_businessKhatAmount'] ?? $enData['applicant_type_of_businessKhatAmount'] ?? null;
 
-            // Retrieve the corresponding fee from the TradeLicenseKhatFee model
             $pesaKorFee = TradeLicenseKhatFee::where([
                 'khat_id_1' => $khat_id_1,
                 'khat_id_2' => $khat_id_2
             ])->first();
 
-            // If a matching fee is found, use it as the PesaKor fee
-            $pesaKor = $pesaKorFee ? $pesaKorFee->fee : 0; // Default to 0 if no fee is found
-
-                    // Calculating the VAT amount (assumed to be a percentage)
+            $pesaKor = $pesaKorFee ? $pesaKorFee->fee : 0;
             $tradeVatAmount = ($sonodFee * $tradeVat) / 100;
-
         } else {
-            $pesaKor = 0; // If it's not 'ট্রেড লাইসেন্স', no PesaKor fee
+            $pesaKor = 0;
             $tradeVatAmount = 0;
         }
 
-
-
-        // Add PesaKor fee if it exists, otherwise just sum the Sonod fee and VAT
+        // Calculate total amount and currently paid money
         $totalAmount = $sonodFee + $tradeVatAmount + $pesaKor;
-
-        // Calculating the money currently paid
         $currentlyPaidMoney = $totalAmount - $lastYearsMoney;
 
-        // Encoding the amount details as JSON with the required structure
+        // Prepare amount details for JSON encoding
         $amountDetails = json_encode([
             'total_amount' => $totalAmount,
-            'pesaKor' => (string)$pesaKor, // Ensure it's a string for the desired format
-            'tredeLisenceFee' => (string)$sonodFee, // 'tredeLisenceFee' maps to the 'sonod_fee'
-            'vatAykor' => (string)$tradeVat, // VAT calculation as a string
-            'khat' => null, // As specified, this is null
-            'last_years_money' => (string)$lastYearsMoney, // Ensuring the fields are returned as strings
-            'currently_paid_money' => (string)$currentlyPaidMoney // Ensure it's a string
+            'pesaKor' => (string)$pesaKor,
+            'tredeLisenceFee' => (string)$sonodFee,
+            'vatAykor' => (string)$tradeVat,
+            'khat' => null,
+            'last_years_money' => (string)$lastYearsMoney,
+            'currently_paid_money' => (string)$currentlyPaidMoney
         ]);
 
-        // Inserting the calculated data into the insertData array
+        // Update insertData with calculated values
         $insertData['last_years_money'] = $lastYearsMoney;
         $insertData['currently_paid_money'] = $currentlyPaidMoney;
         $insertData['total_amount'] = $totalAmount;
@@ -272,7 +260,20 @@ class SonodController extends Controller
         $insertData['amount_deails'] = $amountDetails;
     }
 
+    private function doublePriceForBoth($sonod)
+    {
+        // Double the price if both Sonod and EnglishSonod are created
+        $sonod->total_amount *= 2;
+        $sonod->currently_paid_money *= 2;
+        $sonod->save();
 
+        // Update amount_details JSON
+        $amountDetails = json_decode($sonod->amount_deails, true);
+        $amountDetails['total_amount'] = (string)($amountDetails['total_amount'] * 2);
+        $amountDetails['currently_paid_money'] = (string)($amountDetails['currently_paid_money'] * 2);
+        $sonod->amount_deails = json_encode($amountDetails);
+        $sonod->save();
+    }
 
     private function sendNotification($sonod)
     {
@@ -299,13 +300,6 @@ class SonodController extends Controller
         }
     }
 
-
-     /**
-     * Search Sonod by `sonod_Id` and `sonod_name` or retrieve by `id`.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function findSonod(Request $request)
     {
         // Columns to select
@@ -365,8 +359,4 @@ class SonodController extends Controller
             'error' => 'Invalid search parameters provided',
         ], 400);
     }
-
-
-
-
 }
