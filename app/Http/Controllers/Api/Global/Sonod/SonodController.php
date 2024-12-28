@@ -272,6 +272,7 @@ class SonodController extends Controller
         $amountDetails['total_amount'] = (string)($amountDetails['total_amount'] * 2);
         $amountDetails['currently_paid_money'] = (string)($amountDetails['currently_paid_money'] * 2);
         $sonod->amount_deails = json_encode($amountDetails);
+        $sonod->the_amount_of_money_in_words = convertAnnualIncomeToText($amountDetails['total_amount']);
         $sonod->save();
     }
 

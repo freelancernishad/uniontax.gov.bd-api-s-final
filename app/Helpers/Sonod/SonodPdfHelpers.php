@@ -6,7 +6,7 @@ use App\Models\Sonodnamelist;
 use Illuminate\Support\Facades\Log;
 
 
-function sonodView($id){
+function sonodView($id,$en=false){
     $row = Sonod::find($id);
     if($row->sonod_name=='বিবিধ প্রত্যয়নপত্র'){
         if($row->alive_status=='0'){
@@ -29,8 +29,13 @@ function sonodView($id){
     $blade = $slug;
     }
 
+    $sonodFolder = 'BnSonod';
+    if($en){
+        $sonodFolder = 'EnSonod';
 
-    return view('SonodsPdf.SonodFormat.'.$blade,compact('row','Sonodnamelist','uniouninfo'));
+    }
+
+    return view("SonodsPdf.$sonodFolder.SonodFormat.$blade",compact('row','Sonodnamelist','uniouninfo'));
 
 };
 

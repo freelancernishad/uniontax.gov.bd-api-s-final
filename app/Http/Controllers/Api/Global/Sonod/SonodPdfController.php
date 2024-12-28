@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Global\Sonod;
 
 use App\Http\Controllers\Controller;
+use App\Models\EnglishSonod;
 use App\Models\Sonod;
 use App\Models\Sonodnamelist;
 use App\Models\Uniouninfo;
@@ -22,26 +23,51 @@ class SonodPdfController extends Controller
      */
     public function sonodDownload(Request $request, $id)
     {
+
+
         ini_set('max_execution_time', '60000');
         ini_set("pcre.backtrack_limit", "50000000000000000");
         ini_set('memory_limit', '12008M');
 
-        $row = Sonod::findOrFail($id);
+        $en = $request->en;
 
-        if ($row->stutus == 'cancel') {
+
+
+
+
+        if($en){
+            $sonod = Sonod::select('id','sonod_Id','stutus','sonod_name','unioun_name')->with('english_sonod')->findOrFail($id);
+            $row = $sonod->english_sonod;
+            $sonod_Id = $sonod->sonod_Id;
+            $stutus = $sonod->stutus;
+            $sonod_name = $sonod->sonod_name;
+            $unioun_name = $sonod->unioun_name;
+        }else{
+            $row = Sonod::find($id);
+            $sonod_Id = $row->sonod_Id;
+            $stutus = $row->stutus;
+            $sonod_name = $row->sonod_name;
+            $unioun_name = $row->unioun_name;
+        }
+
+
+
+
+
+        if ($stutus == 'cancel') {
             return response("<h1 style='color:red;text-align:center'>সনদটি বাতিল করা হয়েছে!<h1>", 403);
         }
 
-        if ($row->stutus != 'approved') {
+        if ($stutus != 'approved') {
             return response("<h1 style='color:red;text-align:center'>সনদটি এখনো অনুমোদন করা হয়নি !<h1>", 403);
         }
 
-        $sonod_name = $row->sonod_name;
-        $uniouninfo = Uniouninfo::where('short_name_e', $row->unioun_name)->first();
+
+        $uniouninfo = Uniouninfo::where('short_name_e', $unioun_name)->first();
         $sonodnames = Sonodnamelist::where('bnname', $sonod_name)->first();
         $filename = str_replace(" ", "_", $sonodnames->enname) . "-$row->sonod_Id.pdf";
 
-        $htmlContent = $this->getHtmlContent($row, $sonod_name, $uniouninfo, $sonodnames);
+        $htmlContent = $this->getHtmlContent($row, $sonod_name, $uniouninfo, $sonodnames,$sonod_Id,$en);
 
         if ($sonod_name == 'ওয়ারিশান সনদ' || $sonod_name == 'উত্তরাধিকারী সনদ') {
 
@@ -75,7 +101,7 @@ class SonodPdfController extends Controller
      * @param $sonodnames
      * @return string
      */
-    private function getHtmlContent($row, $sonod_name, $uniouninfo, $sonodnames)
+    private function getHtmlContent($row, $sonod_name, $uniouninfo, $sonodnames,$sonod_Id,$en=false)
     {
 
 
@@ -99,20 +125,28 @@ class SonodPdfController extends Controller
         $sonod_name_size = ['width'=>$width,'fontsize'=>$fontsize];
 
 
+        $sonodFolder = 'BnSonod';
+        if($en){
+            $sonodFolder = 'EnSonod';
+
+        }
+
 
         if ($sonod_name == 'ওয়ারিশান সনদ' || $sonod_name == 'উত্তরাধিকারী সনদ') {
             if ($row->format == 2) {
-                return view('SonodsPdf.wayarisan-uttoradhikari-sonod-format2', compact('row', 'uniouninfo', 'sonodnames','sonod_name_size'))->render();
+                return view("SonodsPdf.$sonodFolder.wayarisan-uttoradhikari-sonod-format2", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id'))->render();
             }
-            return view('SonodsPdf.wayarisan-uttoradhikari-sonod', compact('row', 'uniouninfo', 'sonodnames','sonod_name_size'))->render();
+            return view("SonodsPdf.$sonodFolder.wayarisan-uttoradhikari-sonod", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id'))->render();
             // return $this->pdfHTMLut($row->id, "$sonod_name.pdf");
         }
 
         if ($sonod_name == 'ট্রেড লাইসেন্স' && $row->format == 2) {
-            return view('SonodsPdf.sonod-tradelicense-format2', compact('row', 'uniouninfo', 'sonodnames','sonod_name_size'))->render();
+            return view("SonodsPdf.$sonodFolder.sonod-tradelicense-format2", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id'))->render();
         }
 
-        return view('SonodsPdf.sonod', compact('row', 'uniouninfo', 'sonodnames','sonod_name_size'))->render();
+        return view("SonodsPdf.$sonodFolder.sonod", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id'))->render();
+
+
     }
 
     /**

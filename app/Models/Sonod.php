@@ -133,9 +133,9 @@ class Sonod extends Model
           });
       }
 
-      public function englishSonod()
+      public function english_sonod()
       {
-          return $this->hasOne(EnglishSonod::class);
+          return $this->hasOne(EnglishSonod::class,'sonod_Id','id');
       }
 
 }
