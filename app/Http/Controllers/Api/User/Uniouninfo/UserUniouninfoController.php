@@ -38,6 +38,8 @@ class UserUniouninfoController extends Controller
                                    'district',
                                    'district_en', // New field
                                    'c_name',
+                                   'c_type',
+                                   'c_type_en',
                                    'c_name_en', // New field
                                    'c_email',
                                    'socib_name',
@@ -94,6 +96,8 @@ class UserUniouninfoController extends Controller
             'district' => 'nullable|string|max:255',
             'district_en' => 'nullable|string|max:255', // New field
             'c_name' => 'nullable|string|max:255',
+            'c_type' => 'nullable|string|max:255',
+            'c_type_en' => 'nullable|string|max:255',
             'c_name_en' => 'nullable|string|max:255', // New field
             'c_email' => 'nullable|email|max:255',
             'socib_name' => 'nullable|string|max:255',

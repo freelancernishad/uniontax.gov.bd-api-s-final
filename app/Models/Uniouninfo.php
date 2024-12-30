@@ -22,6 +22,7 @@ class Uniouninfo extends Model
         'c_signture',
         'c_name',
         'c_type',
+        'c_type_en',
         'c_email',
         'socib_name',
         'socib_signture',
