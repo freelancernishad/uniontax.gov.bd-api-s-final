@@ -71,6 +71,12 @@ return [
         //     'provider' => 'students',
         //     'secret' => env('STUDENT_JWT_SECRET'), // Replace with your admin secret key
         // ],
+
+        'uddokta' => [
+            'driver' => 'jwt',
+            'provider' => 'uddoktas',
+            'secret' => env('JWT_SECRET'), // Use the same or a different secret key
+        ],
     ],
 
 
@@ -110,6 +116,10 @@ return [
         //     'driver' => 'eloquent',
         //     'model' => App\Models\Student::class,
         // ],
+        'uddoktas' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Uddokta::class,
+        ],
     ],
 
     /*
@@ -140,6 +150,13 @@ return [
         ],
         'admins' => [
             'provider' => 'admins',
+            'table' => 'password_reset_tokens', // Ensure this matches your table name
+            'expire' => 60, // Link expires in 60 minutes
+            'throttle' => 60, // Prevents multiple reset requests within 60 minutes
+        ],
+
+        'uddoktas' => [
+            'provider' => 'uddoktas',
             'table' => 'password_reset_tokens', // Ensure this matches your table name
             'expire' => 60, // Link expires in 60 minutes
             'throttle' => 60, // Prevents multiple reset requests within 60 minutes
