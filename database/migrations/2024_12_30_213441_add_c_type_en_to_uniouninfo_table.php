@@ -13,7 +13,7 @@ class AddCTypeEnToUniouninfoTable extends Migration
      */
     public function up()
     {
-        Schema::table('uniouninfo', function (Blueprint $table) {
+        Schema::table('uniouninfos', function (Blueprint $table) {
             $table->string('c_type_en')->nullable()->after('c_type');
         });
     }
@@ -25,7 +25,7 @@ class AddCTypeEnToUniouninfoTable extends Migration
      */
     public function down()
     {
-        Schema::table('uniouninfo', function (Blueprint $table) {
+        Schema::table('uniouninfos', function (Blueprint $table) {
             $table->dropColumn('c_type_en');
         });
     }
