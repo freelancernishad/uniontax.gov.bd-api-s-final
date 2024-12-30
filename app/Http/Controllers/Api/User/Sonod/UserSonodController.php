@@ -212,7 +212,7 @@ class UserSonodController extends Controller
 
             $updateData_en = array_merge($updateData_en, [
                 'chaireman_name' => $unioninfo->c_name_en ?? 'N/A',
-                'chaireman_type' => $unioninfo->c_type ?? 'N/A',
+                'chaireman_type' => $unioninfo->c_type_en ?? 'N/A',
                 'c_email' => $unioninfo->c_email ?? 'N/A',
                 'chaireman_sign' => $unioninfo->c_signture ?? 'N/A',
             ]);
