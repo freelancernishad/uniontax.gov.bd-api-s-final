@@ -16,6 +16,17 @@ return new class extends Migration
             $table->string('unioun')->nullable()->after('id');
             $table->string('name');
             $table->string('email')->unique();
+
+            $table->string('phone')->nullable()->after('email');
+            $table->string('position')->nullable()->after('phone');
+            $table->string('full_unioun_name')->nullable()->after('position');
+            $table->string('gram')->nullable()->after('full_unioun_name');
+            $table->string('district')->nullable()->after('gram');
+            $table->string('thana')->nullable()->after('district');
+            $table->string('word')->nullable()->after('thana');
+            $table->text('description')->nullable()->after('word');
+            $table->string('image')->nullable()->after('description');
+            $table->boolean('status')->default(true)->after('image');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
