@@ -76,7 +76,7 @@
         <tr>
             <td width="20%"></td>
             <td width="20%">
-                <img width="70px" src="{{ base64($uniouninfo->sonod_logo) }}" alt="Union Logo">
+                <img width="70px" src="{{ base64('backend/bd-logo.png') }}" alt="Logo">
             </td>
             <td width="20%"></td>
         </tr>
