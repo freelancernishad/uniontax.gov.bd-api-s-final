@@ -18,6 +18,21 @@ class AddPayableAndCouponColumnsToPaymentsTable extends Migration
             $table->unsignedBigInteger('payable_id')->nullable()->after('payable_type');
             $table->unsignedBigInteger('coupon_id')->nullable()->after('payable_id');
 
+
+            $table->string('union')->nullable()->after('payable_id');
+            $table->string('trxId')->nullable()->after('union');
+            $table->unsignedBigInteger('sonodId')->nullable()->after('trxId');
+            $table->string('sonod_type')->nullable()->after('sonodId');
+            $table->string('applicant_mobile')->nullable()->after('sonod_type');
+            $table->date('date')->nullable()->after('applicant_mobile');
+            $table->string('month')->nullable()->after('date');
+            $table->year('year')->nullable()->after('month');
+            $table->longText('paymentUrl')->nullable()->after('year');
+            $table->json('ipnResponse')->nullable()->after('paymentUrl');
+            $table->string('method')->nullable()->after('ipnResponse');
+            $table->string('payment_type')->nullable()->after('method');
+            $table->decimal('balance', 15, 2)->nullable()->after('payment_type');
+
             // Add foreign key constraint for coupon_id if needed
             $table->foreign('coupon_id')->references('id')->on('coupons')->onDelete('set null');
         });

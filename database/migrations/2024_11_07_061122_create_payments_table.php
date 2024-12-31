@@ -21,6 +21,8 @@ class CreatePaymentsTable extends Migration
             $table->string('payment_method')->nullable(); // e.g., 'card', 'paypal_balance', 'bank_transfer'
             $table->string('payer_email')->nullable(); // Email of the payer
             $table->timestamp('paid_at')->nullable(); // Timestamp when payment was completed
+
+            
             $table->timestamps();
         });
     }
