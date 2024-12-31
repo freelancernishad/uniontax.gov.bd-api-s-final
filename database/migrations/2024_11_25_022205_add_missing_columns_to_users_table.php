@@ -14,7 +14,7 @@ class AddMissingColumnsToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('unioun')->nullable()->after('id');
+           
             $table->string('phone')->nullable()->after('email');
             $table->string('position')->nullable()->after('phone');
             $table->string('full_unioun_name')->nullable()->after('position');
