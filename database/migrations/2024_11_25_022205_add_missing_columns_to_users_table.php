@@ -25,7 +25,7 @@ class AddMissingColumnsToUsersTable extends Migration
             // $table->text('description')->nullable()->after('word');
             // $table->string('image')->nullable()->after('description');
             // $table->boolean('status')->default(true)->after('image');
-            $table->string('role')->nullable()->after('status');
+            // $table->string('role')->nullable()->after('status');
         });
     }
 
