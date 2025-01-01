@@ -1,6 +1,7 @@
 <?php
 
 use Intervention\Image\Image;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 
