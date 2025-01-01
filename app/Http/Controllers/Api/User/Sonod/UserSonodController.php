@@ -110,7 +110,7 @@ class UserSonodController extends Controller
 
     public function sonod_action(Request $request, $id)
     {
-        $sonod = Sonod::find($id);
+        $sonod = Sonod::with('english_sonod')->find($id);
 
         // Return an error if the Sonod is not found
         if (!$sonod) {
@@ -137,7 +137,11 @@ class UserSonodController extends Controller
             $sec_prottoyon = $request->sec_prottoyon;
         }else{
 
-                $sec_prottoyon_en = generateSecProttoyon($sonod,true);
+            if($sonod->english_sonod){
+
+                $sec_prottoyon_en = generateSecProttoyon($sonod->english_sonod,true);
+            }
+
 
                 $sec_prottoyon = generateSecProttoyon($sonod);
 
