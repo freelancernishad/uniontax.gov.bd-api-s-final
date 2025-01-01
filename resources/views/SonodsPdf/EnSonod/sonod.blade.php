@@ -37,7 +37,7 @@
                         <img width="70px" src="{{ base64('backend/bd-logo.png') }}">
                     </td>
                     <td style="text-align: center;" width="20%">
-                        <img width="100px" src="{{ base64($row->image) }}">
+                        {{-- <img width="100px" src="{{ base64($row->image) }}"> --}}
                     </td>
                 </tr>
                 <tr style="margin-top:2px;margin-bottom:2px;">
