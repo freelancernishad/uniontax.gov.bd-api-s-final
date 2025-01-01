@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Server\ServerStatusController;
 use App\Http\Controllers\Api\Payments\FailedPaymentController;
 use App\Http\Controllers\Api\User\Package\UserPackageController;
 use App\Http\Controllers\Api\User\Holdingtax\HoldingtaxController;
+use App\Http\Controllers\Api\Auth\Uddokta\CitizenInformationController;
 use App\Http\Controllers\Api\User\PackageAddon\UserPackageAddonController;
 
 // Load users and admins route files
@@ -71,5 +72,7 @@ Route::post('ekpay/check/payments/ipn',[EkpayController::class ,'CheckPayment'])
 
 
 Route::post('payment/failed/support/ticket', [FailedPaymentController::class, 'failed_payment_record_store']);
+
+
 
 

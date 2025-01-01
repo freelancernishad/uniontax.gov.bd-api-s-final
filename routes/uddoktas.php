@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\AuthenticateUddokta;
 use App\Http\Controllers\Api\Auth\Uddokta\AuthUddoktaController;
+use App\Http\Controllers\Api\Auth\Uddokta\CitizenInformationController;
 use App\Http\Controllers\Api\Auth\Uddokta\UddoktaVerificationController;
 use App\Http\Controllers\Api\Auth\Uddokta\UddoktaPasswordResetController;
 
@@ -17,6 +18,13 @@ Route::prefix('auth/uddokta')->group(function () {
         Route::get('me', [AuthUddoktaController::class, 'me']);
         Route::post('change-password', [AuthUddoktaController::class, 'changePassword']);
         Route::get('check-token', [AuthUddoktaController::class, 'checkToken']);
+
+
+
+        Route::post('citizen/information/nid', [CitizenInformationController::class,'citizeninformationNID']);
+        Route::post('citizen/information/brn', [CitizenInformationController::class,'citizeninformationBRN']);
+
+
     });
 });
 
