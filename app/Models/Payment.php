@@ -11,6 +11,7 @@ class Payment extends Model
 
     protected $fillable = [
         'user_id',
+        'uddoktaId',
         // 'gateway',
         // 'transaction_id',
         'currency',

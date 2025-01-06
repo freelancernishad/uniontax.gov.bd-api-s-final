@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Helpers\SmsNocHelper;
 use App\Models\HoldingBokeya;
 use App\Models\TanderInvoice;
+use App\Models\UddoktaSearch;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
@@ -74,7 +75,15 @@ class EkpayController extends Controller
         $Insertdata['ipnResponse'] = $data;
 
         // Update the payment record with the new status and response data
-        return $payment->update($Insertdata);
+         $payment->update($Insertdata);
+
+         // If payment has uddoktaId, delete matching UddoktaSearch records
+        if ($payment->uddoktaId) {
+            UddoktaSearch::where('uddokta_id', $payment->uddoktaId)->delete();
+        }
+
+        return response()->json(['message' => 'IPN processed successfully'], 200);
+
     }
 
     // Update HoldingTax payment status

@@ -12,11 +12,21 @@ use App\Models\Sonodnamelist;
 use App\Models\TradeLicenseKhatFee;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class SonodController extends Controller
 {
     public function sonodSubmit(Request $request)
     {
+
+        $uddoktaId = null;
+        if (Auth::guard('uddokta')->check()) {
+            $uddoktaId = Auth::guard('uddokta')->id();
+        }
+
+
+
+
         try {
             // Extract bn and en data from the request
             $bnData = $request->bn; // Data for Sonod (Bengali)
@@ -35,7 +45,7 @@ class SonodController extends Controller
                 "c_uri" => $bnData['c_uri'],
             ];
 
-            $redirectUrl = sonodpayment($sonod->id, $urls, $hasEnData);
+            $redirectUrl = sonodpayment($sonod->id, $urls, $hasEnData,$uddoktaId);
 
             // Return the response
             return response()->json([
@@ -70,7 +80,7 @@ class SonodController extends Controller
         $successor_list = json_encode($successorListFormatted);
 
 
-        
+
 
         // Fetch the English name of the Sonod
         $sonodName = $bnData['sonod_name'];

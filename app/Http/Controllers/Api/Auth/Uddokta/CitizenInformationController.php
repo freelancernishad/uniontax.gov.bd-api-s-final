@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Auth\Uddokta;
 
 use Illuminate\Http\Request;
 use App\Models\UddoktaSearch;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 
@@ -156,6 +157,9 @@ class CitizenInformationController extends Controller
         // Make the API call using POST method
         $apiResponse = $this->makeApiCall('POST', $endpoint, $body);
 
+        if($apiResponse['status']==404){
+            return response()->json(['error'=>'No Data Found'],404);
+        }
 
 
         // Store the search data and API response temporarily

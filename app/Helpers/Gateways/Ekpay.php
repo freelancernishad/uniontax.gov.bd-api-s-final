@@ -94,7 +94,7 @@ $AKPAY_MER_PASS_KEY = $uniounDetials->AKPAY_MER_PASS_KEY;
 
 
 
-function sonodpayment($id, $urls, $hasEnData = false)
+function sonodpayment($id, $urls, $hasEnData = false,$uddoktaId=null)
 {
     $sonod = Sonod::findOrFail($id);
     $applicant_mobile = int_bn_to_en($sonod->applicant_mobile);
@@ -179,7 +179,8 @@ function sonodpayment($id, $urls, $hasEnData = false)
         'method' => 'ekpay',
         'payment_type' => 'online',
         'date' => $req_timestamp->format('Y-m-d'),
-        'hasEnData' => $hasEnData, // Add hasEnData to the payment record
+        'hasEnData' => $hasEnData,
+        'uddoktaId' => $uddoktaId,
     ]);
 
     return $redirectUrl;
