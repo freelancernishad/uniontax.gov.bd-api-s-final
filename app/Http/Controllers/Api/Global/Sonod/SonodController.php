@@ -76,7 +76,9 @@ class SonodController extends Controller
         // $successorListFormatted = array_values($successorList);
 
 
-        $successorListFormatted  = $bnData['successor_list'];
+        $successorListFormatted  = $bnData['successor_list'] ?? [];
+
+
         $successor_list = json_encode($successorListFormatted);
 
 
