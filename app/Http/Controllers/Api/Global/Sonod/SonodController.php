@@ -51,22 +51,25 @@ class SonodController extends Controller
     protected function createSonod($bnData, $enData, $request)
     {
         // Process successor_list for bnData
-        $successorList = [];
-        foreach ($bnData as $key => $value) {
-            if (strpos($key, 'successor_list') === 0) {
-                // Extract index and field name
-                preg_match('/successor_list\[(\d+)\]\.(w_name|w_relation|w_age|w_nid|w_note)/', $key, $matches);
-                if ($matches) {
-                    $index = $matches[1];
-                    $field = $matches[2];
-                    $successorList[$index][$field] = $value;
-                }
-            }
-        }
+        // $successorList = [];
+        // foreach ($bnData as $key => $value) {
+        //     if (strpos($key, 'successor_list') === 0) {
+        //         // Extract index and field name
+        //         preg_match('/successor_list\[(\d+)\]\.(w_name|w_relation|w_age|w_nid|w_note)/', $key, $matches);
+        //         if ($matches) {
+        //             $index = $matches[1];
+        //             $field = $matches[2];
+        //             $successorList[$index][$field] = $value;
+        //         }
+        //     }
+        // }
+        // $successorListFormatted = array_values($successorList);
 
-        // Convert to the desired JSON format
-        $successorListFormatted = array_values($successorList);
+
+        $successorListFormatted  = $bnData['successor_list'];
         $successor_list = json_encode($successorListFormatted);
+
+
 
         // Fetch the English name of the Sonod
         $sonodName = $bnData['sonod_name'];
