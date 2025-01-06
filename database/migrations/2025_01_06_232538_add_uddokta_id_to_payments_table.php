@@ -13,7 +13,7 @@ class AddUddoktaIdToPaymentsTable extends Migration
     {
         Schema::table('payments', function (Blueprint $table) {
             // Add the new column
-            $table->unsignedBigInteger('uddoktaId')->nullable()->after('user_id');
+            $table->unsignedBigInteger('uddoktaId')->nullable()->after('hasEnData');
         });
     }
 
