@@ -70,6 +70,7 @@ class SonodController extends Controller
         $successor_list = json_encode($successorListFormatted);
 
 
+        
 
         // Fetch the English name of the Sonod
         $sonodName = $bnData['sonod_name'];
