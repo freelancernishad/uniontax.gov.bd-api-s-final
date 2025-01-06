@@ -251,6 +251,7 @@ class AuthUddoktaController extends Controller
             $payload = [
                 'email' => $uddokta->email,
                 'name' => $uddokta->name,
+                'union_name' => $uddokta->union_name,
                 'email_verified' => $uddokta->hasVerifiedEmail(), // Checks verification status
                 'latest_uddokta_search' => $uddoktaSearch, // Include the latest UddoktaSearch data
             ];
