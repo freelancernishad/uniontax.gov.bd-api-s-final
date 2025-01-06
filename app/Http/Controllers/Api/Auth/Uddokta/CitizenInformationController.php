@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Api\Auth\Uddokta;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\UddoktaSearch;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 
 class CitizenInformationController extends Controller
@@ -99,7 +100,8 @@ class CitizenInformationController extends Controller
             // Check if the request was successful
             if ($response->successful()) {
                 // Return the API response
-                return response()->json($response->json(), $response->status());
+                return $response->json();
+                // return response()->json($response->json(), $response->status());
             } else {
                 // Handle API errors
                 return response()->json(['error' => 'API request failed', 'details' => $response->json()], $response->status());
@@ -128,7 +130,18 @@ class CitizenInformationController extends Controller
         $request->validate([
             'nidNumber' => 'required|string',
             'dateOfBirth' => 'required|date',
+            'sonod_name' => 'required|string', // Add sonod_name to validation
         ]);
+
+        // Get the authenticated uddokta
+        $uddokta = auth('uddokta')->user();
+
+        // Check if the uddokta has any existing search record
+        $existingSearch = UddoktaSearch::where('uddokta_id', $uddokta->id)->first();
+
+        if ($existingSearch) {
+            return response()->json(['error' => 'You already have an existing search record. Please complete that application first.'], 403);
+        }
 
         // Prepare the request body
         $body = [
@@ -141,8 +154,23 @@ class CitizenInformationController extends Controller
         $endpoint = "/citizen/information/nid";
 
         // Make the API call using POST method
-        return $this->makeApiCall('POST', $endpoint, $body);
+        $apiResponse = $this->makeApiCall('POST', $endpoint, $body);
+
+
+
+        // Store the search data and API response temporarily
+        UddoktaSearch::create([
+            'sonod_name' => $request->sonod_name,
+            'nid_number' => $request->nidNumber,
+            'uddokta_id' => $uddokta->id,
+            'api_response' => json_encode($apiResponse), // Store the API response
+        ]);
+
+        // Return the API response to the client
+        return response()->json($apiResponse);
     }
+
+
 
     /**
      * Fetch citizen information using BRN.

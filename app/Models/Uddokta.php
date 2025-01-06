@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class Uddokta extends Authenticatable implements JWTSubject
 {
@@ -77,4 +78,10 @@ class Uddokta extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function uddokta_search(): HasOne
+    {
+        return $this->hasOne(UddoktaSearch::class, 'uddokta_id')->latest();
+    }
+
 }

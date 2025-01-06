@@ -230,17 +230,29 @@ class AuthUddoktaController extends Controller
         }
 
         try {
-            // Authenticate the token and retrieve the authenticated Uddokta
-            $uddokta = JWTAuth::setToken($token)->authenticate();
+            // Authenticate the token using the 'uddokta' guard
+            $uddokta = auth('uddokta')->setToken($token)->authenticate();
 
             if (!$uddokta) {
                 return response()->json(['message' => 'Token is invalid or Uddokta not found.'], 401);
             }
 
+            // Fetch the most recent UddoktaSearch record
+            $uddoktaSearch = $uddokta->uddokta_search()
+                ->latest() // Sort by created_at in descending order
+                ->first(['sonod_name', 'nid_number', 'api_response', 'created_at']);
+
+            // Decode the api_response field
+            if ($uddoktaSearch && $uddoktaSearch->api_response) {
+                $uddoktaSearch->api_response = json_decode($uddoktaSearch->api_response, true);
+            }
+
+            // Prepare the payload
             $payload = [
                 'email' => $uddokta->email,
                 'name' => $uddokta->name,
                 'email_verified' => $uddokta->hasVerifiedEmail(), // Checks verification status
+                'latest_uddokta_search' => $uddoktaSearch, // Include the latest UddoktaSearch data
             ];
 
             return response()->json(['message' => 'Token is valid.', 'uddokta' => $payload], 200);
@@ -252,4 +264,6 @@ class AuthUddoktaController extends Controller
             return response()->json(['message' => 'Token is missing or malformed.'], 401);
         }
     }
+
+
 }
