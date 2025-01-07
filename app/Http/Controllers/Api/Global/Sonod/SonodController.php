@@ -58,31 +58,16 @@ class SonodController extends Controller
         }
     }
 
+
     protected function createSonod($bnData, $enData, $request)
     {
         // Process successor_list for bnData
-        // $successorList = [];
-        // foreach ($bnData as $key => $value) {
-        //     if (strpos($key, 'successor_list') === 0) {
-        //         // Extract index and field name
-        //         preg_match('/successor_list\[(\d+)\]\.(w_name|w_relation|w_age|w_nid|w_note)/', $key, $matches);
-        //         if ($matches) {
-        //             $index = $matches[1];
-        //             $field = $matches[2];
-        //             $successorList[$index][$field] = $value;
-        //         }
-        //     }
-        // }
-        // $successorListFormatted = array_values($successorList);
-
-
-        $successorListFormatted  = $bnData['successor_list'] ?? [];
-
-
+        $successorListFormatted = $bnData['successor_list'] ?? [];
         $successor_list = json_encode($successorListFormatted);
 
-
-
+        // Process successor_list for enData
+        $enSuccessorListFormatted = $enData['successor_list'] ?? [];
+        $enSuccessorList = json_encode($enSuccessorListFormatted);
 
         // Fetch the English name of the Sonod
         $sonodName = $bnData['sonod_name'];
@@ -144,6 +129,7 @@ class SonodController extends Controller
                 'stutus' => "Pepaid",
                 'payment_status' => "Unpaid",
                 'year' => date('Y'),
+                'successor_list' => $enSuccessorList, 
             ]);
 
             // Check if EnglishSonod already exists for this Sonod
@@ -161,6 +147,7 @@ class SonodController extends Controller
 
         return $sonod; // Return only the sonod entry
     }
+
 
     private function prepareSonodData($request, $sonodName, $successor_list, $unionName, $sonodId)
     {
