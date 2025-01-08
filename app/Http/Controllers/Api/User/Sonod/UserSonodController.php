@@ -340,6 +340,56 @@ class UserSonodController extends Controller
     }
 
 
+    public function updateEnglishSonod(Request $request, $id)
+    {
+        try {
+            // Find the existing EnglishSonod record
+            $englishSonod = EnglishSonod::findOrFail($id);
+
+            // Filter the request data to only include fields that exist in the EnglishSonod model
+            $updatableFields = [
+                'successor_father_name', 'successor_mother_name',
+                'ut_father_name', 'ut_mother_name', 'ut_grame', 'ut_post', 'ut_thana',
+                'ut_district', 'ut_word', 'successor_father_alive_status', 'successor_mother_alive_status',
+                'applicant_holding_tax_number', 'applicant_national_id_number', 'applicant_birth_certificate_number',
+                'applicant_passport_number', 'applicant_date_of_birth', 'family_name', 'Annual_income',
+                'Annual_income_text', 'Subject_to_permission', 'disabled', 'The_subject_of_the_certificate',
+                'Name_of_the_transferred_area', 'applicant_second_name', 'applicant_owner_type',
+                'applicant_name_of_the_organization', 'organization_address', 'applicant_name', 'utname',
+                'ut_religion', 'alive_status', 'applicant_gender', 'applicant_marriage_status',
+                'applicant_vat_id_number', 'applicant_tax_id_number', 'applicant_type_of_business',
+                'applicant_father_name', 'applicant_mother_name', 'applicant_occupation', 'applicant_education',
+                'applicant_religion', 'applicant_resident_status', 'applicant_present_village',
+                'applicant_present_road_block_sector', 'applicant_present_word_number', 'applicant_present_district',
+                'applicant_present_Upazila', 'applicant_present_post_office', 'applicant_permanent_village',
+                'applicant_permanent_road_block_sector', 'applicant_permanent_word_number',
+                'applicant_permanent_district', 'applicant_permanent_Upazila', 'applicant_permanent_post_office',
+                'successor_list', 'applicant_mobile', 'applicant_email', 'applicant_phone', 'prottoyon',
+                'format', 'applicant_type_of_businessKhat', 'applicant_type_of_businessKhatAmount',
+                'khat'
+            ];
+
+            // Extract only the fields that exist in the model from the request
+            $dataToUpdate = $request->only($updatableFields);
+
+            // Update the EnglishSonod record
+            $englishSonod->update($dataToUpdate);
+
+            // Return the updated record in the response
+            return response()->json([
+                'message' => 'EnglishSonod updated successfully',
+                'englishSonod' => $englishSonod
+            ], 200);
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'EnglishSonod not found'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Update failed', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+
+
     function show($id){
         $sonod = Sonod::find($id);
         return response()->json($sonod);
