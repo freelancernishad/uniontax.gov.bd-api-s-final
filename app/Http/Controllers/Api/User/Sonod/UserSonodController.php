@@ -399,10 +399,12 @@ class UserSonodController extends Controller
         }])->find($id);
 
         $en = $request->en;
-        if($en){
+
+        if($en && $sonod->hasEnData){
             $EnglishSonod = EnglishSonod::find($sonod->english_sonod->id);
             return response()->json($EnglishSonod);
         }
+
 
         return response()->json($sonod);
     }
