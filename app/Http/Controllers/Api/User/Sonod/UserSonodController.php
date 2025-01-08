@@ -22,21 +22,16 @@ class UserSonodController extends Controller
      */
     public function index(Request $request)
     {
-
-
         // Retrieve request parameters
         $sonod_name = $request->sonod_name;
         $stutus = $request->stutus;
         $payment_status = $request->payment_status;
         $sondId = $request->sondId;
 
-        // Process the sonod_name for searching
-    //    return $sonod_name = enBnName($sonod_name)->bnname;
-        // $Sonodnamelist = Sonodnamelist::where('bnname', $sonod_name)->first();
-
         // Initialize the query
         $query = Sonod::query()->where('sonod_name', $sonod_name);
 
+        // Select the required fields including the english_sonod relationship
         $query->select(
             'id',
             'sonod_name',
@@ -52,11 +47,9 @@ class UserSonodController extends Controller
             'created_at',
             'updated_at'
         );
+
         // Filter by union name if provided
-
-
-
-        if(Auth::guard('user')->check()){
+        if (Auth::guard('user')->check()) {
             // Retrieve the authenticated user from the Bearer token
             $user = Auth::user();
 
@@ -66,21 +59,19 @@ class UserSonodController extends Controller
             }
             $union = $user->unioun;
             $position = $user->position;
-        }else{
+        } else {
             $union = $request->union;
             $position = '';
         }
 
         $query->where('unioun_name', $union);
 
-
-
         // If the user is a Secretary and stutus is "Pending", filter the results
         if ($position == 'Secretary' && $stutus === 'Pending') {
             $query->where('stutus', 'Pending');
-        }elseif ($position == 'Chairman' && $stutus === 'Pending') {
+        } elseif ($position == 'Chairman' && $stutus === 'Pending') {
             $query->where('stutus', 'sec_approved');
-        }else {
+        } else {
             $query->where('stutus', $stutus);
         }
 
@@ -94,18 +85,25 @@ class UserSonodController extends Controller
             $query->where("sonod_Id", "LIKE", "%$sondId%");
         }
 
-
+        // Eager load the english_sonod relationship
+        $query->with(['english_sonod' => function ($query) {
+            $query->select('id', 'sonod_Id'); // Select only the id and sonod_Id (foreign key)
+        }]);
 
         // Paginate the results
         $sonods = $query->orderBy('id', 'DESC')->paginate(20);
 
+        // Modify the response to include english_sonod id
+        $sonods->getCollection()->transform(function ($sonod) {
+            $sonod->english_sonod_id = $sonod->english_sonod ? $sonod->english_sonod->id : null;
+            return $sonod;
+        });
+
         // Return the data
         return response()->json([
             'sonods' => $sonods,
-            // 'sonod_name' => $Sonodnamelist,
         ]);
     }
-
 
 
     public function sonod_action(Request $request, $id)
@@ -344,6 +342,11 @@ class UserSonodController extends Controller
 
     function show($id){
         $sonod = Sonod::find($id);
+        return response()->json($sonod);
+    }
+
+    function EnglishShow($id){
+        $sonod = EnglishSonod::find($id);
         return response()->json($sonod);
     }
 
