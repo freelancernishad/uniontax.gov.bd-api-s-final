@@ -405,7 +405,7 @@ class UserSonodController extends Controller
     
         // Check if the request has the 'en' parameter and if the Sonod has English data
         $en = $request->en;
-        if ($en && $sonod->hasEnData == 1) {
+        if ($en==true && $sonod->hasEnData == 1) {
             // Check if english_sonod exists
             if ($sonod->english_sonod) {
                 // Fetch the EnglishSonod record
