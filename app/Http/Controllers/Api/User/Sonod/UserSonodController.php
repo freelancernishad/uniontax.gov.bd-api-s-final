@@ -88,7 +88,7 @@ class UserSonodController extends Controller
 
         // Eager load the english_sonod relationship
         $query->with(['english_sonod' => function ($query) {
-            $query->select('id', 'sonod_Id'); // Select only the id and sonod_Id (foreign key)
+            $query->select('id', 'sonod_Id','prottoyon'); // Select only the id and sonod_Id (foreign key)
         }]);
 
         // Paginate the results
@@ -97,6 +97,7 @@ class UserSonodController extends Controller
         // Modify the response to include english_sonod id
         $sonods->getCollection()->transform(function ($sonod) {
             $sonod->english_sonod_id = $sonod->english_sonod ? $sonod->english_sonod->id : null;
+            $sonod->english_prottoyon = $sonod->english_sonod ? $sonod->english_sonod->prottoyon : null;
             return $sonod;
         });
 
