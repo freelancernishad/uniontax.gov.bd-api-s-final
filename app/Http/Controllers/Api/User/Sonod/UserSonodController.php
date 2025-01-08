@@ -137,17 +137,11 @@ class UserSonodController extends Controller
             $sec_prottoyon_en = $request->sec_prottoyon_en;
             $sec_prottoyon = $request->sec_prottoyon;
         }else{
-
             if($sonod->english_sonod){
 
                 $sec_prottoyon_en = generateSecProttoyon($sonod->english_sonod,true);
             }
-
-
                 $sec_prottoyon = generateSecProttoyon($sonod);
-
-
-
         }
 
 
