@@ -43,7 +43,6 @@ function validateRequest(array $data, array $rules)
 
 function int_en_to_bn($number)
 {
-
     $bn_digits = array('০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯');
     $en_digits = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
 
