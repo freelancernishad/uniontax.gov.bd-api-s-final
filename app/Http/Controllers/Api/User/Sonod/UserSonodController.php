@@ -392,10 +392,22 @@ class UserSonodController extends Controller
 
 
 
-    function show($id){
-        $sonod = Sonod::find($id);
+    function show(Request $request,$id){
+
+        $sonod = Sonod::with(['english_sonod' => function ($query) {
+            $query->select('id'); // Select only the id and sonod_Id (foreign key)
+        }])->find($id);
+
+        $en = $request->en;
+        if($en){
+            $EnglishSonod = EnglishSonod::find($sonod->english_sonod->id);
+            return response()->json($EnglishSonod);
+        }
+
         return response()->json($sonod);
     }
+
+
 
     function EnglishShow($id){
         $sonod = EnglishSonod::find($id);
