@@ -392,34 +392,34 @@ class UserSonodController extends Controller
 
 
     public function show(Request $request, $id)
-{
-    // Fetch the Sonod record with the english_sonod relationship (only the id)
-    $sonod = Sonod::with(['english_sonod' => function ($query) {
-        $query->select('id', 'sonod_Id'); // Select only the id and sonod_Id (foreign key)
-    }])->find($id);
+    {
+        // Fetch the Sonod record with the english_sonod relationship (only the id)
+        $sonod = Sonod::with(['english_sonod' => function ($query) {
+            $query->select('id', 'sonod_Id'); // Select only the id and sonod_Id (foreign key)
+        }])->find($id);
 
-    // Check if the Sonod record exists
-    if (!$sonod) {
-        return response()->json(['message' => 'Sonod not found'], 404);
-    }
-
-    // Check if the request has the 'en' parameter and if the Sonod has English data
-    $en = $request->en; // This will be a string: "true" or "false"
-    if ($en === 'true' && $sonod->hasEnData == 1) { // Compare with the string "true"
-        // Check if english_sonod exists
-        if ($sonod->english_sonod) {
-            // Fetch the EnglishSonod record
-            $EnglishSonod = EnglishSonod::find($sonod->english_sonod->id);
-            return response()->json($EnglishSonod);
-        } else {
-            // Return a response indicating that no EnglishSonod record exists
-            return response()->json(['message' => 'No EnglishSonod record found for this Sonod'], 404);
+        // Check if the Sonod record exists
+        if (!$sonod) {
+            return response()->json(['message' => 'Sonod not found'], 404);
         }
-    }
 
-    // Return the Sonod record
-    return response()->json($sonod);
-}
+        // Check if the request has the 'en' parameter and if the Sonod has English data
+        $en = $request->en; // This will be a string: "true" or "false"
+        if ($en === 'true' && $sonod->hasEnData == 1) { // Compare with the string "true"
+            // Check if english_sonod exists
+            if ($sonod->english_sonod) {
+                // Fetch the EnglishSonod record
+                $EnglishSonod = EnglishSonod::find($sonod->english_sonod->id);
+                return response()->json($EnglishSonod);
+            } else {
+                // Return a response indicating that no EnglishSonod record exists
+                return response()->json(['message' => 'No EnglishSonod record found for this Sonod'], 404);
+            }
+        }
+
+        // Return the Sonod record
+        return response()->json($sonod);
+    }
 
 
 

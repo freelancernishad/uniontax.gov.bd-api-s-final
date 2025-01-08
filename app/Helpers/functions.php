@@ -56,3 +56,37 @@ function int_bn_to_en($number)
 
     return str_replace($bn_digits, $en_digits, $number);
 }
+
+
+
+function getBanglaPositionText($position)
+{
+    $positionMap = [
+        'District_admin' => 'জেলা প্রশাসকের ড্যাশবোর্ড',
+        'DLG' => 'পরিচালক, (যুগ্মসচিব) স্থানীয় সরকার',
+        'super_admin' => 'সুপার এডমিনের ড্যাশবোর্ড',
+        'Sub_District_admin' => 'উপ-পরিচালকের ড্যাশবোর্ড',
+        'Chairman' => 'চেয়ারম্যানের ড্যাশবোর্ড',
+        'Secretary' => 'সচিবের ড্যাশবোর্ড',
+    ];
+
+    // Return the Bangla text for the position, or a default value if not found
+    return $positionMap[$position] ?? 'উপজেলা ড্যাশবোর্ড';
+}
+
+
+ function getBanglaDesignationText($position)
+{
+    $designationMap = [
+        'District_admin' => 'জেলা প্রশাসক',
+        'DLG' => 'পরিচালক, (যুগ্মসচিব) স্থানীয় সরকার',
+        'super_admin' => 'সুপার এডমিন',
+        'Sub_District_admin' => 'উপ-পরিচালক',
+        'Chairman' => 'চেয়ারম্যান',
+        'Secretary' => 'সচিব',
+    ];
+
+    // Return the Bangla text for the designation, or a default value if not found
+    return $designationMap[$position] ?? 'উপজেলা কর্মকর্তা';
+}
+
