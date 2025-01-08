@@ -43,6 +43,7 @@ class UserSonodController extends Controller
             'stutus',
             'payment_status',
             'sonod_Id',
+            'prottoyon',
             'hasEnData',
             'created_at',
             'updated_at'
