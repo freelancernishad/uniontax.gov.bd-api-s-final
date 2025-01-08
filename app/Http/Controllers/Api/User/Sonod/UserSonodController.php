@@ -131,9 +131,10 @@ class UserSonodController extends Controller
 
 
 
-
+        $sec_prottoyon_en = '';
+        $sec_prottoyon = '';
         if($sonod->sonod_name=='বিবিধ প্রত্যয়নপত্র'){
-            $sec_prottoyon_en = $request->sec_prottoyon;
+            $sec_prottoyon_en = $request->sec_prottoyon_en;
             $sec_prottoyon = $request->sec_prottoyon;
         }else{
 
