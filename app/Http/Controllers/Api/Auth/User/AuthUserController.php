@@ -121,6 +121,9 @@ class AuthUserController extends Controller
             $payload = [
                 'email' => $user->email,
                 'name' => $user->name,
+                'position' => $user->position,
+                'dashboard_title' => getBanglaPositionText($user->position),
+                'designation' => getBanglaDesignationText($user->position),
                 'category' => $user->category,
                 'email_verified' => $user->hasVerifiedEmail(), // Checks verification status
             ];
