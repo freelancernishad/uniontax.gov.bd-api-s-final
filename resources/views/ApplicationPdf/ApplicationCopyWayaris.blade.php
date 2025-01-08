@@ -94,7 +94,7 @@
                                 <td>{{ int_en_to_bn($i) }}</td>
                                 <td>{{ $value->w_name ?? "" }}</td>
                                 <td>{{ $value->w_relation ?? "" }}</td>
-                                <td>{{ int_en_to_bn(date("d/m/Y", strtotime($row->w_age))) ?? 0) }}</td>
+                                <td>{{ int_en_to_bn(date("d/m/Y", strtotime($value->w_age))) ?? 0) }}</td>
                                 <td>{{ int_en_to_bn($value->w_nid ?? '') }}</td>
                                 <td>{{ $value->w_note ?? "" }}</td>
                             </tr>
