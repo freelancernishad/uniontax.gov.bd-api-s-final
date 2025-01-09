@@ -3,7 +3,17 @@
 use Carbon\Carbon;
 use App\Models\TokenBlacklist;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Validator;
+
+
+ function isLocalRequest()
+{
+    $host = Request::getHost();
+    $port = Request::getPort(); // Get the port number
+    return in_array($host, ['localhost', '127.0.0.1']) && $port === 8000; // Adjust the port as needed
+}
+
 
 function TokenBlacklist($token){
 // Get the authenticated user for each guard

@@ -66,23 +66,30 @@ class SonodPdfController extends Controller
         }
 
 
-            // Replace signature paths with full URLs in the $row object
-    $signatureFields = ['socib_signture', 'chaireman_sign'];
+        $signatureFields = ['socib_signture', 'chaireman_sign'];
 
-    foreach ($signatureFields as $field) {
-        if ($row->$field) {
-            try {
-                // Replace the file path with the full URL
-                $row->$field = URL::to('/files/' . $row->$field);
-            } catch (\Exception $e) {
-                // If the file is not found or cannot be read, set the value to null
-                $row->$field = null;
+        // return isLocalRequest();
+        foreach ($signatureFields as $field) {
+            if ($row->$field) {
+                try {
+                    // Check if the application is running on localhost
+                    if (!isLocalRequest()) {
+                        // Generate the full URL for localhost
+                        $row->$field = URL::to('/files/' . $row->$field);
+                    } else {
+                        // Use the default image from the live server
+                        $row->$field = 'https://api.uniontax.gov.bd/backend/image.png';
+                    }
+                } catch (\Exception $e) {
+                    // If the file is not found or cannot be read, set the value to the default image
+                    $row->$field = 'https://api.uniontax.gov.bd/backend/image.png';
+                }
+            } else {
+                // If the field is empty, set the value to the default image
+                $row->$field = 'https://api.uniontax.gov.bd/backend/image.png';
             }
-        } else {
-            // If the field is empty, set the value to null
-            $row->$field = null;
         }
-    }
+
 
 
         $uniouninfo = Uniouninfo::where('short_name_e', $unioun_name)->first();
@@ -114,6 +121,10 @@ class SonodPdfController extends Controller
 
 
     }
+
+
+
+
 
     /**
      * Get HTML content for the PDF.
