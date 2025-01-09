@@ -1,7 +1,9 @@
 <?php
 
 use Intervention\Image\Image;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -174,4 +176,34 @@ function base64($Image)
 
 $ext =  pathinfo($Image, PATHINFO_EXTENSION);;
     return $b64image = "data:image/$ext;base64,".base64_encode(file_get_contents($Image));
+}
+
+
+
+function handleFileUrl($filePath, $defaultImage = 'https://api.uniontax.gov.bd/backend/image.png')
+{
+    if (!$filePath) {
+        return $defaultImage;
+    }
+
+    try {
+        // Check if the application is running on localhost
+        if (!isLocalRequest()) {
+            // Generate the full URL for the file
+            return URL::to('/files/' . $filePath);
+        } else {
+            // Use the default image from the live server
+            return $defaultImage;
+        }
+    } catch (\Exception $e) {
+        // If the file is not found or cannot be read, set the value to the default image
+        return $defaultImage;
+    }
+}
+
+function isLocalRequest()
+{
+    $host = Request::getHost();
+    $port = Request::getPort(); // Get the port number
+    return in_array($host, ['localhost', '127.0.0.1']) && $port === 8000; // Adjust the port as needed
 }

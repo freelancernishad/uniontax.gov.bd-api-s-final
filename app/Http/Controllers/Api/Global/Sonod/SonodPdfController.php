@@ -66,35 +66,21 @@ class SonodPdfController extends Controller
         }
 
 
-        $signatureFields = ['socib_signture', 'chaireman_sign'];
-
-        // return isLocalRequest();
+        $signatureFields = ['socib_signture', 'chaireman_sign','image'];
+        // Handle signature fields
         foreach ($signatureFields as $field) {
-            if ($row->$field) {
-                try {
-                    // Check if the application is running on localhost
-                    if (!isLocalRequest()) {
-                        // Generate the full URL for localhost
-                        $row->$field = URL::to('/files/' . $row->$field);
-                    } else {
-                        // Use the default image from the live server
-                        $row->$field = 'https://api.uniontax.gov.bd/backend/image.png';
-                    }
-                } catch (\Exception $e) {
-                    // If the file is not found or cannot be read, set the value to the default image
-                    $row->$field = 'https://api.uniontax.gov.bd/backend/image.png';
-                }
-            } else {
-                // If the field is empty, set the value to the default image
-                $row->$field = 'https://api.uniontax.gov.bd/backend/image.png';
-            }
+            $row->$field = handleFileUrl($row->$field);
         }
+
+
 
 
 
         $uniouninfo = Uniouninfo::where('short_name_e', $unioun_name)->first();
         $sonodnames = Sonodnamelist::where('bnname', $sonod_name)->first();
         $filename = str_replace(" ", "_", $sonodnames->enname) . "-$row->sonod_Id.pdf";
+        // Handle sonod_logo in $uniouninfo
+        $uniouninfo->sonod_logo = handleFileUrl($uniouninfo->sonod_logo);
 
         // return $row;
         $htmlContent = $this->getHtmlContent($row, $sonod_name, $uniouninfo, $sonodnames,$sonod_Id,$en);
