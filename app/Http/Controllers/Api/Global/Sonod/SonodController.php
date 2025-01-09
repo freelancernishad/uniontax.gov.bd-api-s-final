@@ -128,6 +128,7 @@ class SonodController extends Controller
             $englishSonodData = array_merge($enData, [
                 'sonod_Id' => $sonod->id, // Link to the Sonod entry
                 'uniqeKey' => $uniqueKey, // Same unique key as Sonod
+                'image' => $sonod->image, // Same unique key as Sonod
                 'khat' => "সনদ ফি",
                 'stutus' => "Pepaid",
                 'payment_status' => "Unpaid",
@@ -188,6 +189,7 @@ class SonodController extends Controller
         Log::info($request->bn);
         // Handle file uploads with optimized code
         $this->uploadFile($request->bn['image'], $insertData, 'image', $filePath, $dateFolder, $sonodId);
+
         $this->uploadFile($request->applicant_national_id_front_attachment, $insertData, 'applicant_national_id_front_attachment', $filePath, $dateFolder, $sonodId);
         $this->uploadFile($request->applicant_national_id_back_attachment, $insertData, 'applicant_national_id_back_attachment', $filePath, $dateFolder, $sonodId);
         $this->uploadFile($request->applicant_birth_certificate_attachment, $insertData, 'applicant_birth_certificate_attachment', $filePath, $dateFolder, $sonodId);
