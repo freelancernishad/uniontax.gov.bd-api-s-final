@@ -13,6 +13,7 @@ use App\Models\TradeLicenseKhatFee;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class SonodController extends Controller
 {
@@ -129,7 +130,7 @@ class SonodController extends Controller
                 'stutus' => "Pepaid",
                 'payment_status' => "Unpaid",
                 'year' => date('Y'),
-                'successor_list' => $enSuccessorList, 
+                'successor_list' => $enSuccessorList,
             ]);
 
             // Check if EnglishSonod already exists for this Sonod
@@ -191,8 +192,18 @@ class SonodController extends Controller
 
     private function uploadFile($fileData, &$insertData, $field, $filePath, $dateFolder, $sonodId)
     {
-        if (count(explode(';', $fileData)) > 1) {
-            // $insertData[$field] = uploadFileToS3($fileData, "sonod/$filePath/$dateFolder/$sonodId/");
+        if ($fileData) {
+            // Define the directory for the file
+            $directory = "sonod/$filePath/$dateFolder/$sonodId";
+
+            // Generate a unique file name
+            $fileName = time() . '_' . $fileData->getClientOriginalName();
+
+            // Store the file in the protected disk
+            $filePath = Storage::disk('protected')->putFileAs($directory, $fileData, $fileName);
+
+            // Save the file path in the insertData array
+            $insertData[$field] = $filePath;
         }
     }
 
