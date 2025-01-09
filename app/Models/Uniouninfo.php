@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Uniouninfo extends Model
 {
@@ -58,18 +59,19 @@ class Uniouninfo extends Model
      * @param string $attribute
      * @return string
      */
-    public function saveFile($file, $attribute,$dir='')
+    public function saveFile($file, $attribute, $dir = '')
     {
-
-
-        if($dir){
-            $directory = 'uniouninfo/'.$dir;
-        }else{
-            $directory = 'uniouninfo';
-        }
+        // Define the directory
+        $directory = $dir ? 'uniouninfo/' . $dir : 'uniouninfo';
 
         if ($file) {
-            $filePath = uploadFileToS3($file, $directory); // Upload to S3
+            // Generate a unique file name
+            $fileName = time() . '_' . $file->getClientOriginalName();
+
+            // Store the file in the protected disk
+            $filePath = Storage::disk('protected')->putFileAs($directory, $file, $fileName);
+
+            // Save the file path to the model attribute
             $this->$attribute = $filePath;
             $this->save();
 
