@@ -63,7 +63,7 @@ class SonodController extends Controller
 
     protected function createSonod($bnData, $enData, $request)
     {
-   
+
         // Process successor_list for bnData
         $successorListFormatted = $bnData['successor_list'] ?? [];
         $successor_list = json_encode($successorListFormatted);
@@ -185,9 +185,9 @@ class SonodController extends Controller
 
     private function handleFileUploads($request, &$insertData, $filePath, $dateFolder, $sonodId)
     {
-        Log::info($request);
+        Log::info($request->bn);
         // Handle file uploads with optimized code
-        $this->uploadFile($request->image, $insertData, 'image', $filePath, $dateFolder, $sonodId);
+        $this->uploadFile($request->bn->image, $insertData, 'image', $filePath, $dateFolder, $sonodId);
         $this->uploadFile($request->applicant_national_id_front_attachment, $insertData, 'applicant_national_id_front_attachment', $filePath, $dateFolder, $sonodId);
         $this->uploadFile($request->applicant_national_id_back_attachment, $insertData, 'applicant_national_id_back_attachment', $filePath, $dateFolder, $sonodId);
         $this->uploadFile($request->applicant_birth_certificate_attachment, $insertData, 'applicant_birth_certificate_attachment', $filePath, $dateFolder, $sonodId);
