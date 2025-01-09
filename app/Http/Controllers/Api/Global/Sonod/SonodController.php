@@ -63,6 +63,7 @@ class SonodController extends Controller
 
     protected function createSonod($bnData, $enData, $request)
     {
+        Log::info($bnData);
         // Process successor_list for bnData
         $successorListFormatted = $bnData['successor_list'] ?? [];
         $successor_list = json_encode($successorListFormatted);
