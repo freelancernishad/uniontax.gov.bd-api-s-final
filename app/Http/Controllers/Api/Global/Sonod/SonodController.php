@@ -187,7 +187,7 @@ class SonodController extends Controller
     {
         Log::info($request->bn);
         // Handle file uploads with optimized code
-        $this->uploadFile($request->bn->image, $insertData, 'image', $filePath, $dateFolder, $sonodId);
+        $this->uploadFile($request->bn['image'], $insertData, 'image', $filePath, $dateFolder, $sonodId);
         $this->uploadFile($request->applicant_national_id_front_attachment, $insertData, 'applicant_national_id_front_attachment', $filePath, $dateFolder, $sonodId);
         $this->uploadFile($request->applicant_national_id_back_attachment, $insertData, 'applicant_national_id_back_attachment', $filePath, $dateFolder, $sonodId);
         $this->uploadFile($request->applicant_birth_certificate_attachment, $insertData, 'applicant_birth_certificate_attachment', $filePath, $dateFolder, $sonodId);
