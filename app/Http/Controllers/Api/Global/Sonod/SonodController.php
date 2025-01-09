@@ -228,10 +228,10 @@ class SonodController extends Controller
                 $filePath = Storage::disk('protected')->putFileAs($directory, $fileData, $fileName);
             }
 
-            Log::info($filePath);
+            Log::info($directory/$fileName);
 
             // Save the file path in the insertData array
-            $insertData[$field] = "$filePath";
+            $insertData[$field] = "$directory/$fileName";
         }
     }
 
