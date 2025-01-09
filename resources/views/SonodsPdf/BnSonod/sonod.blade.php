@@ -51,7 +51,7 @@
                     </td>
                     <td style="text-align: center;" width="20%">
 
-                    <img width="100px" src="{{ base64($row->image) }}">
+                    <img width="100px" src="{{ $row->image }}">
                </td>
                 </tr>
                 <tr style="margin-top:2px;margin-bottom:2px;">
@@ -170,7 +170,7 @@ $style = '';
                     @endif
                         </td>
                         <td style="text-align: center; width: 200px;" width="30%">
-                            <img width="100px" src="{{ base64($uniouninfo->sonod_logo) }}">
+                            <img width="100px" src="{{ $uniouninfo->sonod_logo }}">
                         </td>
                         <td style="text-align: center;" width="40%">
 
