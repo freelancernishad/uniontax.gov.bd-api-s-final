@@ -6,6 +6,7 @@ use Exception;
 use App\Models\Sonod;
 use App\Models\SonodFee;
 use App\Models\Uniouninfo;
+use Illuminate\Support\Str;
 use App\Models\EnglishSonod;
 use Illuminate\Http\Request;
 use App\Models\Sonodnamelist;
@@ -197,13 +198,34 @@ class SonodController extends Controller
             $directory = "sonod/$filePath/$dateFolder/$sonodId";
 
             // Generate a unique file name
-            $fileName = time() . '_' . $fileData->getClientOriginalName();
+            $fileName = time() . '_' . Str::random(10);
 
-            // Store the file in the protected disk
-            $filePath = Storage::disk('protected')->putFileAs($directory, $fileData, $fileName);
+            // Check if the input is base64 data
+            if (preg_match('/^data:image\/(\w+);base64,/', $fileData, $matches)) {
+                // Extract the base64 data
+                $base64Data = substr($fileData, strpos($fileData, ',') + 1);
+
+                // Decode the base64 data
+                $decodedData = base64_decode($base64Data);
+
+                // Determine the file extension from the MIME type
+                $extension = $matches[1]; // e.g., 'png', 'jpeg'
+
+                // Generate the full file name with extension
+                $fileName .= '.' . $extension;
+
+                // Store the file in the protected disk
+                $filePath = Storage::disk('protected')->put("$directory/$fileName", $decodedData);
+            } else {
+                // Handle file object (e.g., uploaded file)
+                $fileName .= '.' . $fileData->getClientOriginalExtension();
+
+                // Store the file in the protected disk
+                $filePath = Storage::disk('protected')->putFileAs($directory, $fileData, $fileName);
+            }
 
             // Save the file path in the insertData array
-            $insertData[$field] = $filePath;
+            $insertData[$field] = "$directory/$fileName";
         }
     }
 
