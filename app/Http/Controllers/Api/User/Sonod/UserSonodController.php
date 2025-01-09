@@ -345,8 +345,25 @@ class UserSonodController extends Controller
     public function updateEnglishSonod(Request $request, $id)
     {
         try {
+
+
+             // Find the Sonod record with its associated EnglishSonod
+            $sonod = Sonod::with(['english_sonod' => function ($query) {
+                $query->select('id', 'sonod_Id'); // Select only the id and sonod_Id (foreign key)
+            }])->find($id);
+
+            // Check if the Sonod record exists
+            if (!$sonod) {
+                return response()->json(['message' => 'Sonod not found'], 404);
+            }
+
+            // Check if the EnglishSonod exists
+            if (!$sonod->english_sonod) {
+                return response()->json(['message' => 'EnglishSonod not found for the given Sonod'], 404);
+            }
+
             // Find the existing EnglishSonod record
-            $englishSonod = EnglishSonod::findOrFail($id);
+            $englishSonod = EnglishSonod::findOrFail($sonod->english_sonod->id);
 
             // Filter the request data to only include fields that exist in the EnglishSonod model
             $updatableFields = [
