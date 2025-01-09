@@ -68,13 +68,7 @@ Route::get('/files/{path}', function ($path) {
         }
 
         // Serve the file directly with custom headers
-        return response()->file(Storage::disk('protected')->path($path))
-            ->withHeaders([
-                'Content-Type' => 'application/octet-stream',  // Adjust MIME type if needed
-                'Cache-Control' => 'no-cache, no-store, must-revalidate',
-                'Pragma' => 'no-cache',
-                'Expires' => '0',
-            ]);
+        return response()->file(Storage::disk('protected')->path($path));
     } catch (\Exception $e) {
         return response()->json([
             'error' => $e->getMessage(),

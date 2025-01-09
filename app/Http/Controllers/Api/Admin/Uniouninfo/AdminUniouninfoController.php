@@ -1,9 +1,11 @@
 <?php
 namespace App\Http\Controllers\Api\Admin\Uniouninfo;
 
-use App\Http\Controllers\Controller;
 use App\Models\Uniouninfo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class AdminUniouninfoController extends Controller
@@ -16,14 +18,35 @@ class AdminUniouninfoController extends Controller
      */
     public function show($id)
     {
+        // Find the Union information by ID
         $unionInfo = Uniouninfo::find($id);
 
+        // If Union information is not found, return a 404 response
         if (!$unionInfo) {
             return response()->json([
                 'message' => 'Union information not found.',
             ], 404);
         }
 
+        // Replace file path columns with full URLs using the /files/{path} route
+        $fileFields = ['web_logo', 'sonod_logo', 'c_signture', 'socib_signture'];
+
+        foreach ($fileFields as $field) {
+            if ($unionInfo->$field) {
+                try {
+                    // Replace the file path with the full URL
+                    $unionInfo->$field = URL::to('/files/' . $unionInfo->$field);
+                } catch (\Exception $e) {
+                    // If the file is not found or cannot be read, set the value to null
+                    $unionInfo->$field = null;
+                }
+            } else {
+                // If the field is empty, set the value to null
+                $unionInfo->$field = null;
+            }
+        }
+
+        // Return the response with the Union information and updated file URLs
         return response()->json([
             'message' => 'Union information retrieved successfully.',
             'data' => $unionInfo,
