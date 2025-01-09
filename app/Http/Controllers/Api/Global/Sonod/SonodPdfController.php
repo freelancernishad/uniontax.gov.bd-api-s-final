@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Api\Global\Sonod;
 
-use App\Http\Controllers\Controller;
-use App\Models\EnglishSonod;
 use App\Models\Sonod;
-use App\Models\Sonodnamelist;
 use App\Models\Uniouninfo;
+use App\Models\EnglishSonod;
 use Illuminate\Http\Request;
+use App\Models\Sonodnamelist;
+use Illuminate\Support\Facades\URL;
+use App\Http\Controllers\Controller;
 
 class SonodPdfController extends Controller
 {
@@ -65,10 +66,30 @@ class SonodPdfController extends Controller
         }
 
 
+            // Replace signature paths with full URLs in the $row object
+    $signatureFields = ['socib_signture', 'chaireman_sign'];
+
+    foreach ($signatureFields as $field) {
+        if ($row->$field) {
+            try {
+                // Replace the file path with the full URL
+                $row->$field = URL::to('/files/' . $row->$field);
+            } catch (\Exception $e) {
+                // If the file is not found or cannot be read, set the value to null
+                $row->$field = null;
+            }
+        } else {
+            // If the field is empty, set the value to null
+            $row->$field = null;
+        }
+    }
+
+
         $uniouninfo = Uniouninfo::where('short_name_e', $unioun_name)->first();
         $sonodnames = Sonodnamelist::where('bnname', $sonod_name)->first();
         $filename = str_replace(" ", "_", $sonodnames->enname) . "-$row->sonod_Id.pdf";
 
+        // return $row;
         $htmlContent = $this->getHtmlContent($row, $sonod_name, $uniouninfo, $sonodnames,$sonod_Id,$en);
 
         if ($sonod_name == 'ওয়ারিশান সনদ' || $sonod_name == 'উত্তরাধিকারী সনদ') {
