@@ -216,6 +216,8 @@ class SonodController extends Controller
 
                 // Store the file in the protected disk
                 $filePath = Storage::disk('protected')->put("$directory/$fileName", $decodedData);
+
+
             } else {
                 // Handle file object (e.g., uploaded file)
                 $fileName .= '.' . $fileData->getClientOriginalExtension();
@@ -224,8 +226,9 @@ class SonodController extends Controller
                 $filePath = Storage::disk('protected')->putFileAs($directory, $fileData, $fileName);
             }
 
+            Log::info($filePath);
             // Save the file path in the insertData array
-            $insertData[$field] = "$directory/$fileName";
+            $insertData[$field] = "$filePath";
         }
     }
 
