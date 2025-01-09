@@ -227,6 +227,7 @@ class SonodController extends Controller
             }
 
             Log::info($filePath);
+
             // Save the file path in the insertData array
             $insertData[$field] = "$filePath";
         }
