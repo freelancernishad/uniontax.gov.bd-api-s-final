@@ -281,11 +281,11 @@ class SonodPdfController extends Controller
                         </div>
                     </td>
                     <td style="text-align: center; width: 200px;" width="30%">
-                        <img width="100px" src="' . base64($uniouninfo->sonod_logo) . '">
+                        <img width="100px" src="' . $uniouninfo->sonod_logo . '">
                     </td>
                     <td style="text-align: center;" width="40%">
                         <div class="signature text-center position-relative" style="color:black">
-                            <img width="170px" src="' . base64($row->chaireman_sign) . '"><br/>
+                            <img width="170px" src="' . $row->chaireman_sign . '"><br/>
                             <b><span style="color:#7230A0; font-size:18px;">' . $row->chaireman_name . '</span></b><br />
                             <span style="font-size:16px;">' . $row->chaireman_type . '</span><br />
                             ' . $uniouninfo->full_name . '<br>
