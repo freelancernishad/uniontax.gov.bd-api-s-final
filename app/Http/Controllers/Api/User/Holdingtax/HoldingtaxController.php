@@ -80,8 +80,11 @@ class HoldingtaxController extends Controller
         $holding = Holdingtax::create($data);
         $this->createHoldingBokeya($holding->id, $calculationResults['current_year_kor']);
 
-        // Handle bokeya entries via a separate function
+       // Handle bokeya entries via a separate function if $r->bokeya is present
+       if (!empty($r->bokeya)) {
         $this->handleBokeyaEntries($r->bokeya, $holding->id);
+    }
+
 
         return response()->json($holding, 201);
     }

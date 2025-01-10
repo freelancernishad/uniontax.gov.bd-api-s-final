@@ -266,7 +266,7 @@ class SonodPdfController extends Controller
         // Fetch data for the row and union info
         $row = Sonod::find($id);
 
-        
+
 
         $signatureFields = ['socib_signture', 'chaireman_sign','image'];
         // Handle signature fields
