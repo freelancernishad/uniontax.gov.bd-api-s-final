@@ -265,7 +265,18 @@ class SonodPdfController extends Controller
     {
         // Fetch data for the row and union info
         $row = Sonod::find($id);
+
+        
+
+        $signatureFields = ['socib_signture', 'chaireman_sign','image'];
+        // Handle signature fields
+        foreach ($signatureFields as $field) {
+            $row->$field = handleFileUrl($row->$field);
+        }
+
         $uniouninfo = Uniouninfo::where('short_name_e', $row->unioun_name)->first();
+        $uniouninfo->sonod_logo = handleFileUrl($uniouninfo->sonod_logo);
+
 
         // Prepare the HTML output
         $output = '
