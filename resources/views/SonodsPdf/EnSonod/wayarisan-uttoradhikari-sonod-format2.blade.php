@@ -21,7 +21,7 @@
                         <img src="https://api.qrserver.com/v1/create-qr-code/?data={{ $qrurl }}&size=80x80"/>
                         <br />
                         <div class="signature text-center position-relative">
-                            ইস্যুর তারিখ: {{ int_en_to_bn(date('d/m/Y', strtotime($row->created_at))) }}
+                            Issue Date: {{ int_en_to_bn(date('d/m/Y', strtotime($row->created_at))) }}
                         </div>
                     </td>
                     <td style="text-align: center;" width="20%">
@@ -34,7 +34,7 @@
                 <tr style="margin-top:2px;margin-bottom:2px;">
                     <td></td>
                     <td style="text-align: center;" width="50%">
-                        <p style="font-size:14px">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</p>
+                        <p style="font-size:14px">Government of the People's Republic of Bangladesh</p>
                     </td>
                     <td></td>
                 </tr>
@@ -48,14 +48,14 @@
                 <tr style="margin-top:2px;margin-bottom:2px;">
                     <td></td>
                     <td style="text-align: center;" width="50%">
-                        <p style="font-size:13px">উপজেলা: {{ $uniouninfo->thana }}, জেলা: {{ $uniouninfo->district }} ।</p>
+                        <p style="font-size:13px">Upazila: {{ $uniouninfo->thana }}, District: {{ $uniouninfo->district }}.</p>
                     </td>
                     <td></td>
                 </tr>
                 <tr style="margin-top:2px;margin-bottom:2px;">
                     <td></td>
                     <td style="text-align: center;" width="50%">
-                        <p style="font-size:11px">ওয়েবসাইটঃ</p>
+                        <p style="font-size:11px">Website:</p>
                     </td>
                     <td></td>
                 </tr>
@@ -87,8 +87,8 @@
                 <tr>
                     <td style="text-align: center; vertical-align: bottom;" width="40%">
                         <div class="signature text-center position-relative" style="color:black;font-size:12px;">
-                            <span style="font-size:12px;">ইউপি সদস্য/সদস্যা</span><br />
-                            {{ $uniouninfo->full_name }}<br> {{ $uniouninfo->thana }}, {{ $uniouninfo->district }} ।<br>
+                            <span style="font-size:12px;">Union Member</span><br />
+                            {{ $uniouninfo->full_name }}<br> {{ $uniouninfo->thana }}, {{ $uniouninfo->district }}.<br>
                         </div>
                     </td>
                     <td style="text-align: center; width: 200px;" width="30%">
@@ -99,7 +99,7 @@
                             <img width="170px" style="{{ $style }}" src="{{ base64($row->chaireman_sign) }}"><br/>
                             <b><span style="color:{{ $C_color }}; font-size:{{ $C_size }};">{{ $row->chaireman_name }}</span></b><br />
                             <span style="font-size:12px;">{{ $row->chaireman_type }}</span><br />
-                            {{ $uniouninfo->full_name }}<br> {{ $uniouninfo->thana }}, {{ $uniouninfo->district }} ।<br>
+                            {{ $uniouninfo->full_name }}<br> {{ $uniouninfo->thana }}, {{ $uniouninfo->district }}.<br>
                             {{ $row->c_email }}
                         </div>
                     </td>
@@ -107,10 +107,10 @@
             </table>
 
             <p style="background: #787878; color: white; text-align: center; padding: 2px 2px; font-size: 12px; margin-top: 0px; margin:0" class="m-0">
-                "সময়মত ইউনিয়ন কর পরিশোধ করুন। ইউনিয়নের উন্নয়নমূলক কাজে সহায়তা করুন"
+                "Pay union taxes on time. Support the development activities of the union."
             </p>
             <p class="m-0" style="font-size:12px;text-align:center;margin:0;position: fixed; bottom: 0;">
-                ইস্যুকৃত সনদটি যাচাই করতে QR কোড স্ক্যান করুন অথবা ভিজিট করুন {{ $uniouninfo->domain }}
+                To verify this certificate, scan the QR code or visit {{ $uniouninfo->domain }}
             </p>
         </div>
     </div>
