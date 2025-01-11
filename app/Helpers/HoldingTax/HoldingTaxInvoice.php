@@ -17,7 +17,7 @@ function HoldingTaxInvoiceBody($unions, $HoldingBokeya, $customers, $previousamo
                     </div>
                     <table style='width: 100%'>
                         <tr>
-                            <td colspan='2'>অর্থ বছর- " . int_en_to_bn($HoldingBokeya->orthoBchor) . "</td>
+                            <td colspan='2'>অর্থ বছর- " . int_en_to_bn($HoldingBokeya->payOB) . "</td>
                             <td style='text-align: right'>রশিদ নং- " . int_en_to_bn($HoldingBokeya->invoiceId) . "</td>
                         </tr>
                         <tr>
