@@ -98,7 +98,7 @@
                 </div>
             </div>
 
-            {!! sonodView_Inheritance_certificate_english($main_sonod_id) !!}
+            {!! sonodView_Inheritance_certificate_english($row->id) !!}
 
             @php
                 $C_color = '#7230A0';
