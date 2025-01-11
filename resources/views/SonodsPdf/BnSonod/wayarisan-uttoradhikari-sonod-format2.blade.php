@@ -26,10 +26,10 @@
                         </div>
                     </td>
                     <td style="text-align: center;" width="20%">
-                        <img width="80px" src="{{ base64('backend/bd-logo.png') }}">
+                        <img width="70px" src="{{ base64('backend/bd-logo.png') }}">
                     </td>
                     <td style="text-align: center;" width="20%">
-                        <img width="80px" src="{{ $row->image }}">
+                        <img width="70px" src="{{ $row->image }}">
                     </td>
                 </tr>
                 <tr style="margin-top:2px;margin-bottom:2px;">
