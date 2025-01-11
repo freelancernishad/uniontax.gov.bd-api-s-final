@@ -104,18 +104,19 @@ class SonodPdfController extends Controller
     }
 
 
-
-    function sonodVerify(Request $request,$id) {
-        $en = $request->en;
-        if($en){
-            return redirect(url("/sonod/download/$id?en=$en"));
-        }else{
-            return redirect(url("/sonod/download/$id"));
-
+    function sonodVerify(Request $request, $id) {
+        $en = $request->query('en'); // Use query() to get the query parameter
+    
+        // Construct the base URL
+        $url = url("/sonod/download/$id");
+    
+        // Append query parameter if 'en' exists
+        if ($en) {
+            $url .= "?en=$en";
         }
-
-        return response()->json(url("/sonod/download/$id"));
-
+    
+        // Redirect to the constructed URL
+        return redirect($url);
     }
 
 
