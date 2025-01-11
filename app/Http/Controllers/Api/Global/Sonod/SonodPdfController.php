@@ -154,8 +154,9 @@ class SonodPdfController extends Controller
                     $query->select('id', 'sonod_id'); // Select only 'id' and 'sonod_id' from the sonod table
                 }])->find($row->id);
                 $sonod_id = $row->sonod->sonod_id;
+                $main_sonod_id = $row->sonod->id;
 
-                return view("SonodsPdf.$sonodFolder.wayarisan-uttoradhikari-sonod-format2", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id'))->render();
+                return view("SonodsPdf.$sonodFolder.wayarisan-uttoradhikari-sonod-format2", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id','main_sonod_id'))->render();
 
 
             }

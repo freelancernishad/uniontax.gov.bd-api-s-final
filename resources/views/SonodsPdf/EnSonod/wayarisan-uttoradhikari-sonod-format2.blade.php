@@ -16,7 +16,7 @@
                 <tr>
                     <td style="text-align: center;" width="20%">
                         @php
-                            $qrurl = url("/verification/sonod/$row->id?sonod_name=$sonodnames->enname&sonod_Id=$sonod_Id");
+                            $qrurl = url("/verification/sonod/$main_sonod_id?sonod_name=$sonodnames->enname&sonod_Id=$sonod_Id");
                         @endphp
                         <img src="https://api.qrserver.com/v1/create-qr-code/?data={{ $qrurl }}&size=80x80"/>
                         <br />
@@ -98,7 +98,7 @@
                 </div>
             </div>
 
-            {!! sonodView_Inheritance_certificate_english($row->id) !!}
+            {!! sonodView_Inheritance_certificate_english($main_sonod_id) !!}
 
             @php
                 $C_color = '#7230A0';
