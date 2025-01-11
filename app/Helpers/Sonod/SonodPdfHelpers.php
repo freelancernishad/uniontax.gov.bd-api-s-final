@@ -217,3 +217,84 @@ $nagoriinfo .= '<h4 style="text-align:center;margin-bottom:0px;font-size:11px">'
     $output .= '' . $nagoriinfo . '';
     return $output;
 }
+
+
+function sonodView_Inheritance_certificate_english($id) {
+    $row = Sonod::find($id);
+    $sonod_name = $row->sonod_name;
+    if ($sonod_name == 'ওয়ারিশান সনদ') {
+        $text = 'Heir/Heirs Name and Relationship';
+    } else {
+        $text = 'Successors Name and Relationship';
+    }
+
+    $w_list = $row->successor_list;
+    $w_list = json_decode($w_list);
+
+    $nagoriinfo = '';
+
+    if ($sonod_name == 'ওয়ারিশান সনদ') {
+        if ($row->ut_religion == 'ইসলাম') {
+            $deathStatus = 'Late';
+            $deathStatus2 = 'the late';
+        } else {
+            $deathStatus = 'Deceased';
+            $deathStatus2 = 'the deceased';
+        }
+
+        $nagoriinfo .= '
+            <p style="margin-top:0px;margin-bottom:5px;font-size:11px;text-align:justify">&nbsp; &nbsp; &nbsp; This is to certify that ' . $deathStatus . ' ' . $row->utname . ', Father/Husband- ' . $row->ut_father_name . ', Mother- ' . $row->ut_mother_name . ', Village- ' . $row->ut_grame . ', Post Office- ' . $row->ut_post . ', Upazila: ' . $row->ut_thana . ', District- ' . $row->ut_district . '. He was a resident of Ward No. ' . int_en_to_bn($row->ut_word) . ' of this union as a ' . $row->applicant_resident_status . '. At the time of death, he left behind the following heirs. Below are the names and relationships of his heir/heirs.<br>
+            <br>
+            &nbsp; &nbsp; &nbsp; I pray for the salvation of the departed soul of ' . $deathStatus2 . '.
+            </p>
+            <p style="margin: 0;font-size:11px;">Note: All responsibilities of this heir certificate lie with the concerned UP member/verifier.</p>
+        ';
+    } else {
+        $nagoriinfo .= '
+            <p style="margin-top:0px;margin-bottom:5px;font-size:11px;text-align:justify">&nbsp; &nbsp; &nbsp; This is to certify that Mr. ' . $row->utname . ', Father/Husband- ' . $row->ut_father_name . ', Mother- ' . $row->ut_mother_name . ', Village- ' . $row->ut_grame . ', Post Office- ' . $row->ut_post . ', Upazila: ' . $row->ut_thana . ', District- ' . $row->ut_district . '. He is a resident of Ward No. ' . int_en_to_bn($row->ut_word) . ' of this union as a ' . $row->applicant_resident_status . '. Below are the names and relationships of his successor/successors.<br>
+            <br>
+            </p>
+            <p style="margin: 0;font-size:11px;">Note: All responsibilities of this successor certificate lie with the concerned UP member/verifier.</p>
+        ';
+    }
+
+    $nagoriinfo .= '<h4 style="text-align:center;margin-bottom:0px;font-size:11px">' . $text . '</h4>
+    <table class="table" style="width:100%;border-collapse: collapse;" cellspacing="0" cellpadding="0">
+        <tr>
+            <th style="border: 1px dotted black; padding:1px 4px; font-size: 11px;" width="10%">SL No.</th>
+            <th style="border: 1px dotted black; padding:1px 4px; font-size: 11px;" width="30%">Name</th>
+            <th style="border: 1px dotted black; padding:1px 4px; font-size: 11px;" width="10%">Relationship</th>
+            <th style="border: 1px dotted black; padding:1px 4px; font-size: 11px;" width="10%">Age</th>
+            <th style="border: 1px dotted black; padding:1px 4px; font-size: 11px;" width="20%">NID/Birth Registration No.</th>
+        </tr>';
+
+    $i = 1;
+    foreach ($w_list as $rowList) {
+        $nagoriinfo .= '
+        <tr>
+            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . int_en_to_bn($i) . '</td>
+            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . $rowList->w_name . '</td>
+            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . $rowList->w_relation . '</td>
+            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . int_en_to_bn($rowList->w_age) . '</td>
+            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . int_en_to_bn($rowList->w_nid) . '</td>
+        </tr>';
+        $i++;
+    }
+
+    $nagoriinfo .= '
+    </table>
+    <br>
+    <p style="margin-top:-18px;margin-bottom:1px;font-size:11px">
+    Applicant\'s Name: ' . $row->applicant_name . '. Father/Husband\'s Name: ' . $row->applicant_father_name . '. Mother\'s Name: ' . $row->applicant_mother_name . '
+    </p><br>
+    <p style="margin-top:-18px;margin-bottom:1px;font-size:11px">
+    This certificate is issued after verification/authentication of the information submitted by the applicant by the concerned ward UP member.
+    </p> <br/>
+    <p style="margin-top:-18px; margin-bottom:0px;font-size:11px">
+    &nbsp; &nbsp; &nbsp; I wish for his/their overall progress and well-being.
+    </p>';
+
+    $output = ' ';
+    $output .= '' . $nagoriinfo . '';
+    return $output;
+}
