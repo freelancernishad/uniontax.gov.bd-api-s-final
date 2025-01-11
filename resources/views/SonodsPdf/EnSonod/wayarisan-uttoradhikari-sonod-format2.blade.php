@@ -41,14 +41,14 @@
                 <tr style="margin-top:0px;margin-bottom:0px;">
                     <td></td>
                     <td style="margin-top:0px; margin-bottom:0px; text-align: center;" width="50%">
-                        <h1 style="color: #7230A0; margin: 0px; font-size: 18px">{{ $uniouninfo->full_name }}</h1>
+                        <h1 style="color: #7230A0; margin: 0px; font-size: 18px">{{ $uniouninfo->full_name_en }}</h1>
                     </td>
                     <td></td>
                 </tr>
                 <tr style="margin-top:2px;margin-bottom:2px;">
                     <td></td>
                     <td style="text-align: center;" width="50%">
-                        <p style="font-size:13px">Upazila: {{ $uniouninfo->thana }}, District: {{ $uniouninfo->district }}.</p>
+                        <p style="font-size:13px">Upazila: {{ $uniouninfo->thana_en }}, District: {{ $uniouninfo->district_en }}.</p>
                     </td>
                     <td></td>
                 </tr>
@@ -99,7 +99,7 @@
                             <img width="170px" style="{{ $style }}" src="{{ base64($row->chaireman_sign) }}"><br/>
                             <b><span style="color:{{ $C_color }}; font-size:{{ $C_size }};">{{ $row->chaireman_name }}</span></b><br />
                             <span style="font-size:12px;">{{ $row->chaireman_type }}</span><br />
-                            {{ $uniouninfo->full_name }}<br> {{ $uniouninfo->thana }}, {{ $uniouninfo->district }}.<br>
+                            {{ $uniouninfo->full_name_en }}<br> {{ $uniouninfo->thana_en }}, {{ $uniouninfo->district_en }}.<br>
                             {{ $row->c_email }}
                         </div>
                     </td>

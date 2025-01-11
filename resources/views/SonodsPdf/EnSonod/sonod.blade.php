@@ -126,7 +126,7 @@
                             <br />
                             <b><span style="color:#7230A0;font-size:12px;">{{ $row->socib_name }}</span> <br /></b>
                             <span style="font-size:16px;">Secretary</span><br />
-                            {{ $uniouninfo->full_name_en }}<br> {{ $uniouninfo->thana }}, {{ $uniouninfo->district }}.
+                            {{ $uniouninfo->full_name_en }}<br> {{ $uniouninfo->thana_en }}, {{ $uniouninfo->district_en }}.
                             <br>
                         </div>
                         @endif
