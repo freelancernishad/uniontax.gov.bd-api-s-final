@@ -185,6 +185,10 @@ class UserSonodController extends Controller
             $updateData_en = [];
         }
 
+        $format = 1;
+        if($sonod->sonod_name=='ওয়ারিশান সনদ' || $sonod->sonod_name=='উত্তরাধিকারী সনদ'){
+            $format = 2;
+        }
 
 
 
@@ -196,12 +200,14 @@ class UserSonodController extends Controller
                 'socib_name' => $unioninfo->socib_name ?? 'N/A',
                 'socib_signture' => $unioninfo->socib_signture ?? 'N/A',
                 'socib_email' => $unioninfo->socib_email ?? 'N/A',
+                'format' => $format ?? 1,
             ]);
 
             $updateData_en = array_merge($updateData_en, [
                 'socib_name' => $unioninfo->socib_name_en ?? 'N/A',
                 'socib_signture' => $unioninfo->socib_signture ?? 'N/A',
                 'socib_email' => $unioninfo->socib_email ?? 'N/A',
+                'format' => $format ?? 1,
             ]);
 
 
