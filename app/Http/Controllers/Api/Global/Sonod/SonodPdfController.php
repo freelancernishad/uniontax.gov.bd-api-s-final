@@ -106,7 +106,7 @@ class SonodPdfController extends Controller
 
 
     function sonodVerify($id) {
-        return url("/sonod/download/$id");
+        return response()->json(url("/sonod/download/$id"));
     }
 
 
