@@ -63,9 +63,9 @@ class SystemSettingController extends Controller
         }
 
         // Write back to .env safely
-        if (!empty($envContents)) {
-            file_put_contents($envPath, $envContents);
-        }
+        // if (!empty($envContents)) {
+        //     file_put_contents($envPath, $envContents);
+        // }
 
 
         // Return success response
