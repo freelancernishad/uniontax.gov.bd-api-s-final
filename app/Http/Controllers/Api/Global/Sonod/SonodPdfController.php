@@ -105,8 +105,17 @@ class SonodPdfController extends Controller
 
 
 
-    function sonodVerify($id) {
+    function sonodVerify(Request $request,$id) {
+        $en = $request->en;
+        if($en){
+            return redirect(url("/sonod/download/$id?en=$en"));
+        }else{
+            return redirect(url("/sonod/download/$id"));
+
+        }
+
         return response()->json(url("/sonod/download/$id"));
+
     }
 
 
