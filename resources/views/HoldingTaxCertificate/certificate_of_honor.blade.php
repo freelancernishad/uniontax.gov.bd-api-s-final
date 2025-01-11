@@ -114,7 +114,7 @@
             তারিখঃ {{ int_en_to_bn(date('Y-m-d')) }}
         </td>
         <td style="text-align: center; width: 200px;" width="30%">
-            <img width="100px" src="{{ base64($uniouninfo->sonod_logo) }}">
+            <img width="100px" src="{{ $uniouninfo->sonod_logo }}">
         </td>
         <td style="text-align: center;" width="40%">
 
@@ -139,7 +139,7 @@
 
 
             <div class="signature text-center position-relative" style="color:{{ $color }}">
-                <img width="170px"  src="{{ base64($uniouninfo->c_signture) }}"><br/>
+                <img width="170px"  src="{{ $uniouninfo->c_signture }}"><br/>
                 <b><span style="color:{{ $C_color }};font-size:{{ $C_size }};">{{ $uniouninfo->c_name }}</span> <br />
                         </b><span style="font-size:16px;">চেয়ারম্যান</span><br />
 

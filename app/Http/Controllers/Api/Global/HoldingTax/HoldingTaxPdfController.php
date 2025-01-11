@@ -113,7 +113,8 @@ class HoldingTaxPdfController extends Controller
         $holdingBokeya = HoldingBokeya::find($id);
         $holdingTax = Holdingtax::find($holdingBokeya->holdingTax_id);
         $uniouninfo = Uniouninfo::where('short_name_e', $holdingTax->unioun)->first();
-
+        $uniouninfo->sonod_logo = handleFileUrl($uniouninfo->sonod_logo);
+        $uniouninfo->c_signture = handleFileUrl($uniouninfo->c_signture);
         // Generate the file name
         $fileName = 'Certificate_of_Honor-' . date('Y-m-d_H:m:s');
 
