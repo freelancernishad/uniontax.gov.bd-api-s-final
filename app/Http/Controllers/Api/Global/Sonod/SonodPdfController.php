@@ -149,7 +149,15 @@ class SonodPdfController extends Controller
 
         if ($sonod_name == 'ওয়ারিশান সনদ' || $sonod_name == 'উত্তরাধিকারী সনদ') {
             if ($row->format == 2) {
+
+                $row = EnglishSonod::with(['sonod' => function ($query) {
+                    $query->select('id', 'sonod_id'); // Select only 'id' and 'sonod_id' from the sonod table
+                }])->find($row->id);
+                $sonod_id = $row->sonod->sonod_id;
+
                 return view("SonodsPdf.$sonodFolder.wayarisan-uttoradhikari-sonod-format2", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id'))->render();
+
+
             }
             return view("SonodsPdf.$sonodFolder.wayarisan-uttoradhikari-sonod", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id'))->render();
             // return $this->pdfHTMLut($row->id, "$sonod_name.pdf");
