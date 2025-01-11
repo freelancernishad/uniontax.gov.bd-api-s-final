@@ -84,7 +84,7 @@ class UniouninfoController extends Controller
 
 
            // Replace file path columns with full URLs using the /files/{path} route
-           $fileFields = ['web_logo', 'sonod_logo', 'c_signture', 'socib_signture'];
+           $fileFields = ['web_logo', 'sonod_logo', 'c_signture', 'socib_signture', 'u_image'];
 
            foreach ($fileFields as $field) {
                if ($uniouninfos->$field) {
