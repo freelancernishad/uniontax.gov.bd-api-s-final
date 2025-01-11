@@ -29,6 +29,12 @@ class ApiResponse
         // Capture the response
         $response = $next($request);
 
+
+        // Skip formatting for redirect responses
+        if ($response->isRedirection()) {
+            return $response;
+        }
+
         // Check if the response is a valid Response object
         if ($response instanceof Response) {
             // Decode the response content if it's JSON
