@@ -18,7 +18,7 @@
                         @php
                             $qrurl = url("/verification/sonod/$row->id?sonod_name=$sonodnames->enname&sonod_Id=$row->sonod_Id");
                         @endphp
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?data={{ $qrurl }}&size=80x80"/>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?data={{ $qrurl }}&size=70x70"/>
                         <br />
                         <div class="signature text-center position-relative" style="font-size:14px">
                             সনদ নং:  {{ int_en_to_bn($row->sonod_Id) }} <br />
