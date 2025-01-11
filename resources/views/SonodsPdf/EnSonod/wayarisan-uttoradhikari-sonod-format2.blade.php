@@ -20,7 +20,7 @@
                         @endphp
                         <img src="https://api.qrserver.com/v1/create-qr-code/?data={{ $qrurl }}&size=80x80"/>
                         <br />
-                        <div class="signature text-center position-relative" style="font-size: 12px">
+                        <div class="signature text-center position-relative" style="font-size: 12px;margin-top:8px">
                             Issue Date: {{ date('d/m/Y', strtotime($row->created_at)) }}
                         </div>
                     </td>
