@@ -112,6 +112,8 @@ class HoldingTaxPdfController extends Controller
         // Retrieve the HoldingBokeya, HoldingTax, and UniounInfo data
         $holdingBokeya = HoldingBokeya::find($id);
         $holdingTax = Holdingtax::find($holdingBokeya->holdingTax_id);
+        $holdingTax->image = handleFileUrl($holdingTax->image);
+        
         $uniouninfo = Uniouninfo::where('short_name_e', $holdingTax->unioun)->first();
         $uniouninfo->sonod_logo = handleFileUrl($uniouninfo->sonod_logo);
         $uniouninfo->c_signture = handleFileUrl($uniouninfo->c_signture);
