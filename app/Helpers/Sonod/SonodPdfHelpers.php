@@ -220,7 +220,19 @@ $nagoriinfo .= '<h4 style="text-align:center;margin-bottom:0px;font-size:11px">'
 
 
 function sonodView_Inheritance_certificate_english($id) {
-    $row = Sonod::find($id);
+
+
+
+
+        $row = EnglishSonod::with(['sonod' => function ($query) {
+            $query->select('id', 'sonod_id'); // Select only 'id' and 'sonod_id' from the sonod table
+        }])->find($id);
+        $sonod_id = $row->sonod->sonod_id;
+
+
+
+
+
     $sonod_name = $row->sonod_name;
     if ($sonod_name == 'ওয়ারিশান সনদ') {
         $text = 'Heir/Heirs Name and Relationship';
