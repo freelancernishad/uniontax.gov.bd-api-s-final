@@ -334,7 +334,7 @@ class HoldingtaxController extends Controller
 
         // Query the Holdingtax model and apply filters
         $query = Holdingtax::query();
-        $query->select(['id','maliker_name','nid_no','mobile_no']);
+        $query->select(['id','holding_no','maliker_name','nid_no','mobile_no']);
 
 
         $userUnion = $r->unioun;
