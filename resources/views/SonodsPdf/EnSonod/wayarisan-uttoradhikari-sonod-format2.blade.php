@@ -67,7 +67,7 @@
                     $fontsize = '15px';
                 @endphp
                 <div style="background-color: #159513; color: #fff; font-size: {{ $fontsize }}; border-radius: 30em; width:{{ $width }}; margin:14px auto; text-align:center; padding:3px 0;">
-                    {{ changeSonodName($row->sonod_name) }}
+                    {{ SonodEnName($row->sonod_name) }}
                 </div>
             </div>
 
