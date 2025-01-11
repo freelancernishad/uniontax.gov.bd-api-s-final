@@ -81,7 +81,7 @@
 
     </td>
     <td style="text-align: center;" width="20%">
-        <img width="100px" src="{{ base64($row->image) }}">
+        <img width="100px" src="{{ $row->image }}">
     </td>
 </tr>
 
@@ -141,7 +141,7 @@ margin-left: 83px;
                         <td style="text-align: center;vertical-align: bottom;"  width="40%">
 
                         <div class="signature text-center position-relative" style="color:black">
-                            <img width="170px" style="{{ $style }}"  src="{{ base64($row->socib_signture) }}"><br/>
+                            <img width="170px" style="{{ $style }}"  src="{{ $row->socib_signture }}"><br/>
                                 <b><span style="color:{{ $C_color }};font-size:{{ $C_size }};">{{ $row->socib_name }}</span> <br />
                                      </b><span style="font-size:16px;">প্রশাসনিক কর্মকর্তা</span><br />
                              {{ $uniouninfo->full_name }}<br> {{ $uniouninfo->thana }}, {{ $uniouninfo->district }} ।
@@ -151,13 +151,13 @@ margin-left: 83px;
 
                         </td>
                         <td style="text-align: center; width: 200px;" width="30%">
-                            <img width="100px" src="{{ base64($uniouninfo->sonod_logo) }}">
+                            <img width="100px" src="{{ $uniouninfo->sonod_logo }}">
                         </td>
                         <td style="text-align: center;" width="40%">
 
 
                             <div class="signature text-center position-relative" style="color:{{ $color }}">
-                                <img width="170px" style="{{ $style }}"  src="{{ base64($row->chaireman_sign) }}"><br/>
+                                <img width="170px" style="{{ $style }}"  src="{{ $row->chaireman_sign }}"><br/>
                                 <b><span style="color:{{ $C_color }};font-size:{{ $C_size }};">{{ $row->chaireman_name }}</span> <br />
                                         </b><span style="font-size:16px;">{{ $row->chaireman_type }}</span><br />
 
