@@ -21,7 +21,7 @@
                         <img src="https://api.qrserver.com/v1/create-qr-code/?data={{ $qrurl }}&size=80x80"/>
                         <br />
                         <div class="signature text-center position-relative">
-                            Issue Date: {{ int_en_to_bn(date('d/m/Y', strtotime($row->created_at))) }}
+                            Issue Date: {{ date('d/m/Y', strtotime($row->created_at)) }}
                         </div>
                     </td>
                     <td style="text-align: center;" width="20%">
@@ -88,7 +88,7 @@
                     <td style="text-align: center; vertical-align: bottom;" width="40%">
                         <div class="signature text-center position-relative" style="color:black;font-size:12px;">
                             <span style="font-size:12px;">Union Member</span><br />
-                            {{ $uniouninfo->full_name }}<br> {{ $uniouninfo->thana }}, {{ $uniouninfo->district }}.<br>
+                            {{ $uniouninfo->full_name_en }}<br> {{ $uniouninfo->thana_en }}, {{ $uniouninfo->district_en }}.<br>
                         </div>
                     </td>
                     <td style="text-align: center; width: 200px;" width="30%">
