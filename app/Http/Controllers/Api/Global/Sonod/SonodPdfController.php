@@ -106,15 +106,15 @@ class SonodPdfController extends Controller
 
     function sonodVerify(Request $request, $id) {
         $en = $request->query('en'); // Use query() to get the query parameter
-    
+
         // Construct the base URL
         $url = url("/sonod/download/$id");
-    
+
         // Append query parameter if 'en' exists
         if ($en) {
             $url .= "?en=$en";
         }
-    
+
         // Redirect to the constructed URL
         return redirect($url);
     }
@@ -157,33 +157,32 @@ class SonodPdfController extends Controller
 
 
         $sonodFolder = 'BnSonod';
+        $main_sonod_id = $row->id;
         if($en){
+            $main_sonod_id = $row->sonod->id;
             $sonodFolder = 'EnSonod';
 
         }
 
 
+
+
         if ($sonod_name == 'ওয়ারিশান সনদ' || $sonod_name == 'উত্তরাধিকারী সনদ') {
             if ($row->format == 2) {
-                if($en){
-                    $main_sonod_id = $row->sonod->id;
-                }else{
-                    $main_sonod_id = $row->id;
 
-                }
                 return view("SonodsPdf.$sonodFolder.wayarisan-uttoradhikari-sonod-format2", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id','main_sonod_id'))->render();
 
 
             }
-            return view("SonodsPdf.$sonodFolder.wayarisan-uttoradhikari-sonod", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id'))->render();
+            return view("SonodsPdf.$sonodFolder.wayarisan-uttoradhikari-sonod", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id','main_sonod_id'))->render();
             // return $this->pdfHTMLut($row->id, "$sonod_name.pdf");
         }
 
         if ($sonod_name == 'ট্রেড লাইসেন্স' && $row->format == 2) {
-            return view("SonodsPdf.$sonodFolder.sonod-tradelicense-format2", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id'))->render();
+            return view("SonodsPdf.$sonodFolder.sonod-tradelicense-format2", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id','main_sonod_id'))->render();
         }
 
-        return view("SonodsPdf.$sonodFolder.sonod", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id'))->render();
+        return view("SonodsPdf.$sonodFolder.sonod", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id','main_sonod_id'))->render();
 
 
     }
