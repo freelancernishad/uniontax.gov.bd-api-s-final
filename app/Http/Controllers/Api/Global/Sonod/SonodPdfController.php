@@ -86,18 +86,13 @@ class SonodPdfController extends Controller
         $htmlContent = $this->getHtmlContent($row, $sonod_name, $uniouninfo, $sonodnames,$sonod_Id,$en);
 
         if ($sonod_name == 'ওয়ারিশান সনদ' || $sonod_name == 'উত্তরাধিকারী সনদ') {
-
             $header = null;
             $footer = null;
             if ($row->format == 1) {
                 $header = $this->pdfHeader($id, $filename);
                 $footer = $this->pdfFooter($id, $filename);
             }
-
-
             generatePdf($htmlContent, $header, $footer, $filename);
-
-
         }else{
             generatePdf($htmlContent, $header=null, $footer=null, $filename);
 
