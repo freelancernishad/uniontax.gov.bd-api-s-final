@@ -284,11 +284,11 @@ function sonodView_Inheritance_certificate_english($id) {
     foreach ($w_list as $rowList) {
         $nagoriinfo .= '
         <tr>
-            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . int_en_to_bn($i) . '</td>
+            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . ($i) . '</td>
             <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . $rowList->w_name . '</td>
             <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . $rowList->w_relation . '</td>
-            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . int_en_to_bn($rowList->w_age) . '</td>
-            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . int_en_to_bn($rowList->w_nid) . '</td>
+            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . ($rowList->w_age) . '</td>
+            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . ($rowList->w_nid) . '</td>
         </tr>';
         $i++;
     }
