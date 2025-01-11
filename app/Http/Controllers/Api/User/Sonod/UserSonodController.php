@@ -189,6 +189,9 @@ class UserSonodController extends Controller
         if($sonod->sonod_name=='ওয়ারিশান সনদ' || $sonod->sonod_name=='উত্তরাধিকারী সনদ'){
             $format = 2;
         }
+        if($sonod->sonod_name=='ট্রেড লাইসেন্স'){
+            $format = 2;
+        }
 
 
 
