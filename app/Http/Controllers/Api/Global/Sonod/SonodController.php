@@ -188,7 +188,7 @@ class SonodController extends Controller
     {
 
         // Handle file uploads with optimized code
-        if($request->bn['image']){
+        if(isset($request->bn['image']) && $request->bn['image']){
             $this->uploadFile($request->bn['image'], $insertData, 'image', $filePath, $dateFolder, $sonodId);
         }
 
