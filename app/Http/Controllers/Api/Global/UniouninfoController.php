@@ -7,6 +7,7 @@ use App\Models\Uniouninfo;
 use Illuminate\Http\Request;
 use App\Models\Sonodnamelist;
 use App\Models\TradeLicenseKhat;
+use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -77,6 +78,31 @@ class UniouninfoController extends Controller
     if (!$uniouninfos) {
         return response()->json(['message' => 'No data found'], 404);
     }
+
+
+
+
+
+           // Replace file path columns with full URLs using the /files/{path} route
+           $fileFields = ['web_logo', 'sonod_logo', 'c_signture', 'socib_signture'];
+
+           foreach ($fileFields as $field) {
+               if ($uniouninfos->$field) {
+                   try {
+                       // Replace the file path with the full URL
+                       $uniouninfos->$field = URL::to('/files/' . $uniouninfos->$field);
+                   } catch (\Exception $e) {
+                       // If the file is not found or cannot be read, set the value to null
+                       $uniouninfos->$field = null;
+                   }
+               } else {
+                   // If the field is empty, set the value to null
+                   $uniouninfos->$field = null;
+               }
+           }
+
+
+
 
     // Cache the sonod_name_lists data
     $sonodCacheKey = 'sonod_name_lists_' . $shortName;
