@@ -20,6 +20,12 @@ use App\Http\Controllers\Api\Global\HoldingTax\HoldingTaxPdfController;
 Route::get('/sonod/d/{id}', [SonodPdfController::class,'sonodDownload']);
 Route::get('/sonod/download/{id}', [SonodPdfController::class,'sonodDownload']);
 
+Route::get('/verification/sonod/{id}', [SonodPdfController::class,'sonodVerify']);
+
+
+
+
+
 Route::get('/document/d/{id}', [DocumentPdfController::class,'userDocument']);
 Route::get('/applicant/copy/download/{id}', [DocumentPdfController::class,'userDocument']);
 
