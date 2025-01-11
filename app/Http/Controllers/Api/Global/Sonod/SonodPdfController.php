@@ -150,7 +150,14 @@ class SonodPdfController extends Controller
         if ($sonod_name == 'ওয়ারিশান সনদ' || $sonod_name == 'উত্তরাধিকারী সনদ') {
             if ($row->format == 2) {
 
-                $main_sonod_id = $row->sonod->id;
+                if($en){
+                    $main_sonod_id = $row->sonod->id;
+                }else{
+                    $main_sonod_id = $row->id;
+
+                }
+
+
                 return view("SonodsPdf.$sonodFolder.wayarisan-uttoradhikari-sonod-format2", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id','main_sonod_id'))->render();
 
 
