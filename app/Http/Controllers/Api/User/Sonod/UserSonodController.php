@@ -138,7 +138,6 @@ class UserSonodController extends Controller
             $sec_prottoyon = $request->sec_prottoyon;
         }else{
             if($sonod->english_sonod){
-
                 $sec_prottoyon_en = generateSecProttoyon($sonod->english_sonod,true);
             }
                 $sec_prottoyon = generateSecProttoyon($sonod);
@@ -167,15 +166,26 @@ class UserSonodController extends Controller
 
 
         // Initialize the update data with common fields
-        $updateData = [
-            'sec_prottoyon' => $sec_prottoyon,
-            'stutus' => $approveData, // sec_approved or approved
-        ];
 
+
+        if($user->position=='Secretary'){
+
+            $updateData = [
+                'sec_prottoyon' => $sec_prottoyon,
+                'stutus' => $approveData, // sec_approved or approved
+            ];
 
             $updateData_en = [
                 'sec_prottoyon' => $sec_prottoyon_en,
             ];
+        }else{
+            $updateData = [
+                'stutus' => $approveData,
+            ];
+            $updateData_en = [];
+        }
+
+
 
 
 
