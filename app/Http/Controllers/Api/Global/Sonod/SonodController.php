@@ -475,22 +475,27 @@ class SonodController extends Controller
                 // Set renew_able flag
                 $sonod->renew_able = ($isNotCurrentOrthoBchor && $isRenewable);
 
+                // Initialize download URLs
                 $sonod->download_url = '';
                 $sonod->download_url_en = '';
-                // Generate the download URL
-                if ($sonod->renew_able) {
-                    // If renew_able is true, generate the download URL for the renewed Sonod (if applicable)
-                    if ($sonod->renewed_id && $sonod->renewed) {
-                        $sonod->download_url = url("sonod/download/$sonod->renewed_id");
-                        if ($sonod->hasEnData) {
-                            $sonod->download_url_en = url("sonod/download/$sonod->renewed_id?en=true");
+
+                // Check if the Sonod is approved and paid
+                if ($sonod->stutus === 'Approved' && $sonod->payment_status === 'Paid') {
+                    // Generate the download URL
+                    if ($sonod->renew_able) {
+                        // If renew_able is true, generate the download URL for the renewed Sonod (if applicable)
+                        if ($sonod->renewed_id && $sonod->renewed) {
+                            $sonod->download_url = url("sonod/download/$sonod->renewed_id");
+                            if ($sonod->hasEnData) {
+                                $sonod->download_url_en = url("sonod/download/$sonod->renewed_id?en=true");
+                            }
                         }
-                    }
-                } else {
-                    // If renew_able is false, generate the download URL for the main Sonod
-                    $sonod->download_url = url("sonod/download/$sonod->id");
-                    if ($sonod->hasEnData) {
-                        $sonod->download_url_en = url("sonod/download/$sonod->id?en=true");
+                    } else {
+                        // If renew_able is false, generate the download URL for the main Sonod
+                        $sonod->download_url = url("sonod/download/$sonod->id");
+                        if ($sonod->hasEnData) {
+                            $sonod->download_url_en = url("sonod/download/$sonod->id?en=true");
+                        }
                     }
                 }
 
@@ -539,23 +544,27 @@ class SonodController extends Controller
                 // Set renew_able flag
                 $results->renew_able = ($isNotCurrentOrthoBchor && $isRenewable);
 
-
+                // Initialize download URLs
                 $results->download_url = '';
                 $results->download_url_en = '';
-                // Generate the download URL
-                if ($results->renew_able) {
-                    // If renew_able is true, generate the download URL for the renewed Sonod (if applicable)
-                    if ($results->renewed_id && $results->renewed) {
-                        $results->download_url = url("sonod/download/$results->renewed_id");
-                        if ($results->hasEnData) {
-                            $results->download_url_en = url("sonod/download/$results->renewed_id?en=true");
+
+                // Check if the Sonod is approved and paid
+                if ($results->stutus === 'approved' && $results->payment_status === 'Paid') {
+                    // Generate the download URL
+                    if ($results->renew_able) {
+                        // If renew_able is true, generate the download URL for the renewed Sonod (if applicable)
+                        if ($results->renewed_id && $results->renewed) {
+                            $results->download_url = url("sonod/download/$results->renewed_id");
+                            if ($results->hasEnData) {
+                                $results->download_url_en = url("sonod/download/$results->renewed_id?en=true");
+                            }
                         }
-                    }
-                } else {
-                    // If renew_able is false, generate the download URL for the main Sonod
-                    $results->download_url = url("sonod/download/$results->id");
-                    if ($results->hasEnData) {
-                        $results->download_url_en = url("sonod/download/$results->id?en=true");
+                    } else {
+                        // If renew_able is false, generate the download URL for the main Sonod
+                        $results->download_url = url("sonod/download/$results->id");
+                        if ($results->hasEnData) {
+                            $results->download_url_en = url("sonod/download/$results->id?en=true");
+                        }
                     }
                 }
 
