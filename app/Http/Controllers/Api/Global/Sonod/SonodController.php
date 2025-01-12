@@ -726,7 +726,7 @@ class SonodController extends Controller
                 // 'new_sonod' => $newSonod,
                 // 'new_english_sonod' => $newEnglishSonod ?? null, // Include the new EnglishSonod if it exists
                 'redirect_url' => $redirectUrl,
-            ], 201);
+            ], 200);
 
         } catch (Exception $e) {
             // Handle errors and return a response
