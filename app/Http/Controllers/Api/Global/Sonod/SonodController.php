@@ -442,6 +442,10 @@ class SonodController extends Controller
             'payment_status',
             'stutus',
             'successor_list',
+            'orthoBchor', // Include orthoBchor in the response
+            'renewed_id', // Include renewed_id in the response
+            'renewed', // Include renewed in the response
+            'hasEnData',
         ];
 
         // Retrieve by ID if 'id' is provided
@@ -449,6 +453,47 @@ class SonodController extends Controller
             $sonod = Sonod::select($columns)->find($request->input('id'));
 
             if ($sonod) {
+                // Calculate the current orthoBchor
+                $currentYear = date('Y');
+                $currentMonth = date('m');
+
+                if ($currentMonth >= 7) {
+                    $currentOrthoBchor = $currentYear . '-' . substr(($currentYear + 1), -2);
+                } else {
+                    $currentOrthoBchor = ($currentYear - 1) . '-' . substr($currentYear, -2);
+                }
+
+                // Check if orthoBchor is not current
+                $isNotCurrentOrthoBchor = ($sonod->orthoBchor !== $currentOrthoBchor);
+
+                // Check if renewed_id is not null but renewed is null
+                $isRenewable = (
+                    ($sonod->renewed_id !== null && $sonod->renewed === null) || // Case 1
+                    ($sonod->renewed_id === null && $sonod->renewed === null)    // Case 2
+                );
+
+                // Set renew_able flag
+                $sonod->renew_able = ($isNotCurrentOrthoBchor && $isRenewable);
+
+                $sonod->download_url = '';
+                $sonod->download_url_en = '';
+                // Generate the download URL
+                if ($sonod->renew_able) {
+                    // If renew_able is true, generate the download URL for the renewed Sonod (if applicable)
+                    if ($sonod->renewed_id && $sonod->renewed) {
+                        $sonod->download_url = url("sonod/download/$sonod->renewed_id");
+                        if ($sonod->hasEnData) {
+                            $sonod->download_url_en = url("sonod/download/$sonod->renewed_id?en=true");
+                        }
+                    }
+                } else {
+                    // If renew_able is false, generate the download URL for the main Sonod
+                    $sonod->download_url = url("sonod/download/$sonod->id");
+                    if ($sonod->hasEnData) {
+                        $sonod->download_url_en = url("sonod/download/$sonod->id?en=true");
+                    }
+                }
+
                 return response()->json([
                     'success' => true,
                     'data' => $sonod,
@@ -472,6 +517,48 @@ class SonodController extends Controller
                 ->first();
 
             if ($results) {
+                // Calculate the current orthoBchor
+                $currentYear = date('Y');
+                $currentMonth = date('m');
+
+                if ($currentMonth >= 7) {
+                    $currentOrthoBchor = $currentYear . '-' . substr(($currentYear + 1), -2);
+                } else {
+                    $currentOrthoBchor = ($currentYear - 1) . '-' . substr($currentYear, -2);
+                }
+
+                // Check if orthoBchor is not current
+                $isNotCurrentOrthoBchor = ($results->orthoBchor !== $currentOrthoBchor);
+
+                // Check if renewed_id is not null but renewed is null
+                $isRenewable = (
+                    ($results->renewed_id !== null && $results->renewed === null) || // Case 1
+                    ($results->renewed_id === null && $results->renewed === null)    // Case 2
+                );
+
+                // Set renew_able flag
+                $results->renew_able = ($isNotCurrentOrthoBchor && $isRenewable);
+
+
+                $results->download_url = '';
+                $results->download_url_en = '';
+                // Generate the download URL
+                if ($results->renew_able) {
+                    // If renew_able is true, generate the download URL for the renewed Sonod (if applicable)
+                    if ($results->renewed_id && $results->renewed) {
+                        $results->download_url = url("sonod/download/$results->renewed_id");
+                        if ($results->hasEnData) {
+                            $results->download_url_en = url("sonod/download/$results->renewed_id?en=true");
+                        }
+                    }
+                } else {
+                    // If renew_able is false, generate the download URL for the main Sonod
+                    $results->download_url = url("sonod/download/$results->id");
+                    if ($results->hasEnData) {
+                        $results->download_url_en = url("sonod/download/$results->id?en=true");
+                    }
+                }
+
                 return response()->json($results);
             }
 
