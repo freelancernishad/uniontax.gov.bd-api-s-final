@@ -69,8 +69,8 @@ $orthoBchor = explode('-', $row->orthoBchor);
 @php
 $amount_details = $amount_details;
 $amount_details = json_decode($amount_details);
-$tradeLicenseFee = $amount_details->tradeLicenseFee;
-$vatAykor = ($tradeLicenseFee * $amount_details->vatAykor) / 100;
+$tredeLisenceFee = $amount_details->tredeLisenceFee;
+$vatAykor = ($tredeLisenceFee * $amount_details->vatAykor) / 100;
 @endphp
 
 <table width='100%' style="font-size: 12px;margin-top:10px">
@@ -78,7 +78,7 @@ $vatAykor = ($tradeLicenseFee * $amount_details->vatAykor) / 100;
         <td width='50%'>
             <ul style='list-style:none'>
                 <li>Trade License Fee (Renewal):</li>
-                <li>Permit Fee: {{ int_en_to_bn($tradeLicenseFee) }} Taka</li>
+                <li>Permit Fee: {{ int_en_to_bn($tredeLisenceFee) }} Taka</li>
                 <li>Service Charge: 0.00 Taka</li>
                 <li>Arrears: {{ int_en_to_bn($amount_details->last_years_money) }} Taka</li>
                 <li>Subcharge: 0.00 Taka</li>

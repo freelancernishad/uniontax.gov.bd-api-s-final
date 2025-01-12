@@ -69,7 +69,7 @@ function sonodView_trade2($id,$en=false){
         $bladeType = 'EnSonod';
 
 
-        return $amount_details;
+        // return $amount_details;
     }else{
         $bladeType = 'BnSonod';
 
