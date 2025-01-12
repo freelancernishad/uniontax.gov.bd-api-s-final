@@ -17,7 +17,7 @@
                 <tr style="margin-top:0px;margin-bottom:0px;">
                     <td></td>
                     <td style="margin-top:0px; margin-bottom:0px; text-align: center;" width=50%>
-                        <h1 style="color: #7230A0; margin: 0px; font-size: 18px">{{ $uniouninfo->full_name }}</h1>
+                        <h1 style="color: #7230A0; margin: 0px; font-size: 18px">{{ $uniouninfo->full_name_en }}</h1>
                     </td>
                     <td></td>
                 </tr>
@@ -25,7 +25,7 @@
                 <tr style="margin-top:2px;margin-bottom:2px;">
                     <td></td>
                     <td style="text-align: center;" width="50%">
-                        <p style="font-size:14px">{{ $uniouninfo->thana }}, {{ $uniouninfo->district }}.</p>
+                        <p style="font-size:14px">{{ $uniouninfo->thana_en }}, {{ $uniouninfo->district_en }}.</p>
                     </td>
                     <td></td>
                 </tr>
