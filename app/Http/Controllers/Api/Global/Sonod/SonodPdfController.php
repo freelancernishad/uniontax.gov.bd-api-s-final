@@ -180,13 +180,6 @@ class SonodPdfController extends Controller
 
         if ($sonod_name == 'ট্রেড লাইসেন্স' && $row->format == 2) {
 
-
-            if($en){
-               return $row;
-               
-    
-            }
-
             return view("SonodsPdf.$sonodFolder.sonod-tradelicense-format2", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id','main_sonod_id'))->render();
         }
 
