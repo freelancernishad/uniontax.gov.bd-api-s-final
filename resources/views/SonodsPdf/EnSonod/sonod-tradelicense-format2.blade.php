@@ -45,7 +45,7 @@
                         <img src="https://api.qrserver.com/v1/create-qr-code/?data={{ $qrurl }}&size=80x80"/>
                         <br/>
                         <div class="signature text-center position-relative">
-                            Issue Date: {{ int_en_to_bn(date("d/m/Y", strtotime($row->created_at))) }}
+                            Issue Date: {{ (date("d/m/Y", strtotime($row->created_at))) }}
                         </div>
                     </td>
                     <td style="text-align: center; line-height:1em" width="20%">
@@ -53,10 +53,10 @@
 
                         <div class="nagorik_sonod" style="margin-top:2px;">
                             <div style="color: #159513;font-size: 17px;border-radius: 30em;width:200px;margin:5px auto;text-align:center;padding:3px 0;">
-                                <b>{{ $row->sonod_name }}</b>
+                                <b>{{ SonodEnName($row->sonod_name) }}</b>
                             </div>
                             <div style="font-size: 14px;width:300px;margin:1px auto;text-align:center;">
-                                License No: {{ int_en_to_bn($sonod_Id) }}
+                                License No: {{ ($sonod_Id) }}
                             </div>
                         </div>
                     </td>
