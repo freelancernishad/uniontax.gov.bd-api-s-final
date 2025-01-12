@@ -686,7 +686,7 @@ class SonodController extends Controller
             // Update the existing Sonod to mark it as renewed
             $existingSonod->update([
                 'renewed_id' => $newSonod->id,
-                'renewed' => 1, // Mark as renewed
+                // 'renewed' => 1, 
             ]);
 
             // Check if the existing Sonod has an associated EnglishSonod
