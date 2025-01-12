@@ -535,13 +535,13 @@ class SonodController extends Controller
                 // Check if orthoBchor is not current
                 $isNotCurrentOrthoBchor = ($results->orthoBchor !== $currentOrthoBchor);
 
-                return response()->json($isNotCurrentOrthoBchor);
+
                 // Check if renewed_id is not null but renewed is null
                 $isRenewable = (
                     ($results->renewed_id !== null && $results->renewed === null) || // Case 1
                     ($results->renewed_id === null && $results->renewed === null)    // Case 2
                 );
-
+                return response()->json($isRenewable);
                 // Set renew_able flag
                 $results->renew_able = ($isNotCurrentOrthoBchor && $isRenewable);
 
@@ -605,7 +605,7 @@ class SonodController extends Controller
                 return response()->json(['error' => 'Sonod not found'], 404);
             }
 
-           
+
 
             // Check if the Sonod is approved and paid
             if ($existingSonod->stutus !== 'approved' || $existingSonod->payment_status !== 'Paid') {
