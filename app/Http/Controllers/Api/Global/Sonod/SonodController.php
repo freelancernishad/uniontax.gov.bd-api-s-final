@@ -535,6 +535,7 @@ class SonodController extends Controller
                 // Check if orthoBchor is not current
                 $isNotCurrentOrthoBchor = ($results->orthoBchor !== $currentOrthoBchor);
 
+                return response()->json($isNotCurrentOrthoBchor);
                 // Check if renewed_id is not null but renewed is null
                 $isRenewable = (
                     ($results->renewed_id !== null && $results->renewed === null) || // Case 1
