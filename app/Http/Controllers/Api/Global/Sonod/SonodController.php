@@ -188,7 +188,7 @@ class SonodController extends Controller
 
 
 
-                
+
 
 
 
@@ -484,4 +484,153 @@ class SonodController extends Controller
             'error' => 'Invalid search parameters provided',
         ], 400);
     }
+
+
+    public function renewSonod(Request $request, $id)
+    {
+        try {
+            // Extract URIs from the request
+            $urls = [
+                "s_uri" => $request->input('s_uri'),
+                "f_uri" => $request->input('f_uri'),
+                "c_uri" => $request->input('c_uri'),
+            ];
+
+            // Validate that URIs are provided in the request
+            if (empty($urls['s_uri']) || empty($urls['f_uri']) || empty($urls['c_uri'])) {
+                return response()->json(['error' => 'Missing URIs in the request'], 400);
+            }
+
+            // Retrieve existing Sonod data
+            $existingSonod = Sonod::find($id);
+
+            if (!$existingSonod) {
+                return response()->json(['error' => 'Sonod not found'], 404);
+            }
+
+            // Check if renewed_id exists
+            if ($existingSonod->renewed_id) {
+                // If renewed_id exists, check the renewed status
+                if ($existingSonod->renewed) {
+                    // If both renewed_id and renewed are true, return a message
+                    return response()->json(['message' => 'Sonod has already been renewed.'], 200);
+                } else {
+                    // If renewed_id exists but renewed is false, generate payment URL using renewed_id
+                    $renewedSonod = Sonod::find($existingSonod->renewed_id);
+
+                    if ($renewedSonod) {
+                        $uddoktaId = null;
+                        if (Auth::guard('uddokta')->check()) {
+                            $uddoktaId = Auth::guard('uddokta')->id();
+                        }
+
+                        // Generate payment URL directly using renewed_id
+                        $redirectUrl = sonodpayment($renewedSonod->id, $urls, $renewedSonod->hasEnData, $uddoktaId);
+
+                        return response()->json([
+                            'message' => 'Sonod renewal pending. Redirecting to payment for the renewed Sonod.',
+                            'redirect_url' => $redirectUrl,
+                        ], 200);
+                    } else {
+                        return response()->json(['error' => 'Renewed Sonod not found'], 404);
+                    }
+                }
+            }
+
+            // If both renewed_id and renewed are false, proceed with the normal renewal process
+
+            // Calculate the current orthoBchor
+            $currentYear = date('Y');
+            $currentMonth = date('m');
+
+            if ($currentMonth >= 7) {
+                $currentOrthoBchor = $currentYear . '-' . substr(($currentYear + 1), -2);
+            } else {
+                $currentOrthoBchor = ($currentYear - 1) . '-' . substr($currentYear, -2);
+            }
+
+            // Validate that the existing Sonod is from the previous orthoBchor
+            if ($existingSonod->orthoBchor === $currentOrthoBchor) {
+                return response()->json(['error' => 'Sonod from the current orthoBchor cannot be renewed'], 400);
+            }
+
+            // Generate new sonod_Id for the renewed Sonod
+            $sonodId = (string) sonodId($existingSonod->unioun_name, $existingSonod->sonod_name, $currentOrthoBchor);
+
+            // Replicate existing Sonod data
+            $newSonod = $existingSonod->replicate();
+
+            // Generate a new unique key for the renewed Sonod
+            do {
+                $uniqueKey = md5(uniqid($existingSonod->unioun_name . $existingSonod->sonod_name . microtime(), true));
+                $existingSonodWithKey = Sonod::where('uniqeKey', $uniqueKey)->first();
+            } while ($existingSonodWithKey);
+
+            // Modify specific fields for the new Sonod
+            $newSonod->orthoBchor = $currentOrthoBchor; // Set to the current orthoBchor
+            $newSonod->sonod_Id = $sonodId;
+            $newSonod->uniqeKey = $uniqueKey; // Assign the new unique key
+            $newSonod->stutus = 'Pepaid'; // Assuming 'Pepaid' is the correct status
+            $newSonod->payment_status = 'Unpaid';
+            $newSonod->renewed_id = null; // Ensure the new Sonod is not marked as renewed
+            $newSonod->renewed = 0; // Mark as not renewed
+
+            // Save the new Sonod record
+            $newSonod->save();
+
+            // Update the existing Sonod to mark it as renewed
+            $existingSonod->update([
+                'renewed_id' => $newSonod->id,
+                'renewed' => 1, // Mark as renewed
+            ]);
+
+            // Check if the existing Sonod has an associated EnglishSonod
+            $existingEnglishSonod = EnglishSonod::where('sonod_Id', $existingSonod->id)->first();
+
+            if ($existingEnglishSonod) {
+                // Replicate the existing EnglishSonod data
+                $newEnglishSonod = $existingEnglishSonod->replicate();
+
+                // Generate a new unique key for the renewed EnglishSonod
+                do {
+                    $englishUniqueKey = md5(uniqid($existingSonod->unioun_name . $existingSonod->sonod_name . microtime(), true));
+                    $existingEnglishSonodWithKey = EnglishSonod::where('uniqeKey', $englishUniqueKey)->first();
+                } while ($existingEnglishSonodWithKey);
+
+                // Modify specific fields for the new EnglishSonod
+                $newEnglishSonod->sonod_Id = $newSonod->id; // Link to the new Sonod
+                $newEnglishSonod->uniqeKey = $englishUniqueKey; // Assign the new unique key
+                $newEnglishSonod->stutus = 'Pepaid'; // Update status
+                $newEnglishSonod->payment_status = 'Unpaid'; // Update payment status
+
+                // Save the new EnglishSonod record
+                $newEnglishSonod->save();
+            }
+
+            $uddoktaId = null;
+            if (Auth::guard('uddokta')->check()) {
+                $uddoktaId = Auth::guard('uddokta')->id();
+            }
+
+            // Generate payment URL directly (similar to sonodSubmit)
+            $redirectUrl = sonodpayment($newSonod->id, $urls, $newSonod->hasEnData, $uddoktaId);
+
+            // Return the response with the new Sonod data and payment URL
+            return response()->json([
+                'message' => 'Sonod renewed successfully',
+                // 'new_sonod' => $newSonod,
+                // 'new_english_sonod' => $newEnglishSonod ?? null, // Include the new EnglishSonod if it exists
+                'redirect_url' => $redirectUrl,
+            ], 201);
+
+        } catch (Exception $e) {
+            // Handle errors and return a response
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
+    }
+
+
+
+
+
 }
