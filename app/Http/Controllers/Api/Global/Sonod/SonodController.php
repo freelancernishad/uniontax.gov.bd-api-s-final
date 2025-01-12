@@ -541,7 +541,7 @@ class SonodController extends Controller
                     ($results->renewed_id && !$results->renewed) || // Case 1
                     (!$results->renewed_id && !$results->renewed)    // Case 2
                 );
-                return response()->json($isRenewable);
+                // return response()->json($isRenewable);
                 // Set renew_able flag
                 $results->renew_able = ($isNotCurrentOrthoBchor && $isRenewable);
 
