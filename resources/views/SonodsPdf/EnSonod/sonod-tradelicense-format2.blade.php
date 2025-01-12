@@ -92,7 +92,7 @@
                             <img width="170px" style="{{ $style }}" src="{{ $row->socib_signture }}"><br/>
                             <b><span style="color:{{ $C_color }};font-size:{{ $C_size }};">{{ $row->socib_name }}</span><br/></b>
                             <span style="font-size:16px;">Administrative Officer</span><br/>
-                            {{ $uniouninfo->full_name }}<br> {{ $uniouninfo->thana }}, {{ $uniouninfo->district }}.<br>
+                            {{ $uniouninfo->full_name_en }}<br> {{ $uniouninfo->thana_en }}, {{ $uniouninfo->district_en }}.<br>
                         </div>
                     </td>
                     <td style="text-align: center; width: 200px;" width="30%">
@@ -103,7 +103,7 @@
                             <img width="170px" style="{{ $style }}" src="{{ $row->chaireman_sign }}"><br/>
                             <b><span style="color:{{ $C_color }};font-size:{{ $C_size }};">{{ $row->chaireman_name }}</span><br/></b>
                             <span style="font-size:16px;">{{ $row->chaireman_type }}</span><br/>
-                            {{ $uniouninfo->full_name }}<br> {{ $uniouninfo->thana }}, {{ $uniouninfo->district }}.<br>
+                            {{ $uniouninfo->full_name_en }}<br> {{ $uniouninfo->thana_en }}, {{ $uniouninfo->district_en }}.<br>
                             @if($row->unioun_name!='gognagar')
                             {{ $row->c_email }}
                             @endif
