@@ -538,8 +538,8 @@ class SonodController extends Controller
 
                 // Check if renewed_id is not null but renewed is null
                 $isRenewable = (
-                    ($results->renewed_id !== null && $results->renewed === null) || // Case 1
-                    ($results->renewed_id === null && $results->renewed === null)    // Case 2
+                    ($results->renewed_id && !$results->renewed) || // Case 1
+                    (!$results->renewed_id && !$results->renewed)    // Case 2
                 );
                 return response()->json($isRenewable);
                 // Set renew_able flag
