@@ -62,11 +62,11 @@ function sonodView_trade2($id,$en=false){
 
     if($en){
         $row = EnglishSonod::with(['sonod' => function ($query) {
-            $query->select('id', 'sonod_id','amount_details'); // Select only 'id' and 'sonod_id' from the sonod table
+            $query->select('id', 'sonod_id','amount_deails'); // Select only 'id' and 'sonod_id' from the sonod table
         }])->find($id);
         return $row;
         $sonod_id = $row->sonod->sonod_id;
-        $amount_details = $row->sonod->amount_details;
+        $amount_details = $row->sonod->amount_deails;
         $bladeType = 'EnSonod';
 
 
@@ -75,7 +75,7 @@ function sonodView_trade2($id,$en=false){
 
         $row = Sonod::find($id);
         $sonod_id = $row->sonod_id;
-        $amount_details = $row->amount_details;
+        $amount_details = $row->amount_deails;
     }
 
 
