@@ -20,17 +20,14 @@ class UniouninfoController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function getByShortName(Request $request)
-{
-    // Get the type from the request query
-    $type = $request->query('type');
+    {
+        // Get the type from the request query
+        $type = $request->query('type');
 
-    // Cache the result for TradeLicenseKhat
-    if ($type == 'TradeLicenseKhat') {
-        $cacheKey = 'TradeLicenseKhat_all';
-
-        // Attempt to get data from the cache
-        $TradeLicenseKhat = cache()->remember($cacheKey, 60, function () {
-            return TradeLicenseKhat::with('khatFees.khat2')->where('main_khat_id', 0)
+        // Handle TradeLicenseKhat type
+        if ($type == 'TradeLicenseKhat') {
+            $TradeLicenseKhat = TradeLicenseKhat::with('khatFees.khat2')
+                ->where('main_khat_id', 0)
                 ->select('name', 'khat_id')
                 ->get()
                 ->map(function ($khat) {
@@ -47,103 +44,71 @@ class UniouninfoController extends Controller
                         })
                     ];
                 });
-        });
 
-        return response()->json($TradeLicenseKhat, 200);
-    }
+            return response()->json($TradeLicenseKhat, 200);
+        }
 
-    // Cache the result for Uniouninfo and Sonodnamelist
+        // Handle Uniouninfo and Sonodnamelist
+        $auth = Auth::user();
+        $shortName = $request->query('name');
+        if ($auth) {
+            $shortName = $auth->unioun;
+        }
 
-    $auth = Auth::user();
-    $shortName = $request->query('name');
-    if($auth){
-        $shortName = $auth->unioun;
-    }
+        if (!$shortName) {
+            return response()->json(['error' => 'short_name_e is required'], 400);
+        }
 
+        $columns = ['id', 'short_name_e', 'short_name_b', 'thana', 'district', 'web_logo', 'format', 'google_map', 'defaultColor', 'payment_type', 'nidServicestatus', 'nidService', 'u_image', 'u_description', 'u_notice'];
 
-    if (!$shortName) {
-        return response()->json(['error' => 'short_name_e is required'], 400);
-    }
-
-    $columns = ['id', 'short_name_e', 'short_name_b', 'thana', 'district', 'web_logo', 'format', 'google_map', 'defaultColor', 'payment_type', 'nidServicestatus', 'nidService', 'u_image', 'u_description', 'u_notice'];
-
-    // Cache the uniouninfos data
-    $uniounCacheKey = 'uniouninfo_' . $shortName;
-    $uniouninfos = cache()->remember($uniounCacheKey, 60, function () use ($shortName, $columns) {
-        return Uniouninfo::where('short_name_e', $shortName)
+        // Fetch Uniouninfo data
+        $uniouninfos = Uniouninfo::where('short_name_e', $shortName)
             ->select($columns)
             ->first();
-    });
 
-    if (!$uniouninfos) {
-        return response()->json(['message' => 'No data found'], 404);
-    }
+        if (!$uniouninfos) {
+            return response()->json(['message' => 'No data found'], 404);
+        }
 
+        // Replace file path columns with full URLs using the /files/{path} route
+        $fileFields = ['web_logo', 'sonod_logo', 'c_signture', 'socib_signture', 'u_image'];
 
+        foreach ($fileFields as $field) {
+            if ($uniouninfos->$field) {
+                try {
+                    // Replace the file path with the full URL
+                    $uniouninfos->$field = URL::to('/files/' . $uniouninfos->$field);
+                } catch (\Exception $e) {
+                    // If the file is not found or cannot be read, set the value to null
+                    $uniouninfos->$field = null;
+                }
+            } else {
+                // If the field is empty, set the value to null
+                $uniouninfos->$field = null;
+            }
+        }
 
-
-
-           // Replace file path columns with full URLs using the /files/{path} route
-           $fileFields = ['web_logo', 'sonod_logo', 'c_signture', 'socib_signture', 'u_image'];
-
-           foreach ($fileFields as $field) {
-               if ($uniouninfos->$field) {
-                   try {
-                       // Replace the file path with the full URL
-                       $uniouninfos->$field = URL::to('/files/' . $uniouninfos->$field);
-                   } catch (\Exception $e) {
-                       // If the file is not found or cannot be read, set the value to null
-                       $uniouninfos->$field = null;
-                   }
-               } else {
-                   // If the field is empty, set the value to null
-                   $uniouninfos->$field = null;
-               }
-           }
-
-
-
-
-    // Cache the sonod_name_lists data
-    $sonodCacheKey = 'sonod_name_lists_' . $shortName;
-    $sonod_name_lists = cache()->remember($sonodCacheKey, 60, function () use ($shortName,$auth) {
-        return Sonodnamelist::select(['id', 'service_id', 'bnname', 'enname', 'icon'])
-            ->with(['sonodFees' => function ($query) use ($shortName,$auth) {
+        // Fetch Sonodnamelist data
+        $sonod_name_lists = Sonodnamelist::select(['id', 'service_id', 'bnname', 'enname', 'icon'])
+            ->with(['sonodFees' => function ($query) use ($shortName, $auth) {
                 $query->select('service_id', 'fees')
-                      ->where('unioun', $shortName);
+                    ->where('unioun', $shortName);
             }])
             ->get()
-            ->map(function ($sonod) use ($shortName,$auth) {
-
-
-
-            if($auth){
-                $stutus = 'Pending';
-                if($auth->position=='Chairman'){
-                    $stutus = 'sec_approved';
-                }
-                // Fetch the count of Sonod statuses
-                $pendingCount = Sonod::where('unioun_name', $shortName)
-                    ->where('sonod_name', $sonod->bnname)
-                    ->where('stutus', $stutus)
-                    ->count();
-
-                // $approvedCount = Sonod::where('unioun_name', $shortName)
-                //     ->where('sonod_name', $sonod->bnname)
-                //     ->where('stutus', 'approved')
-                //     ->count();
-
-                // $cancelCount = Sonod::where('unioun_name', $shortName)
-                //     ->where('sonod_name', $sonod->bnname)
-                //     ->where('stutus', 'cancel')
-                //     ->count();
-
-                }else{
+            ->map(function ($sonod) use ($shortName, $auth) {
+                if ($auth) {
+                    $stutus = 'Pending';
+                    if ($auth->position == 'Chairman') {
+                        $stutus = 'sec_approved';
+                    }
+                    // Fetch the count of Sonod statuses
+                    $pendingCount = Sonod::where('unioun_name', $shortName)
+                        ->where('sonod_name', $sonod->bnname)
+                        ->where('stutus', $stutus)
+                        ->count();
+                } else {
                     $pendingCount = 0;
-                    // $approvedCount = 0;
-                    // $cancelCount = 0;
                 }
-
 
                 // Collect Sonod fees
                 $fees = $sonod->sonodFees->pluck('fees')->implode(', ');
@@ -155,19 +120,16 @@ class UniouninfoController extends Controller
                     'icon' => $sonod->icon,
                     'sonod_fees' => $fees ? (int)$fees : 0,
                     'pendingCount' => $pendingCount,
-                    // 'approvedCount' => $approvedCount,
-                    // 'cancelCount' => $cancelCount,
                 ];
             });
-    });
 
-    $returnData = [
-        'uniouninfos' => $uniouninfos,
-        'sonod_name_lists' => $sonod_name_lists,
-    ];
+        $returnData = [
+            'uniouninfos' => $uniouninfos,
+            'sonod_name_lists' => $sonod_name_lists,
+        ];
 
-    return response()->json($returnData, 200);
-}
+        return response()->json($returnData, 200);
+    }
 
 
 }
