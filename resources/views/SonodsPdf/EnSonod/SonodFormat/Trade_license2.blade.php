@@ -29,13 +29,13 @@ $orthoBchor = explode('-', $row->orthoBchor);
         <td width="30%">Address of the Establishment</td><td>: {{ $row->organization_address }}</td>
     </tr>
     <tr>
-        <td width="30%">Ward No.</td><td>: {{ int_en_to_bn($row->applicant_present_word_number) }}</td>
+        <td width="30%">Ward No.</td><td>: {{ ($row->applicant_present_word_number) }}</td>
     </tr>
     <tr>
-        <td width="30%">National ID No.</td><td>: {{ int_en_to_bn($row->applicant_national_id_number) }}</td>
+        <td width="30%">National ID No.</td><td>: {{ ($row->applicant_national_id_number) }}</td>
     </tr>
     <tr>
-        <td width="30%">Fiscal Year</td><td>: {{ int_en_to_bn($row->orthoBchor) }}</td>
+        <td width="30%">Fiscal Year</td><td>: {{ ($row->orthoBchor) }}</td>
     </tr>
 </table>
 
@@ -78,18 +78,18 @@ $vatAykor = ($tredeLisenceFee * $amount_details->vatAykor) / 100;
         <td width='50%'>
             <ul style='list-style:none'>
                 <li>Trade License Fee (Renewal):</li>
-                <li>Permit Fee: {{ int_en_to_bn($tredeLisenceFee) }} Taka</li>
+                <li>Permit Fee: {{ ($tredeLisenceFee) }} Taka</li>
                 <li>Service Charge: 0.00 Taka</li>
-                <li>Arrears: {{ int_en_to_bn($amount_details->last_years_money) }} Taka</li>
+                <li>Arrears: {{ ($amount_details->last_years_money) }} Taka</li>
                 <li>Subcharge: 0.00 Taka</li>
             </ul>
         </td>
         <td width='50%' align="right">
             <ul style='list-style:none'>
-                <li>Tax on Profession, Business, and Trade: {{ int_en_to_bn($amount_details->pesaKor) }} Taka</li>
+                <li>Tax on Profession, Business, and Trade: {{ ($amount_details->pesaKor) }} Taka</li>
                 <li>Signboard (Identification): 0.00 Taka</li>
                 <li>Income Tax/Source Tax: 0.00 Taka</li>
-                <li>VAT: {{ int_en_to_bn($vatAykor) }} Taka</li>
+                <li>VAT: {{ ($vatAykor) }} Taka</li>
                 <li>Amendment Fee: 0.00 Taka</li>
             </ul>
         </td>
@@ -101,10 +101,10 @@ $vatAykor = ($tredeLisenceFee * $amount_details->vatAykor) / 100;
 <table width='100%' style="font-size: 12px">
     <tr>
         <td width='50%'>
-            <b style="color:#159513">Validity of this Trade License: Until {{ int_en_to_bn("30-06-20" . $orthoBchor[1]) }}</b>
+            <b style="color:#159513">Validity of this Trade License: Until {{ ("30-06-20" . $orthoBchor[1]) }}</b>
         </td>
         <td width='50%' align="right">
-            <b style="color:black">Total Amount: {{ int_en_to_bn($row->total_amount) }} Taka Only</b>
+            <b style="color:black">Total Amount: {{ ($row->total_amount) }} Taka Only</b>
         </td>
     </tr>
 </table>
