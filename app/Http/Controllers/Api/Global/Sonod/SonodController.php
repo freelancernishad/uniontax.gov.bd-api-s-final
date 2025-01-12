@@ -163,7 +163,7 @@ class SonodController extends Controller
                 'applicant_email' => $sonod->applicant_email,
 
                 'applicant_resident_status' => $sonod->applicant_resident_status == 'স্থায়ী' ? 'Permanent' : ($sonod->applicant_resident_status == 'অস্থায়ী' ? 'Temporary' : ''),
-                'alive_status' => $sonod->alive_status,
+
 
 
               'applicant_present_district' => ($district = District::where('bn_name', $sonod->applicant_present_district)->first()) ? $district->name : '',
@@ -194,7 +194,7 @@ class SonodController extends Controller
 
 
 
-
+                'alive_status' => $sonod->alive_status,
                 'format' => $sonod->format,
                 'sonod_Id' => $sonod->id,
                 'uniqeKey' => $uniqueKey,
@@ -686,7 +686,7 @@ class SonodController extends Controller
             // Update the existing Sonod to mark it as renewed
             $existingSonod->update([
                 'renewed_id' => $newSonod->id,
-                // 'renewed' => 1, 
+                // 'renewed' => 1,
             ]);
 
             // Check if the existing Sonod has an associated EnglishSonod
