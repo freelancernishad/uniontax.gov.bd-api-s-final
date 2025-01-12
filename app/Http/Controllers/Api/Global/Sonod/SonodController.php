@@ -128,6 +128,7 @@ class SonodController extends Controller
         if (!empty($enData)) {
 
 
+            $sonod = Sonod::find($sonod->id);
 
 
 
