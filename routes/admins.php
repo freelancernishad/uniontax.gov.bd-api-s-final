@@ -50,6 +50,7 @@ Route::prefix('admin')->group(function () {
         Route::put('/allowed-origins/{id}', [AllowedOriginController::class, 'update']);
         Route::delete('/allowed-origins/{id}', [AllowedOriginController::class, 'destroy']);
 
+        Route::post('/store-union-names', [AllowedOriginController::class, 'storeUnionNames']);
 
 
         Route::prefix('users')->group(function () {

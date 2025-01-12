@@ -84,4 +84,26 @@ class AllowedOriginController extends Controller
 
         return response()->json(['message' => 'Origin deleted successfully.']);
     }
+
+
+    public function storeUnionNames(Request $request)
+    {
+        // Validate the request body to ensure 'districtName' is provided
+        $request->validate([
+            'districtName' => 'required|string',
+        ]);
+
+        // Get the district name from the request body
+        $districtName = $request->input('districtName');
+
+        // Create an instance of AllowedOrigin and call the method
+        $allowedOrigin = new AllowedOrigin();
+        $allowedOrigin->storeUnionNamesWithDomain($districtName);
+
+        // Return a success response
+        return response()->json([
+            'message' => 'Union names with domain have been stored successfully for district: ' . $districtName,
+        ], 200);
+    }
+
 }
