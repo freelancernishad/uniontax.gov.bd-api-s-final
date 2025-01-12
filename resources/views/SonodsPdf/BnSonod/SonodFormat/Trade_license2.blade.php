@@ -140,7 +140,15 @@ $orthoBchor = explode('-',$row->orthoBchor);
             </td>
 
         <td width='50%' align ="right">
+
+            @if($row->hasEnData==1)
+            <b style="color:black">সর্বমোট : {{ int_en_to_bn($row->total_amount/2) }} টাকা মাত্র </b>
+            @else
             <b style="color:black">সর্বমোট : {{ int_en_to_bn($row->total_amount) }} টাকা মাত্র </b>
+            @endif
+
+
+
             </td>
         </tr>
     </table>
