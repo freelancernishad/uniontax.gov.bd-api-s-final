@@ -67,6 +67,9 @@ function sonodView_trade2($id,$en=false){
         $sonod_id = $row->sonod->sonod_id;
         $amount_details = $row->sonod->amount_details;
         $bladeType = 'EnSonod';
+
+        return $row;
+
     }else{
         $bladeType = 'BnSonod';
 
