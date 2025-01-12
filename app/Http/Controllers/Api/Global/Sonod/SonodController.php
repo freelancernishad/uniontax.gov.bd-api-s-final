@@ -604,6 +604,14 @@ class SonodController extends Controller
                 return response()->json(['error' => 'Sonod not found'], 404);
             }
 
+           
+
+            // Check if the Sonod is approved and paid
+            if ($existingSonod->stutus !== 'approved' || $existingSonod->payment_status !== 'Paid') {
+                return response()->json(['error' => 'Sonod must be approved and paid to be renewed'], 400);
+            }
+
+
             // Check if renewed_id exists
             if ($existingSonod->renewed_id) {
                 // If renewed_id exists, check the renewed status
