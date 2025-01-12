@@ -66,7 +66,9 @@ function sonodView_trade2($id,$en=false){
         }])->find($id);
         $sonod_id = $row->sonod->sonod_id;
         $amount_details = $row->sonod->amount_details;
+        $bladeType = 'EnSonod';
     }else{
+        $bladeType = 'BnSonod';
 
         $row = Sonod::find($id);
         $sonod_id = $row->sonod_id;
@@ -82,7 +84,7 @@ function sonodView_trade2($id,$en=false){
     $sonod = Sonodnamelist::where('bnname',$row->sonod_name)->first();
     $uniouninfo = Uniouninfo::where('short_name_e',$row->unioun_name)->first();
     $blade = 'Trade_license2';
-    return view('SonodsPdf.BnSonod.SonodFormat.'.$blade,compact('row','sonod','uniouninfo','sonod_id','amount_details'));
+    return view("SonodsPdf.$bladeType.SonodFormat.".$blade,compact('row','sonod','uniouninfo','sonod_id','amount_details'));
 
 };
 
