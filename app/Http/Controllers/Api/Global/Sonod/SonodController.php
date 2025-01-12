@@ -13,6 +13,8 @@ use App\Models\Sonodnamelist;
 use App\Models\TradeLicenseKhatFee;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Devfaysal\BangladeshGeocode\Models\District;
+use Devfaysal\BangladeshGeocode\Models\Upazila;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -124,17 +126,86 @@ class SonodController extends Controller
 
         // Create EnglishSonod only if enData is not empty
         if (!empty($enData)) {
+
+
+
+
+
+
+
+
+
+
+
+
             // Prepare data for insertion for EnglishSonod (enData)
             $englishSonodData = array_merge($enData, [
-                'sonod_Id' => $sonod->id, // Link to the Sonod entry
-                'uniqeKey' => $uniqueKey, // Same unique key as Sonod
-                'image' => $sonod->image, // Same unique key as Sonod
+
+
+                'applicant_gender' => $sonod->applicant_gender == 'পুরুষ' ? 'Male' : ($sonod->applicant_gender == 'মহিলা' ? 'Female' : ''),
+
+                'applicant_national_id_number' => int_bn_to_en($sonod->applicant_national_id_number),
+                'applicant_birth_certificate_number' => int_bn_to_en($sonod->applicant_birth_certificate_number),
+                'applicant_holding_tax_number' => int_bn_to_en($sonod->applicant_holding_tax_number),
+                'applicant_mobile' => int_bn_to_en($sonod->applicant_mobile),
+                'applicant_date_of_birth' => int_bn_to_en($sonod->applicant_date_of_birth),
+                'image' => $sonod->image,
+                'applicant_owner_type' => $sonod->applicant_owner_type == 'ব্যক্তি মালিকানাধীন' ? 'Individual Ownership' :
+                ($sonod->applicant_owner_type == 'যৌথ মালিকানা' ? 'Joint Ownership' :
+                ($sonod->applicant_owner_type == 'কোম্পানী' ? 'Company' : '')),
+
+                'applicant_vat_id_number' => $sonod->applicant_vat_id_number,
+                'applicant_tax_id_number' => $sonod->applicant_tax_id_number,
+                'applicant_type_of_businessKhat' => $sonod->applicant_type_of_businessKhat,
+                'applicant_type_of_businessKhatAmount' => $sonod->applicant_type_of_businessKhatAmount,
+                'last_years_money' => $sonod->last_years_money,
+                'orthoBchor' => int_bn_to_en($sonod->orthoBchor),
+                'applicant_email' => $sonod->applicant_email,
+                'applicant_resident_status' => $sonod->applicant_resident_status,
+
+
+              'applicant_present_district' => ($district = District::where('bn_name', $sonod->applicant_present_district)->first()) ? $district->name : '',
+                'applicant_present_Upazila' => ($upazila = Upazila::where('bn_name', $sonod->applicant_present_Upazila)->first()) ? $upazila->name : '',
+                'applicant_present_word_number' => int_bn_to_en($sonod->applicant_present_word_number),
+
+
+                // 'applicant_present_post_office' => $sonod->applicant_present_post_office,
+                // 'applicant_present_village' => $sonod->applicant_present_village,
+
+
+                'applicant_permanent_district' => ($district = District::where('bn_name', $sonod->applicant_permanent_district)->first()) ? $district->name : '',
+                'applicant_permanent_Upazila' => ($upazila = Upazila::where('bn_name', $sonod->applicant_permanent_Upazila)->first()) ? $upazila->name : '',
+                'applicant_permanent_word_number' => int_bn_to_en($sonod->applicant_permanent_word_number),
+
+
+                // 'applicant_permanent_post_office' => $sonod->applicant_permanent_post_office,
+                // 'applicant_permanent_village' => $sonod->applicant_permanent_village,
+
+
+
+
+
+
+
+
+
+
+                'sonod_Id' => $sonod->id,
+                'uniqeKey' => $uniqueKey,
                 'khat' => "সনদ ফি",
                 'stutus' => "Pepaid",
                 'payment_status' => "Unpaid",
                 'year' => date('Y'),
                 'successor_list' => $enSuccessorList,
             ]);
+
+
+
+
+
+
+
+
 
             // Check if EnglishSonod already exists for this Sonod
             $existingEnglishSonod = EnglishSonod::where('sonod_Id', $sonod->id)->first();
