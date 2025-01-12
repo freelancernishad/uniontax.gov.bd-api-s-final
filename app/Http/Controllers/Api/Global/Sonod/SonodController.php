@@ -161,7 +161,9 @@ class SonodController extends Controller
                 'last_years_money' => $sonod->last_years_money,
                 'orthoBchor' => int_bn_to_en($sonod->orthoBchor),
                 'applicant_email' => $sonod->applicant_email,
-                'applicant_resident_status' => $sonod->applicant_resident_status,
+
+                'applicant_resident_status' => $sonod->applicant_resident_status == 'স্থায়ী' ? 'Permanent' : ($sonod->applicant_resident_status == 'অস্থায়ী' ? 'Temporary' : ''),
+                'alive_status' => $sonod->alive_status,
 
 
               'applicant_present_district' => ($district = District::where('bn_name', $sonod->applicant_present_district)->first()) ? $district->name : '',
@@ -186,10 +188,14 @@ class SonodController extends Controller
 
 
 
+                
 
 
 
 
+
+
+                'format' => $sonod->format,
                 'sonod_Id' => $sonod->id,
                 'uniqeKey' => $uniqueKey,
                 'khat' => "সনদ ফি",

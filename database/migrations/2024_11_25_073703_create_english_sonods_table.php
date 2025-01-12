@@ -36,7 +36,7 @@ class CreateEnglishSonodsTable extends Migration
             $table->string('applicant_national_id_number', 20)->nullable();
             $table->string('applicant_birth_certificate_number', 20)->nullable();
             $table->string('applicant_passport_number', 20)->nullable();
-            $table->date('applicant_date_of_birth')->nullable();
+            $table->string('applicant_date_of_birth')->nullable();
             $table->string('family_name', 100)->nullable();
             $table->decimal('Annual_income', 10, 2)->nullable();
             $table->text('Annual_income_text')->nullable();
