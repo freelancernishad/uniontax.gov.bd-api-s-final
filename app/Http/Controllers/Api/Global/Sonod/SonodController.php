@@ -134,6 +134,7 @@ class SonodController extends Controller
 
 
 
+            Log::info($sonod);
 
 
 
