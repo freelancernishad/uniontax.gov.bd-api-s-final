@@ -89,19 +89,25 @@
                         $i = 1;
                     @endphp
                         @if(!empty($row->successor_list) && is_array(json_decode($row->successor_list, true)))
-                        @foreach(json_decode($row->successor_list) as $value)
-                            <tr>
-                                <td>{{ int_en_to_bn($i) }}</td>
-                                <td>{{ $value->w_name ?? "" }}</td>
-                                <td>{{ $value->w_relation ?? "" }}</td>
-                                <td>{{ int_en_to_bn(date("d/m/Y", strtotime($value->w_age)) ?? 0) }}</td>
-                                <td>{{ int_en_to_bn($value->w_nid ?? '') }}</td>
-                                <td>{{ $value->w_note ?? "" }}</td>
-                            </tr>
-                            @php
-                                $i++;
-                            @endphp
-                        @endforeach
+                            @foreach(json_decode($row->successor_list) as $value)
+                                <tr>
+                                    <td>{{ int_en_to_bn($i) }}</td>
+                                    <td>{{ isset($value->w_name) && !empty($value->w_name) ? $value->w_name : '' }}</td>
+                                    <td>{{ isset($value->w_relation) && !empty($value->w_relation) ? $value->w_relation : '' }}</td>
+                                    <td>
+                                        @if(isset($value->w_age) && !empty($value->w_age))
+                                            {{ int_en_to_bn(date("d/m/Y", strtotime($value->w_age))) }}
+                                        @else
+                                            {{ int_en_to_bn(0) }}
+                                        @endif
+                                    </td>
+                                    <td>{{ isset($value->w_nid) && !empty($value->w_nid) ? int_en_to_bn($value->w_nid) : int_en_to_bn(0) }}</td>
+                                    <td>{{ isset($value->w_note) && !empty($value->w_note) ? $value->w_note : '' }}</td>
+                                </tr>
+                                @php
+                                    $i++;
+                                @endphp
+                            @endforeach
                         @else
                         <tr>
                             @if($row->sonod_name=='উত্তরাধিকারী সনদ')
