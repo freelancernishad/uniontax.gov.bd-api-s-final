@@ -136,7 +136,20 @@ class UserUniouninfoController extends Controller
 
         // Retrieve validated data
         $validatedData = $validator->validated();
+        // Map Bengali `c_type` to English `c_type_en`
+        if (isset($validatedData['c_type'])) {
+            $cTypeMap = [
+                'চেয়ারম্যান' => 'Chairman',
+                'প্যানেল চেয়ারম্যান ১' => 'Panel Chairman 1',
+                'প্যানেল চেয়ারম্যান ২' => 'Panel Chairman 2',
+                'প্যানেল চেয়ারম্যান ৩' => 'Panel Chairman 3',
+                'প্রশাসক' => 'Administrator',
+                'সদস্য/সদস্যা' => 'Member',
+            ];
 
+            // Set `c_type_en` based on the selected `c_type`
+            $validatedData['c_type_en'] = $cTypeMap[$validatedData['c_type']] ?? null;
+        }
         // Update the union info
         $unionInfo->update($validatedData);
 
