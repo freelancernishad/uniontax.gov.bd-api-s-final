@@ -195,11 +195,11 @@ $nagoriinfo .= '<h4 style="text-align:center;margin-bottom:0px;font-size:11px">'
         $nagoriinfo .= '
         <tr>
             <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . int_en_to_bn($i) . '</td>
-            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . (isset($rowList->w_name) && !empty($rowList->w_name) ? $rowList->w_name : 'N/A') . '</td>
-            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . (isset($rowList->w_relation) && !empty($rowList->w_relation) ? $rowList->w_relation : 'N/A') . '</td>
-            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . (isset($rowList->w_age) && !empty($rowList->w_age) ? int_en_to_bn(date("d/m/Y", strtotime($rowList->w_age))) : 'N/A') . '</td>
-            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . (isset($rowList->w_nid) && !empty($rowList->w_nid) ? int_en_to_bn($rowList->w_nid) : 'N/A') . '</td>
-            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . (isset($rowList->w_note) && !empty($rowList->w_note) ? $rowList->w_note : 'N/A') . '</td>
+            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . (isset($rowList->w_name) && !empty($rowList->w_name) ? $rowList->w_name : '-') . '</td>
+            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . (isset($rowList->w_relation) && !empty($rowList->w_relation) ? $rowList->w_relation : '-') . '</td>
+            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . (isset($rowList->w_age) && !empty($rowList->w_age) ? int_en_to_bn(date("d/m/Y", strtotime($rowList->w_age))) : '-') . '</td>
+            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . (isset($rowList->w_nid) && !empty($rowList->w_nid) ? int_en_to_bn($rowList->w_nid) : '-') . '</td>
+            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . (isset($rowList->w_note) && !empty($rowList->w_note) ? $rowList->w_note : '-') . '</td>
         </tr>';
 
         $i++;
@@ -299,10 +299,10 @@ function sonodView_Inheritance_certificate_english($id) {
         $nagoriinfo .= '
         <tr>
             <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . $i . '</td>
-            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . (isset($rowList->w_name) && !empty($rowList->w_name) ? $rowList->w_name : 'N/A') . '</td>
-            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . (isset($rowList->w_relation) && !empty($rowList->w_relation) ? $rowList->w_relation : 'N/A') . '</td>
-            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . (isset($rowList->w_age) && !empty($rowList->w_age) ? date("d/m/Y", strtotime($rowList->w_age)) : 'N/A') . '</td>
-            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . (isset($rowList->w_nid) && !empty($rowList->w_nid) ? $rowList->w_nid : 'N/A') . '</td>
+            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . (isset($rowList->w_name) && !empty($rowList->w_name) ? $rowList->w_name : '-') . '</td>
+            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . (isset($rowList->w_relation) && !empty($rowList->w_relation) ? $rowList->w_relation : '-') . '</td>
+            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . (isset($rowList->w_age) && !empty($rowList->w_age) ? date("d/m/Y", strtotime($rowList->w_age)) : '-') . '</td>
+            <td style="text-align:center; border: 1px dotted black; padding:1px 4px; font-size: 11px;">' . (isset($rowList->w_nid) && !empty($rowList->w_nid) ? $rowList->w_nid : '-') . '</td>
         </tr>';
         $i++;
     }
