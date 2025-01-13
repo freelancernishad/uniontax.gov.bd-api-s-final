@@ -27,13 +27,18 @@ class UniouninfoController extends Controller
         // Handle TradeLicenseKhat type
         if ($type == 'TradeLicenseKhat') {
             $TradeLicenseKhat = TradeLicenseKhat::with('khatFees.khat2')
-                ->where('main_khat_id', 0)
-                ->select('name', 'khat_id')
+                ->where('main_khat_id', 0) // Fetch only parent records (where main_khat_id is 0)
+                ->select('name', 'khat_id', 'main_khat_id')
                 ->get()
                 ->map(function ($khat) {
+                    // Check if the TradeLicenseKhat has any child records
+                    $hasChild = TradeLicenseKhat::where('main_khat_id', $khat->khat_id)->exists();
+
                     return [
                         'name' => $khat->name,
                         'khat_id' => $khat->khat_id,
+                        'main_khat_id' => $khat->main_khat_id,
+                        'has_child' => $hasChild, // Add this column
                         'khat_fees' => $khat->khatFees->map(function ($fee) {
                             return [
                                 'name' => $fee->khat2->name ?? null,
@@ -47,6 +52,7 @@ class UniouninfoController extends Controller
 
             return response()->json($TradeLicenseKhat, 200);
         }
+
 
         // Handle Uniouninfo and Sonodnamelist
         $auth = Auth::user();

@@ -450,6 +450,64 @@ class HoldingtaxController extends Controller
 
 
 
+    public function updateUnpaidHoldingBokeyaPrice(Request $request, $id)
+    {
+        // Find the HoldingBokeya entry by ID
+        $holdingBokeya = HoldingBokeya::find($id);
+
+        // Check if the HoldingBokeya entry exists
+        if (!$holdingBokeya) {
+            return response()->json([
+                'message' => 'Holding Bokeya not found'
+            ], 404);
+        }
+
+
+
+        // Get the authenticated user
+        $user = auth()->user();
+
+        // Get the associated Holdingtax record
+        $holdingTax = $holdingBokeya->holdingTax;
+
+        // Check if the authenticated user's unioun matches the Holdingtax unioun
+        if ($user->unioun !== $holdingTax->unioun) {
+            return response()->json([
+                'message' => 'You are not authorized to update this Holding Bokeya'
+            ], 403);
+        }
+
+
+        // Ensure the status is 'Unpaid'
+        if ($holdingBokeya->status !== 'Unpaid') {
+            return response()->json([
+                'message' => 'Only Holding Bokeya with status "Unpaid" can be updated'
+            ], 400);
+        }
+
+
+        // Validate the request data (only 'price' is allowed)
+        $validator = Validator::make($request->all(), [
+            'price' => 'required|numeric|min:0', // Ensure price is a valid number
+        ]);
+
+        // Check for validation failure
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Update only the price of the HoldingBokeya entry
+        $holdingBokeya->price = $request->price;
+        $holdingBokeya->save();
+
+        return response()->json([
+            'message' => 'Holding Bokeya price updated successfully',
+            'data' => $holdingBokeya
+        ], 200);
+    }
+
+
+
 
 
 

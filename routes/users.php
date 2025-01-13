@@ -52,10 +52,13 @@ Route::prefix('user')->group(function () {
         Route::put('/sonod/update/{id}', [UserSonodController::class, 'update']);
         Route::put('english/sonod/update/{id}', [UserSonodController::class, 'updateEnglishSonod']);
 
+
+
+
         Route::get('holdingtax', [HoldingtaxController::class, 'holdingSearch']);
         Route::post('holdingtax', [HoldingtaxController::class, 'store']);
         Route::get('holdingtax/{id}', [HoldingtaxController::class, 'getSingleHoldingTaxWithBokeyas']);
-
+        Route::put('/holding-bokeya/{id}/update-price', [HoldingtaxController::class, 'updateUnpaidHoldingBokeyaPrice']);
 
 
 
