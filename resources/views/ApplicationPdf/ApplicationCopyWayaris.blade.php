@@ -98,11 +98,11 @@
                                         @if(isset($value->w_age) && !empty($value->w_age))
                                             {{ int_en_to_bn(date("d/m/Y", strtotime($value->w_age))) }}
                                         @else
-                                            {{ int_en_to_bn(0) }}
+                                            {{ N/A }}
                                         @endif
                                     </td>
-                                    <td>{{ isset($value->w_nid) && !empty($value->w_nid) ? int_en_to_bn($value->w_nid) : int_en_to_bn(0) }}</td>
-                                    <td>{{ isset($value->w_note) && !empty($value->w_note) ? $value->w_note : '' }}</td>
+                                    <td>{{ isset($value->w_nid) && !empty($value->w_nid) ? int_en_to_bn($value->w_nid) : N/A }}</td>
+                                    <td>{{ isset($value->w_note) && !empty($value->w_note) ? $value->w_note : N/A }}</td>
                                 </tr>
                                 @php
                                     $i++;
