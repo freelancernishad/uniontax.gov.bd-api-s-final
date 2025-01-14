@@ -104,7 +104,7 @@ $vatAykor = ($tredeLisenceFee * $amount_details->vatAykor) / 100;
             <b style="color:#159513">Validity of this Trade License: Until {{ ("30-06-20" . $orthoBchor[1]) }}</b>
         </td>
         <td width='50%' align="right">
-            <b style="color:black">Total Amount: {{ (($amount_details->total_amount/2)+$amount_details->last_years_money) }} Taka Only</b>
+            <b style="color:black">Total Amount: {{ (($amount_details->currently_paid_money)+$amount_details->last_years_money) }} Taka Only</b>
         </td>
     </tr>
 </table>
