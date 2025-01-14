@@ -366,11 +366,11 @@ class SonodController extends Controller
         $totalAmount = $sonodFee + $tradeVatAmount + $pesaKor;
 
 
-        $currentlyPaidMoney = $totalAmount - $lastYearsMoney;
+        $currentlyPaidMoney = $totalAmount;
 
         // Prepare amount details for JSON encoding
         $amountDetails = json_encode([
-            'total_amount' => $totalAmount,
+            'total_amount' => $totalAmount+$lastYearsMoney,
             'pesaKor' => (string)$pesaKor,
             'tredeLisenceFee' => (string)$sonodFee,
             'vatAykor' => (string)$tradeVat,
@@ -382,24 +382,45 @@ class SonodController extends Controller
         // Update insertData with calculated values
         $insertData['last_years_money'] = $lastYearsMoney;
         $insertData['currently_paid_money'] = $currentlyPaidMoney;
-        $insertData['total_amount'] = $totalAmount;
-        $insertData['the_amount_of_money_in_words'] = convertAnnualIncomeToText($totalAmount);
+        $insertData['total_amount'] = $totalAmount+$lastYearsMoney;
+        $insertData['the_amount_of_money_in_words'] = convertAnnualIncomeToText($totalAmount+$lastYearsMoney);
         $insertData['amount_deails'] = $amountDetails;
     }
 
     private function doublePriceForBoth($sonod)
     {
-        // Double the price if both Sonod and EnglishSonod are created
-        $sonod->total_amount *= 2;
-        $sonod->currently_paid_money *= 2;
-        $sonod->save();
-
-        // Update amount_details JSON
+        // Decode the amount_details JSON
         $amountDetails = json_decode($sonod->amount_deails, true);
-        $amountDetails['total_amount'] = (string)($amountDetails['total_amount'] * 2);
-        $amountDetails['currently_paid_money'] = (string)($amountDetails['currently_paid_money'] * 2);
+
+        // Check if the sonod_name is 'ট্রেড লাইসেন্স'
+        if ($sonod->sonod_name == 'ট্রেড লাইসেন্স') {
+            // Get the trade license fee and calculate 15% VAT
+            $tredeLisenceFee = (float)$amountDetails['tredeLisenceFee'];
+            $vatAykor = $tredeLisenceFee * 0.15; // 15% VAT
+
+            // Add the trade license fee and VAT to the total amount
+            $amountDetails['total_amount'] = (string)((float)$amountDetails['total_amount'] + $tredeLisenceFee + $vatAykor);
+
+            // Update the total amount and currently paid money in the sonod model
+            $sonod->total_amount = (float)$amountDetails['total_amount'];
+            $sonod->currently_paid_money = (float)$amountDetails['currently_paid_money'];
+        } else {
+            // For other sonod types, double the total amount and currently paid money
+            $sonod->total_amount *= 2;
+            $sonod->currently_paid_money *= 2;
+
+            // Update the amount_details JSON for other sonod types
+            $amountDetails['total_amount'] = (string)($amountDetails['total_amount'] * 2);
+            $amountDetails['currently_paid_money'] = (string)($amountDetails['currently_paid_money'] * 2);
+        }
+
+        // Save the updated amount_details JSON
         $sonod->amount_deails = json_encode($amountDetails);
+
+        // Update the amount in words
         $sonod->the_amount_of_money_in_words = convertAnnualIncomeToText($amountDetails['total_amount']);
+
+        // Save the sonod model
         $sonod->save();
     }
 

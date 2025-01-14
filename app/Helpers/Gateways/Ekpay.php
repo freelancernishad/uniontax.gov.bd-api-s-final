@@ -131,6 +131,7 @@ function sonodpayment($id, $urls, $hasEnData = false,$uddoktaId=null)
 
 
         $last_years_money = $sonod->last_years_money ?? 0;
+
         $total_amount = $pesaKorFee ? $pesaKorFee->fee + $sonod_fee + $tradeVatAmount : $sonod_fee;
 
         $total_amount = $total_amount+$last_years_money;
