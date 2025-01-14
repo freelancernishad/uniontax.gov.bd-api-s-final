@@ -65,7 +65,6 @@ class SonodController extends Controller
 
     protected function createSonod($bnData, $enData, $request)
     {
-
         // Process successor_list for bnData
         $successorListFormatted = $bnData['successor_list'] ?? [];
         $successor_list = json_encode($successorListFormatted);
@@ -365,6 +364,8 @@ class SonodController extends Controller
 
         // Calculate total amount and currently paid money
         $totalAmount = $sonodFee + $tradeVatAmount + $pesaKor;
+
+
         $currentlyPaidMoney = $totalAmount - $lastYearsMoney;
 
         // Prepare amount details for JSON encoding
