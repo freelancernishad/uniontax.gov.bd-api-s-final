@@ -142,7 +142,7 @@ function sonodpayment($id, $urls, $hasEnData = false,$uddoktaId=null)
 
     // Double the amount if hasEnData is true
     if ($hasEnData) {
-        $total_amount *= 2;
+        $total_amount = $total_amount+$sonod_fee+$tradeVatAmount;
     }
 
     if ($total_amount < 1) {
