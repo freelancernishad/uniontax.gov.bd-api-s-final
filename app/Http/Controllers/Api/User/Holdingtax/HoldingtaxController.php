@@ -279,9 +279,9 @@ class HoldingtaxController extends Controller
         $holdingTax = Holdingtax::select(['unioun', 'id', 'holding_no', 'category', 'maliker_name', 'father_or_samir_name', 'gramer_name', 'word_no', 'nid_no', 'mobile_no', 'griher_barsikh_mullo', 'jomir_vara', 'barsikh_vara'])
             ->with(['holdingBokeyas' => function ($query) {
                 // Select only required columns for holdingBokeyas and filter out entries with price = 0 or null
-                $query->select(['id', 'year', 'price', 'status', 'holdingTax_id'])
-                      ->whereNotNull('price') // Exclude entries where price is null
-                      ->where('price', '!=', 0); // Exclude entries where price is 0
+                $query->select(['id', 'year', 'price', 'status', 'holdingTax_id']);
+                    //   ->whereNotNull('price') // Exclude entries where price is null
+                    //   ->where('price', '!=', 0); // Exclude entries where price is 0
             }])
             ->find($id);
     
