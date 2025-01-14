@@ -60,6 +60,11 @@ Route::prefix('user')->group(function () {
         Route::get('holdingtax/{id}', [HoldingtaxController::class, 'getSingleHoldingTaxWithBokeyas']);
         Route::put('/holding-bokeya/{id}/update-price', [HoldingtaxController::class, 'updateUnpaidHoldingBokeyaPrice']);
 
+        // Update Holdingtax only
+        Route::put('/holdingtax/{id}', [HoldingtaxController::class, 'updateHoldingtaxOnly']);
+
+        // Add a new bokeya by Holdingtax ID
+        Route::post('/holdingtax/{holdingTaxId}/bokeya', [HoldingtaxController::class, 'addNewBokeya']);
 
 
 

@@ -509,6 +509,121 @@ class HoldingtaxController extends Controller
 
 
 
+    public function updateHoldingtaxOnly(Request $request, $id)
+    {
+        // Validate the request data
+        $validator = Validator::make($request->all(), [
+            'category' => 'sometimes|required|string',
+            'holding_no' => 'sometimes|required|string',
+            'maliker_name' => 'sometimes|required|string',
+            'father_or_samir_name' => 'sometimes|required|string',
+            'gramer_name' => 'sometimes|required|string',
+            'word_no' => 'sometimes|required|string',
+            'nid_no' => 'sometimes|required|string',
+            'mobile_no' => 'sometimes|required|string',
+            'griher_barsikh_mullo' => 'sometimes|nullable|numeric',
+            'jomir_vara' => 'sometimes|nullable|numeric',
+            'barsikh_vara' => 'sometimes|nullable|numeric',
+            'image' => 'sometimes|nullable|string',
+            'busnessName' => 'sometimes|nullable|string',
+        ]);
+
+        // Check for validation failure
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Find the Holdingtax record by ID
+        $holdingTax = Holdingtax::find($id);
+
+        // Check if the Holdingtax record exists
+        if (!$holdingTax) {
+            return response()->json([
+                'message' => 'Holding Tax not found'
+            ], 404);
+        }
+
+        // Get the authenticated user
+        $user = auth()->user();
+
+        // Check if the authenticated user's unioun matches the Holdingtax unioun
+        if ($user->unioun !== $holdingTax->unioun) {
+            return response()->json([
+                'message' => 'You are not authorized to update this Holding Tax'
+            ], 403);
+        }
+
+        // Update the Holdingtax record with the validated data
+        $holdingTax->update($request->all());
+
+        // Handle image update if a new image is provided
+        if ($request->has('image') && $this->isNewImage($request->image)) {
+            $holdingTax->image = $this->uploadImage($request->image);
+            $holdingTax->save();
+        }
+
+        return response()->json([
+            'message' => 'Holding Tax updated successfully',
+            'data' => $holdingTax
+        ], 200);
+    }
+
+
+     /**
+     * Add a new bokeya entry for a specific Holdingtax record.
+     *
+     * @param Request $request
+     * @param int $holdingTaxId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function addNewBokeya(Request $request, $holdingTaxId)
+    {
+        // Validate the request data
+        $validator = Validator::make($request->all(), [
+            'year' => 'required|string', // Year of the bokeya
+            'price' => 'required|numeric|min:0', // Price of the bokeya
+        ]);
+
+        // Check for validation failure
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Find the Holdingtax record by ID
+        $holdingTax = Holdingtax::find($holdingTaxId);
+
+        // Check if the Holdingtax record exists
+        if (!$holdingTax) {
+            return response()->json([
+                'message' => 'Holding Tax not found'
+            ], 404);
+        }
+
+        // Get the authenticated user
+        $user = auth()->user();
+
+        // Check if the authenticated user's unioun matches the Holdingtax unioun
+        if ($user->unioun !== $holdingTax->unioun) {
+            return response()->json([
+                'message' => 'You are not authorized to add a bokeya for this Holding Tax'
+            ], 403);
+        }
+
+        // Create a new bokeya entry
+        $bokeyaData = [
+            'holdingTax_id' => $holdingTaxId,
+            'year' => $request->year,
+            'price' => $request->price,
+            'status' => 'Unpaid',
+        ];
+
+        $bokeya = HoldingBokeya::create($bokeyaData);
+
+        return response()->json([
+            'message' => 'Bokeya added successfully',
+            'data' => $bokeya
+        ], 201);
+    }
 
 
 }
