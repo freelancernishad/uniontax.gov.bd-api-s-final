@@ -54,6 +54,7 @@ Route::prefix('global/')->group(function () {
 });
 
 Route::get('global/uniouninfo', [UniouninfoController::class, 'getByShortName']);
+Route::post('global/uniouninfo', [UniouninfoController::class, 'getByShortName']);
 
 
 Route::get('holdingtax/search', [HoldingtaxController::class, 'holdingSearch']);
