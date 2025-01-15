@@ -116,6 +116,7 @@ function sonodpayment($id, $urls, $hasEnData = false,$uddoktaId=null)
     $sonod_fee = $sonodFees->fees;
     $total_amount = $sonod_fee;
 
+    $tradeVatAmount = 0;
     // Additional logic for 'ট্রেড লাইসেন্স'
     if ($sonod_name == 'ট্রেড লাইসেন্স') {
         $khat_id_1 = $sonod->applicant_type_of_businessKhat;
