@@ -22,14 +22,10 @@ class SonodController extends Controller
 {
     public function sonodSubmit(Request $request)
     {
-
         $uddoktaId = null;
         if (Auth::guard('uddokta')->check()) {
             $uddoktaId = Auth::guard('uddokta')->id();
         }
-
-
-
 
         try {
             // Extract bn and en data from the request
@@ -355,7 +351,7 @@ class SonodController extends Controller
         // Check if it's a 'ট্রেড লাইসেন্স' and retrieve the PesaKor fee
         if ($sonodName == 'ট্রেড লাইসেন্স') {
             $khat_id_1 = $bnData['applicant_type_of_businessKhat'] ?? $enData['applicant_type_of_businessKhat'] ?? null;
-            $khat_id_2 = $bnData['applicant_type_of_businessKhatAmount'] ?? $enData['applicant_type_of_businessKhatAmount'] ?? null;
+            $khat_id_2 = $bnData['applicant_type_of_businessKhatAmount'] ?? $enData['applicant_type_of_businessKhatAmount'] ?? 0;
 
             $pesaKorFee = TradeLicenseKhatFee::where([
                 'khat_id_1' => $khat_id_1,
