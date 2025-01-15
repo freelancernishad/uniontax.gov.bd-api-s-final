@@ -81,10 +81,14 @@ class AuthUserController extends Controller
 
         // Define payload data
         $payload = [
+            'unioun' => $user->unioun,
             'email' => $user->email,
             'name' => $user->name,
-            'category' => $user->category ?? null, // Include category if applicable
-            'email_verified' => $user->hasVerifiedEmail(), // Check verification status
+            'position' => $user->position,
+            'dashboard_title' => getBanglaPositionText($user->position),
+            'designation' => getBanglaDesignationText($user->position),
+            'category' => $user->category,
+            'email_verified' => $user->hasVerifiedEmail(), // Checks verification status
         ];
 
         return response()->json([
@@ -119,6 +123,7 @@ class AuthUserController extends Controller
 
             // Custom payload data, including email verification status
             $payload = [
+                'unioun' => $user->unioun,
                 'email' => $user->email,
                 'name' => $user->name,
                 'position' => $user->position,
@@ -250,11 +255,13 @@ class AuthUserController extends Controller
             }
 
             $payload = [
+                'unioun' => $user->unioun,
                 'email' => $user->email,
                 'name' => $user->name,
                 'position' => $user->position,
                 'dashboard_title' => getBanglaPositionText($user->position),
                 'designation' => getBanglaDesignationText($user->position),
+                'category' => $user->category,
                 'email_verified' => $user->hasVerifiedEmail(), // Checks verification status
             ];
 
