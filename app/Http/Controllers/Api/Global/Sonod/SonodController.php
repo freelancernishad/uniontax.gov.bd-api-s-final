@@ -57,8 +57,15 @@ class SonodController extends Controller
                 'redirect_url' => $redirectUrl,
             ]);
         } catch (Exception $e) {
-            // Handle errors and return a response
-            return response()->json(['error' => $e], 400);
+            // Handle errors and return a response with full error details
+            return response()->json([
+                'error' => [
+                    'message' => $e->getMessage(), // The error message
+                    'file' => $e->getFile(),       // The file where the error occurred
+                    'line' => $e->getLine(),       // The line number where the error occurred
+                    'trace' => $e->getTrace(),     // The full stack trace
+                ]
+            ], 400);
         }
     }
 
