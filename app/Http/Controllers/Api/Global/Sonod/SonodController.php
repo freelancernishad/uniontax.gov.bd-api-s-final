@@ -58,7 +58,7 @@ class SonodController extends Controller
             ]);
         } catch (Exception $e) {
             // Handle errors and return a response
-            return response()->json(['error' => $e->getMessage()], 400);
+            return response()->json(['error' => $e], 400);
         }
     }
 
