@@ -7,6 +7,7 @@ use App\Models\Uniouninfo;
 use App\Models\EnglishSonod;
 use Illuminate\Http\Request;
 use App\Models\Sonodnamelist;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
 
@@ -85,6 +86,7 @@ class SonodPdfController extends Controller
         $uniouninfo->sonod_logo = handleFileUrl($uniouninfo->sonod_logo);
 
         // return $row;
+        Log::info($row);
         $htmlContent = $this->getHtmlContent($row, $sonod_name, $uniouninfo, $sonodnames,$sonod_Id,$en,$font_family);
 
         if ($sonod_name == 'ওয়ারিশান সনদ' || $sonod_name == 'উত্তরাধিকারী সনদ') {
