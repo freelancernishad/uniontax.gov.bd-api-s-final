@@ -10,7 +10,7 @@
 <style>
     body{
         /*font-family: 'noto_sans_bengali', 'sans-serif';*/
-        font-family: 'bangla', 'sans-serif';
+        font-family: '{{ $font_family }}', "sans-serif";
     }
 
     .nikosh{

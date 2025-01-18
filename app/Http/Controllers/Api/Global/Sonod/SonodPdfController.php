@@ -85,7 +85,7 @@ class SonodPdfController extends Controller
         $uniouninfo->sonod_logo = handleFileUrl($uniouninfo->sonod_logo);
 
         // return $row;
-        $htmlContent = $this->getHtmlContent($row, $sonod_name, $uniouninfo, $sonodnames,$sonod_Id,$en);
+        $htmlContent = $this->getHtmlContent($row, $sonod_name, $uniouninfo, $sonodnames,$sonod_Id,$en,$font_family);
 
         if ($sonod_name == 'ওয়ারিশান সনদ' || $sonod_name == 'উত্তরাধিকারী সনদ') {
             $header = null;
@@ -134,7 +134,7 @@ class SonodPdfController extends Controller
      * @param $sonodnames
      * @return string
      */
-    private function getHtmlContent($row, $sonod_name, $uniouninfo, $sonodnames,$sonod_Id,$en=false)
+    private function getHtmlContent($row, $sonod_name, $uniouninfo, $sonodnames,$sonod_Id,$en=false,$font_family='bangla')
     {
 
 
@@ -172,20 +172,20 @@ class SonodPdfController extends Controller
         if ($sonod_name == 'ওয়ারিশান সনদ' || $sonod_name == 'উত্তরাধিকারী সনদ') {
             if ($row->format == 2) {
 
-                return view("SonodsPdf.$sonodFolder.wayarisan-uttoradhikari-sonod-format2", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id','main_sonod_id'))->render();
+                return view("SonodsPdf.$sonodFolder.wayarisan-uttoradhikari-sonod-format2", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id','main_sonod_id','font_family'))->render();
 
 
             }
-            return view("SonodsPdf.$sonodFolder.wayarisan-uttoradhikari-sonod", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id','main_sonod_id'))->render();
+            return view("SonodsPdf.$sonodFolder.wayarisan-uttoradhikari-sonod", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id','main_sonod_id','font_family'))->render();
             // return $this->pdfHTMLut($row->id, "$sonod_name.pdf");
         }
 
         if ($sonod_name == 'ট্রেড লাইসেন্স' && $row->format == 2) {
 
-            return view("SonodsPdf.$sonodFolder.sonod-tradelicense-format2", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id','main_sonod_id'))->render();
+            return view("SonodsPdf.$sonodFolder.sonod-tradelicense-format2", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id','main_sonod_id','font_family'))->render();
         }
 
-        return view("SonodsPdf.$sonodFolder.sonod", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id','main_sonod_id'))->render();
+        return view("SonodsPdf.$sonodFolder.sonod", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id','main_sonod_id','font_family'))->render();
 
 
     }
