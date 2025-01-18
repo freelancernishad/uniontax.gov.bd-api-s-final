@@ -14,7 +14,7 @@ class AddFontFamilyToSonodsTable extends Migration
     public function up()
     {
         Schema::table('sonods', function (Blueprint $table) {
-            $table->longText('font_family')->default('bangla')->after('hasEnData');
+            $table->string('font_family', 50)->default('bangla')->after('hasEnData');
         });
     }
 
