@@ -105,37 +105,41 @@ class Sonod extends Model
         'renewed',
         'renewed_id',
         'format',
-        'hasEnData'
+        'hasEnData',
+        'font_family', // Add this line
     ];
 
+    protected $attributes = [
+        'font_family' => 'bangla', // Set default value
+    ];
 
-      // Relationship: A Sonod has many payments
-      public function payments()
-      {
-          return $this->hasMany(Payment::class, 'sonodId');
-      }
+    // Relationship: A Sonod has many payments
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'sonodId');
+    }
 
-      public function payment()
-      {
-          return $this->hasOne(Payment::class, 'sonodId')
-              ->orderBy('created_at'); // Order by creation date to get the first one
-      }
+    public function payment()
+    {
+        return $this->hasOne(Payment::class, 'sonodId')
+            ->orderBy('created_at'); // Order by creation date to get the first one
+    }
 
-      // Get Payment details as array
-      public function getPaymentsDetailsAttribute()
-      {
-          return $this->payments->map(function ($payment) {
-              return [
-                  'amount' => $payment->amount,
-                  'status' => $payment->status,
-                  'date' => $payment->created_at->format('Y-m-d'),
-              ];
-          });
-      }
+    // Get Payment details as array
+    public function getPaymentsDetailsAttribute()
+    {
+        return $this->payments->map(function ($payment) {
+            return [
+                'amount' => $payment->amount,
+                'status' => $payment->status,
+                'date' => $payment->created_at->format('Y-m-d'),
+            ];
+        });
+    }
 
-      public function english_sonod()
-      {
-          return $this->hasOne(EnglishSonod::class,'sonod_Id','id');
-      }
-
+    public function english_sonod()
+    {
+        return $this->hasOne(EnglishSonod::class,'sonod_Id','id');
+    }
 }
+

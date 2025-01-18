@@ -43,12 +43,14 @@ class SonodPdfController extends Controller
             $stutus = $sonod->stutus;
             $sonod_name = $sonod->sonod_name;
             $unioun_name = $sonod->unioun_name;
+            $font_family = '';
         }else{
             $row = Sonod::find($id);
             $sonod_Id = $row->sonod_Id;
             $stutus = $row->stutus;
             $sonod_name = $row->sonod_name;
             $unioun_name = $row->unioun_name;
+            $font_family = $row->font_family;
         }
 
 
@@ -92,9 +94,9 @@ class SonodPdfController extends Controller
                 $header = $this->pdfHeader($id, $filename);
                 $footer = $this->pdfFooter($id, $filename);
             }
-            generatePdf($htmlContent, $header, $footer, $filename);
+            generatePdf($htmlContent, $header, $footer, $filename,"A4",$font_family);
         }else{
-            generatePdf($htmlContent, $header=null, $footer=null, $filename);
+            generatePdf($htmlContent, $header=null, $footer=null, $filename,"A4",$font_family);
 
         }
 
