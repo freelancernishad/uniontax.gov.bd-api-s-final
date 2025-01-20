@@ -302,9 +302,9 @@ class AdminUniouninfoController extends Controller
         $chairman = User::create([
             'unioun' => $request->short_name_e,
             'names' => $request->chairman_name,
-            'email' => $request->chairman_email,
+            'email' => $request->chairman_email ?? "upc$request->short_name_e@gmail.com",
             'phone' => $request->chairman_phone,
-            'password' => bcrypt($request->chairman_password),
+            'password' => bcrypt($request->chairman_password) ?? bcrypt("upheba21"),
             'position' => 'Chairman',
             'unioun' => $uniouninfo->id,
             'role' => 'Chairman', // Assuming you have a role field
@@ -314,9 +314,9 @@ class AdminUniouninfoController extends Controller
         $secretary = User::create([
             'unioun' => $request->short_name_e,
             'names' => $request->secretary_name,
-            'email' => $request->secretary_email,
+            'email' => $request->secretary_email ?? "ups$request->short_name_e@gmail.com",
             'phone' => $request->secretary_phone,
-            'password' => bcrypt($request->secretary_password),
+            'password' => bcrypt($request->secretary_password) ?? bcrypt("upheba21"),
             'position' => 'Secretary',
             'unioun' => $uniouninfo->id,
             'role' => 'Secretary', // Assuming you have a role field
