@@ -6,6 +6,7 @@ use App\Models\Uniouninfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
+use App\Models\AllowedOrigin;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -299,25 +300,34 @@ class AdminUniouninfoController extends Controller
 
         // Create the Chairman User
         $chairman = User::create([
+            'unioun' => $request->short_name_e,
             'names' => $request->chairman_name,
             'email' => $request->chairman_email,
             'phone' => $request->chairman_phone,
             'password' => bcrypt($request->chairman_password),
-            'position' => 'chairman',
+            'position' => 'Chairman',
             'unioun' => $uniouninfo->id,
-            'role' => 'chairman', // Assuming you have a role field
+            'role' => 'Chairman', // Assuming you have a role field
         ]);
 
         // Create the Secretary User
         $secretary = User::create([
+            'unioun' => $request->short_name_e,
             'names' => $request->secretary_name,
             'email' => $request->secretary_email,
             'phone' => $request->secretary_phone,
             'password' => bcrypt($request->secretary_password),
-            'position' => 'secretary',
+            'position' => 'Secretary',
             'unioun' => $uniouninfo->id,
-            'role' => 'secretary', // Assuming you have a role field
+            'role' => 'Secretary', // Assuming you have a role field
         ]);
+
+        $origin_url =  "https://$request->short_name_e.uniontax.gov.bd";
+        $allowedAccess = AllowedOrigin::create(['origin_url'=>$origin_url]);
+
+        $origin_url =  "https://$request->short_name_e.unionservices.gov.bd";
+        $allowedAccess = AllowedOrigin::create(['origin_url'=>$origin_url]);
+
 
         // Handle file uploads if necessary
         if ($request->hasFile('web_logo')) {
