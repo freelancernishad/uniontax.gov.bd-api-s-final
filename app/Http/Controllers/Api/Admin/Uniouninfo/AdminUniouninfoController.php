@@ -299,7 +299,7 @@ class AdminUniouninfoController extends Controller
 
         // Create the Chairman User
         $chairman = User::create([
-            'name' => $request->chairman_name,
+            'names' => $request->chairman_name,
             'email' => $request->chairman_email,
             'phone' => $request->chairman_phone,
             'password' => bcrypt($request->chairman_password),
@@ -310,7 +310,7 @@ class AdminUniouninfoController extends Controller
 
         // Create the Secretary User
         $secretary = User::create([
-            'name' => $request->secretary_name,
+            'names' => $request->secretary_name,
             'email' => $request->secretary_email,
             'phone' => $request->secretary_phone,
             'password' => bcrypt($request->secretary_password),
