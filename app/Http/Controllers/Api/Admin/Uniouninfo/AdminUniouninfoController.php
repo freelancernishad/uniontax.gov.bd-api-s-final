@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Api\Admin\Uniouninfo;
 
+use App\Models\User;
 use App\Models\Uniouninfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
@@ -224,4 +225,124 @@ class AdminUniouninfoController extends Controller
             'data' => $unionInfo,
         ], 200);
     }
+
+
+
+    public function createUnionWithUsers(Request $request)
+    {
+        // Validate the request data
+        $validator = Validator::make($request->all(), [
+            'full_name' => 'nullable|string',
+            'short_name_e' => 'nullable|string',
+            'domain' => 'nullable|string',
+            'portal' => 'nullable|string',
+            'short_name_b' => 'nullable|string',
+            'thana' => 'nullable|string',
+            'district' => 'nullable|string',
+            'web_logo' => 'nullable|file',
+            'sonod_logo' => 'nullable|file',
+            'c_signture' => 'nullable|file',
+            'c_name' => 'nullable|string',
+            'c_type' => 'nullable|string',
+            'c_type_en' => 'nullable|string',
+            'c_email' => 'nullable|email',
+            'socib_name' => 'nullable|string',
+            'socib_signture' => 'nullable|file',
+            'socib_email' => 'nullable|email',
+            'format' => 'nullable|string',
+            'u_image' => 'nullable|file',
+            'u_description' => 'nullable|string',
+            'u_notice' => 'nullable|string',
+            'u_code' => 'nullable|string',
+            'contact_email' => 'nullable|email',
+            'google_map' => 'nullable|string',
+            'defaultColor' => 'nullable|string',
+            'payment_type' => 'nullable|string',
+            'AKPAY_MER_REG_ID' => 'nullable|string',
+            'AKPAY_MER_PASS_KEY' => 'nullable|string',
+            'smsBalance' => 'nullable|integer',
+            'nidServicestatus' => 'nullable|string',
+            'nidService' => 'nullable|string',
+            'status' => 'nullable|string',
+            'type' => 'nullable|string',
+            'full_name_en' => 'nullable|string',
+            'c_name_en' => 'nullable|string',
+            'district_en' => 'nullable|string',
+            'thana_en' => 'nullable|string',
+            'socib_name_en' => 'nullable|string',
+
+
+            'chairman_name' => 'required|string',
+            'chairman_email' => 'required|email',
+            'chairman_phone' => 'required|string',
+            'chairman_password' => 'required|string',
+
+            'secretary_name' => 'required|string',
+            'secretary_email' => 'required|email',
+            'secretary_phone' => 'required|string',
+            'secretary_password' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Create the Uniouninfo record
+        $uniouninfo = Uniouninfo::create($request->only([
+            'full_name', 'short_name_e', 'domain', 'portal', 'short_name_b', 'thana', 'district',
+            'web_logo', 'sonod_logo', 'c_signture', 'c_name', 'c_type', 'c_type_en', 'c_email',
+            'socib_name', 'socib_signture', 'socib_email', 'format', 'u_image', 'u_description',
+            'u_notice', 'u_code', 'contact_email', 'google_map', 'defaultColor', 'payment_type',
+            'AKPAY_MER_REG_ID', 'AKPAY_MER_PASS_KEY', 'smsBalance', 'nidServicestatus', 'nidService',
+            'status', 'type', 'full_name_en', 'c_name_en', 'district_en', 'thana_en', 'socib_name_en',
+        ]));
+
+        // Create the Chairman User
+        $chairman = User::create([
+            'name' => $request->chairman_name,
+            'email' => $request->chairman_email,
+            'phone' => $request->chairman_phone,
+            'password' => bcrypt($request->chairman_password),
+            'position' => 'chairman',
+            'unioun' => $uniouninfo->id,
+            'role' => 'chairman', // Assuming you have a role field
+        ]);
+
+        // Create the Secretary User
+        $secretary = User::create([
+            'name' => $request->secretary_name,
+            'email' => $request->secretary_email,
+            'phone' => $request->secretary_phone,
+            'password' => bcrypt($request->secretary_password),
+            'position' => 'secretary',
+            'unioun' => $uniouninfo->id,
+            'role' => 'secretary', // Assuming you have a role field
+        ]);
+
+        // Handle file uploads if necessary
+        if ($request->hasFile('web_logo')) {
+            $uniouninfo->saveFile($request->file('web_logo'), 'web_logo');
+        }
+        if ($request->hasFile('sonod_logo')) {
+            $uniouninfo->saveFile($request->file('sonod_logo'), 'sonod_logo');
+        }
+        if ($request->hasFile('c_signture')) {
+            $uniouninfo->saveFile($request->file('c_signture'), 'c_signture');
+        }
+        if ($request->hasFile('socib_signture')) {
+            $uniouninfo->saveFile($request->file('socib_signture'), 'socib_signture');
+        }
+        if ($request->hasFile('u_image')) {
+            $uniouninfo->saveFile($request->file('u_image'), 'u_image');
+        }
+
+        // Return a success response
+        return response()->json([
+            'message' => 'Union and users created successfully',
+            'uniouninfo' => $uniouninfo,
+            'chairman' => $chairman,
+            'secretary' => $secretary,
+        ], 201);
+    }
+
 }

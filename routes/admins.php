@@ -134,6 +134,8 @@ Route::prefix('admin')->group(function () {
         Route::get('/failed-payments', [FailedPaymentController::class, 'index']);
 
 
+        Route::post('/create-union', [AdminUniouninfoController::class, 'createUnionWithUsers']);
+
     });
 });
 
