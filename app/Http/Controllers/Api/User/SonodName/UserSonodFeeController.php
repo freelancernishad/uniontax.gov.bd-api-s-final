@@ -57,19 +57,19 @@ class UserSonodFeeController extends Controller
         $validator = Validator::make($request->all(), [
             'fees_data' => 'required|array',
             'fees_data.*.sonod_fees_id' => 'nullable|exists:sonod_fees,id', // Make this nullable for creation
-            'fees_data.*.sonodnamelist_id' => 'nullable|exists:sonodnamelists,id',
-            'fees_data.*.service_id' => 'nullable',
-            'fees_data.*.fees' => 'nullable|numeric',
-            'fees_data.*.unioun' => 'nullable|string|max:255',
+            'fees_data.*.sonodnamelist_id' => 'required|exists:sonodnamelists,id',
+            'fees_data.*.service_id' => 'required',
+            'fees_data.*.fees' => 'required|numeric',
+            'fees_data.*.unioun' => 'required|string|max:255',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
                 'errors' => $validator->errors()
             ], 400);
         }
-
+    
         foreach ($request->fees_data as $feeData) {
             // Use updateOrCreate to either update the existing record or create a new one
             SonodFee::updateOrCreate(
@@ -84,7 +84,7 @@ class UserSonodFeeController extends Controller
                 ]
             );
         }
-
+    
         return response()->json([
             'status' => 'success',
             'message' => 'SonodFees updated or created successfully'
