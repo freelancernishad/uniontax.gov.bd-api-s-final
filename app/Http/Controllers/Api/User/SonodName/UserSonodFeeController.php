@@ -56,11 +56,11 @@ class UserSonodFeeController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'fees_data' => 'required|array',
-            'fees_data.*.sonod_fees_id' => 'required|exists:sonod_fees,id',
-            'fees_data.*.sonodnamelist_id' => 'required|exists:sonodnamelists,id',
-            'fees_data.*.service_id' => 'required',
-            'fees_data.*.fees' => 'required|numeric',
-            'fees_data.*.unioun' => 'required|string|max:255',
+            'fees_data.*.sonod_fees_id' => 'nullable|exists:sonod_fees,id', // Make this nullable for creation
+            'fees_data.*.sonodnamelist_id' => 'nullable|exists:sonodnamelists,id',
+            'fees_data.*.service_id' => 'nullable',
+            'fees_data.*.fees' => 'nullable|numeric',
+            'fees_data.*.unioun' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -71,26 +71,23 @@ class UserSonodFeeController extends Controller
         }
 
         foreach ($request->fees_data as $feeData) {
-            $sonodFee = SonodFee::find($feeData['sonod_fees_id']);
-            if (!$sonodFee) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'SonodFee not found for ID ' . $feeData['sonod_fees_id']
-                ], 404);
-            }
-
-            // Update the existing SonodFee
-            $sonodFee->update([
-                // 'sonodnamelist_id' => $feeData['sonodnamelist_id'],
-                'service_id' => $feeData['service_id'],
-                'fees' => $feeData['fees'],
-                'unioun' => $feeData['unioun'],
-            ]);
+            // Use updateOrCreate to either update the existing record or create a new one
+            SonodFee::updateOrCreate(
+                [
+                    'id' => $feeData['sonod_fees_id'] ?? null, // Use the ID if provided, otherwise null
+                ],
+                [
+                    'sonodnamelist_id' => $feeData['sonodnamelist_id'],
+                    'service_id' => $feeData['service_id'],
+                    'fees' => $feeData['fees'],
+                    'unioun' => $feeData['unioun'],
+                ]
+            );
         }
 
         return response()->json([
             'status' => 'success',
-            'message' => 'SonodFees updated successfully'
+            'message' => 'SonodFees updated or created successfully'
         ], 200);
     }
 
