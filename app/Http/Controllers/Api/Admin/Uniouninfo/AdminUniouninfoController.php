@@ -306,7 +306,7 @@ class AdminUniouninfoController extends Controller
             'phone' => $request->chairman_phone,
             'password' => bcrypt("upsheba21"),
             'position' => 'Chairman',
-            'unioun' => $uniouninfo->id,
+            // 'unioun' => $uniouninfo->id,
             'role' => 'Chairman', // Assuming you have a role field
         ]);
 
@@ -318,7 +318,7 @@ class AdminUniouninfoController extends Controller
             'phone' => $request->secretary_phone,
             'password' => bcrypt("upsheba21"),
             'position' => 'Secretary',
-            'unioun' => $uniouninfo->id,
+            // 'unioun' => $uniouninfo->id,
             'role' => 'Secretary', // Assuming you have a role field
         ]);
 
