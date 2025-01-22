@@ -5,10 +5,11 @@ namespace App\Http\Controllers\Api\User\Sonod;
 use App\Models\User;
 use App\Models\Sonod;
 use App\Models\Uniouninfo;
+use App\Models\EnglishSonod;
 use Illuminate\Http\Request;
 use App\Models\Sonodnamelist;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Models\EnglishSonod;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -354,6 +355,7 @@ class UserSonodController extends Controller
                 $dataToUpdate['sec_prottoyon'] = generateSecProttoyon($sonod);
         }
 
+        Log::info($dataToUpdate);
         // Update the Sonod record
         $sonod->update($dataToUpdate);
 
