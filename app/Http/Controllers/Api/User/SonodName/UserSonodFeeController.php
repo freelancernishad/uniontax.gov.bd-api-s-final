@@ -62,14 +62,14 @@ class UserSonodFeeController extends Controller
             'fees_data.*.fees' => 'required|numeric',
             'fees_data.*.unioun' => 'required|string|max:255',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
                 'errors' => $validator->errors()
             ], 400);
         }
-    
+
         foreach ($request->fees_data as $feeData) {
             // Use updateOrCreate to either update the existing record or create a new one
             SonodFee::updateOrCreate(
@@ -84,7 +84,7 @@ class UserSonodFeeController extends Controller
                 ]
             );
         }
-    
+
         return response()->json([
             'status' => 'success',
             'message' => 'SonodFees updated or created successfully'
