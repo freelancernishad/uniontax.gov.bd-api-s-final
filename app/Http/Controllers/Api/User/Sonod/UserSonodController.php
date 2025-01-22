@@ -380,20 +380,20 @@ class UserSonodController extends Controller
             $sonod = Sonod::with(['english_sonod' => function ($query) {
                 $query->select('id', 'sonod_Id'); // Select only the id and sonod_Id (foreign key)
             }])->find($id);
-
+    
             // Check if the Sonod record exists
             if (!$sonod) {
                 return response()->json(['message' => 'Sonod not found'], 404);
             }
-
+    
             // Check if the EnglishSonod exists
             if (!$sonod->english_sonod) {
                 return response()->json(['message' => 'EnglishSonod not found for the given Sonod'], 404);
             }
-
+    
             // Find the existing EnglishSonod record
             $englishSonod = EnglishSonod::findOrFail($sonod->english_sonod->id);
-
+    
             // Filter the request data to only include fields that exist in the EnglishSonod model
             $updatableFields = [
                 'successor_father_name', 'successor_mother_name',
@@ -416,10 +416,10 @@ class UserSonodController extends Controller
                 'format', 'applicant_type_of_businessKhat', 'applicant_type_of_businessKhatAmount',
                 'khat'
             ];
-
+    
             // Extract only the fields that exist in the model from the request
             $dataToUpdate = $request->only($updatableFields);
-
+    
             // Handle sec_prottoyon update
             if ($englishSonod->sonod_name == 'বিবিধ প্রত্যয়নপত্র' || $englishSonod->sonod_name == 'অনাপত্তি সনদপত্র') {
                 // Update sec_prottoyon if provided in the request
@@ -430,16 +430,16 @@ class UserSonodController extends Controller
                 // Generate sec_prottoyon for other sonod_name values
                 $dataToUpdate['sec_prottoyon'] = generateSecProttoyon($englishSonod, true);
             }
-
+    
             // Update the EnglishSonod record
             $englishSonod->update($dataToUpdate);
-
+    
             // Return the updated record in the response
             return response()->json([
                 'message' => 'EnglishSonod updated successfully',
                 'englishSonod' => $englishSonod
             ], 200);
-
+    
         } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'EnglishSonod not found'], 404);
         } catch (\Exception $e) {

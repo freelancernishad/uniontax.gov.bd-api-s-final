@@ -273,15 +273,15 @@ class AdminUniouninfoController extends Controller
             'socib_name_en' => 'nullable|string',
 
 
-            'chairman_name' => 'required|string',
-            'chairman_email' => 'required|email',
-            'chairman_phone' => 'required|string',
-            'chairman_password' => 'required|string',
+            'chairman_name' => 'nullable|string',
+            'chairman_email' => 'nullable|email',
+            'chairman_phone' => 'nullable|string',
+            'chairman_password' => 'nullable|string',
 
-            'secretary_name' => 'required|string',
-            'secretary_email' => 'required|email',
-            'secretary_phone' => 'required|string',
-            'secretary_password' => 'required|string',
+            'secretary_name' => 'nullable|string',
+            'secretary_email' => 'nullable|email',
+            'secretary_phone' => 'nullable|string',
+            'secretary_password' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
