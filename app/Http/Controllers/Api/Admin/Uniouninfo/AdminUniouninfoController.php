@@ -304,7 +304,7 @@ class AdminUniouninfoController extends Controller
             'names' => $request->chairman_name,
             'email' => $request->chairman_email ?? "upc$request->short_name_e@gmail.com",
             'phone' => $request->chairman_phone,
-            'password' => bcrypt($request->chairman_password) ?? bcrypt("upheba21"),
+            'password' => bcrypt("upsheba21"),
             'position' => 'Chairman',
             'unioun' => $uniouninfo->id,
             'role' => 'Chairman', // Assuming you have a role field
@@ -316,7 +316,7 @@ class AdminUniouninfoController extends Controller
             'names' => $request->secretary_name,
             'email' => $request->secretary_email ?? "ups$request->short_name_e@gmail.com",
             'phone' => $request->secretary_phone,
-            'password' => bcrypt($request->secretary_password) ?? bcrypt("upheba21"),
+            'password' => bcrypt("upsheba21"),
             'position' => 'Secretary',
             'unioun' => $uniouninfo->id,
             'role' => 'Secretary', // Assuming you have a role field
