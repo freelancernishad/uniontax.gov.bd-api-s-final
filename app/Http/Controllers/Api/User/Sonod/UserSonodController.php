@@ -314,72 +314,69 @@ class UserSonodController extends Controller
 
 
     public function update(Request $request, $id)
-{
-    try {
-        // Find the existing record
-        $sonod = Sonod::with('english_sonod')->findOrFail($id);
+    {
+        try {
+            // Find the existing record
+            $sonod = Sonod::with('english_sonod')->findOrFail($id);
 
-        // Filter the request data to only include fields that exist in the Sonod model
-        $updatableFields = [
-            'successor_father_name', 'successor_mother_name',
-            'ut_father_name', 'ut_mother_name', 'ut_grame', 'ut_post', 'ut_thana',
-            'ut_district', 'ut_word', 'successor_father_alive_status', 'successor_mother_alive_status',
-            'applicant_holding_tax_number', 'applicant_national_id_number', 'applicant_birth_certificate_number',
-            'applicant_passport_number', 'applicant_date_of_birth', 'family_name', 'Annual_income',
-            'Annual_income_text', 'Subject_to_permission', 'disabled', 'The_subject_of_the_certificate',
-            'Name_of_the_transferred_area', 'applicant_second_name', 'applicant_owner_type',
-            'applicant_name_of_the_organization', 'organization_address', 'applicant_name', 'utname',
-            'ut_religion', 'alive_status', 'applicant_gender', 'applicant_marriage_status',
-            'applicant_vat_id_number', 'applicant_tax_id_number', 'applicant_type_of_business',
-            'applicant_father_name', 'applicant_mother_name', 'applicant_occupation', 'applicant_education',
-            'applicant_religion', 'applicant_resident_status', 'applicant_present_village',
-            'applicant_present_road_block_sector', 'applicant_present_word_number', 'applicant_present_district',
-            'applicant_present_Upazila', 'applicant_present_post_office', 'applicant_permanent_village',
-            'applicant_permanent_road_block_sector', 'applicant_permanent_word_number',
-            'applicant_permanent_district', 'applicant_permanent_Upazila', 'applicant_permanent_post_office',
-            'successor_list', 'applicant_mobile', 'applicant_email', 'applicant_phone', 'prottoyon',
-            'format', 'applicant_type_of_businessKhat', 'applicant_type_of_businessKhatAmount',
-            'khat', 'sec_prottoyon' // Allow sec_prottoyon to be updated if provided
-        ];
+            // Filter the request data to only include fields that exist in the Sonod model
+            $updatableFields = [
+                'successor_father_name', 'successor_mother_name',
+                'ut_father_name', 'ut_mother_name', 'ut_grame', 'ut_post', 'ut_thana',
+                'ut_district', 'ut_word', 'successor_father_alive_status', 'successor_mother_alive_status',
+                'applicant_holding_tax_number', 'applicant_national_id_number', 'applicant_birth_certificate_number',
+                'applicant_passport_number', 'applicant_date_of_birth', 'family_name', 'Annual_income',
+                'Annual_income_text', 'Subject_to_permission', 'disabled', 'The_subject_of_the_certificate',
+                'Name_of_the_transferred_area', 'applicant_second_name', 'applicant_owner_type',
+                'applicant_name_of_the_organization', 'organization_address', 'applicant_name', 'utname',
+                'ut_religion', 'alive_status', 'applicant_gender', 'applicant_marriage_status',
+                'applicant_vat_id_number', 'applicant_tax_id_number', 'applicant_type_of_business',
+                'applicant_father_name', 'applicant_mother_name', 'applicant_occupation', 'applicant_education',
+                'applicant_religion', 'applicant_resident_status', 'applicant_present_village',
+                'applicant_present_road_block_sector', 'applicant_present_word_number', 'applicant_present_district',
+                'applicant_present_Upazila', 'applicant_present_post_office', 'applicant_permanent_village',
+                'applicant_permanent_road_block_sector', 'applicant_permanent_word_number',
+                'applicant_permanent_district', 'applicant_permanent_Upazila', 'applicant_permanent_post_office',
+                'successor_list', 'applicant_mobile', 'applicant_email', 'applicant_phone', 'prottoyon',
+                'format', 'applicant_type_of_businessKhat', 'applicant_type_of_businessKhatAmount',
+                'khat'
+            ];
 
-        // Extract only the fields that exist in the model from the request
-        $dataToUpdate = $request->only($updatableFields);
+            // Extract only the fields that exist in the model from the request
+            $dataToUpdate = $request->only($updatableFields);
 
-        // Handle sec_prottoyon and sec_prottoyon_en updates
-        if ($sonod->sonod_name == 'বিবিধ প্রত্যয়নপত্র' || $sonod->sonod_name == 'অনাপত্তি সনদপত্র') {
-            // Update sec_prottoyon if provided in the request
-            if ($request->has('sec_prottoyon')) {
-                $dataToUpdate['sec_prottoyon'] = $request->sec_prottoyon;
+            // Update the Sonod record (excluding sec_prottoyon for now)
+            $sonod->update($dataToUpdate);
+
+            // Handle sec_prottoyon update after the main update is completed
+            if ($sonod->sonod_name == 'বিবিধ প্রত্যয়নপত্র' || $sonod->sonod_name == 'অনাপত্তি সনদপত্র') {
+                // Update sec_prottoyon if provided in the request
+                if ($request->has('sec_prottoyon')) {
+                    $sonod->update(['sec_prottoyon' => $request->sec_prottoyon]);
+                }
+            } else {
+                // Generate and update sec_prottoyon for other sonod_name values
+                $sonod->update(['sec_prottoyon' => generateSecProttoyon($sonod)]);
             }
-        } else {
-                $dataToUpdate['sec_prottoyon'] = generateSecProttoyon($sonod);
+
+            // Return the updated record in the response
+            return response()->json([
+                'message' => 'Sonod updated successfully',
+                'sonod' => $sonod
+            ], 200);
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Sonod not found'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Update failed', 'error' => $e->getMessage()], 500);
         }
-
-        Log::info($dataToUpdate);
-        // Update the Sonod record
-        $sonod->update($dataToUpdate);
-
-
-        // Return the updated record in the response
-        return response()->json([
-            'message' => 'Sonod updated successfully',
-            'sonod' => $sonod
-        ], 200);
-
-    } catch (ModelNotFoundException $e) {
-        return response()->json(['message' => 'Sonod not found'], 404);
-    } catch (\Exception $e) {
-        return response()->json(['message' => 'Update failed', 'error' => $e->getMessage()], 500);
     }
-}
 
 
     public function updateEnglishSonod(Request $request, $id)
     {
         try {
-
-
-             // Find the Sonod record with its associated EnglishSonod
+            // Find the Sonod record with its associated EnglishSonod
             $sonod = Sonod::with(['english_sonod' => function ($query) {
                 $query->select('id', 'sonod_Id'); // Select only the id and sonod_Id (foreign key)
             }])->find($id);
@@ -423,19 +420,16 @@ class UserSonodController extends Controller
             // Extract only the fields that exist in the model from the request
             $dataToUpdate = $request->only($updatableFields);
 
-
-
+            // Handle sec_prottoyon update
             if ($englishSonod->sonod_name == 'বিবিধ প্রত্যয়নপত্র' || $englishSonod->sonod_name == 'অনাপত্তি সনদপত্র') {
                 // Update sec_prottoyon if provided in the request
                 if ($request->has('sec_prottoyon')) {
                     $dataToUpdate['sec_prottoyon'] = $request->sec_prottoyon;
                 }
             } else {
-                    $dataToUpdate['sec_prottoyon'] = generateSecProttoyon($englishSonod,true);
+                // Generate sec_prottoyon for other sonod_name values
+                $dataToUpdate['sec_prottoyon'] = generateSecProttoyon($englishSonod, true);
             }
-
-
-
 
             // Update the EnglishSonod record
             $englishSonod->update($dataToUpdate);
