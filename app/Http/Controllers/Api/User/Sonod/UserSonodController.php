@@ -420,19 +420,19 @@ class UserSonodController extends Controller
             // Extract only the fields that exist in the model from the request
             $dataToUpdate = $request->only($updatableFields);
     
-            // Handle sec_prottoyon update
+            // Update the EnglishSonod record (excluding sec_prottoyon for now)
+            $englishSonod->update($dataToUpdate);
+    
+            // Handle sec_prottoyon update after the main update is completed
             if ($englishSonod->sonod_name == 'বিবিধ প্রত্যয়নপত্র' || $englishSonod->sonod_name == 'অনাপত্তি সনদপত্র') {
                 // Update sec_prottoyon if provided in the request
                 if ($request->has('sec_prottoyon')) {
-                    $dataToUpdate['sec_prottoyon'] = $request->sec_prottoyon;
+                    $englishSonod->update(['sec_prottoyon' => $request->sec_prottoyon]);
                 }
             } else {
-                // Generate sec_prottoyon for other sonod_name values
-                $dataToUpdate['sec_prottoyon'] = generateSecProttoyon($englishSonod, true);
+                // Generate and update sec_prottoyon for other sonod_name values
+                $englishSonod->update(['sec_prottoyon' => generateSecProttoyon($englishSonod, true)]);
             }
-    
-            // Update the EnglishSonod record
-            $englishSonod->update($dataToUpdate);
     
             // Return the updated record in the response
             return response()->json([
