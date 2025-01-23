@@ -85,7 +85,13 @@ class PaymentReportsController extends Controller
     }
 
     if ($from && $to) {
-        $query->whereBetween('date', [$from, $to]);
+        if ($from === $to) {
+            // If from and to are the same, use a simple where clause
+            $query->where('date', $from);
+        } else {
+            // Otherwise, use whereBetween
+            $query->whereBetween('date', [$from, $to]);
+        }
     }
 
     if ($sonod_type && $sonod_type !== 'all') {
