@@ -237,9 +237,9 @@ use Rakibhstu\Banglanumber\NumberToBangla;
         return $month < 7 ? ($year - 1) . "-" . date('y') : $year . "-" . (date('y') + 1);
     }
 
-    function CurrentOrthoBochor($full = 0, $month = '')
+    function CurrentOrthoBochor($full = 0, $month = '', $year = '')
     {
-        $year = date('Y');
+        $year = $year ?: date('Y');
         $month = $month ?: date('m'); // Use the current month if none is provided
 
         // Determine the year range based on the month
