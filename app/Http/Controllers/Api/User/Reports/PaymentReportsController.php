@@ -82,11 +82,14 @@ class PaymentReportsController extends Controller
 
     if ($from && $to) {
         if ($from === $to) {
-            // If from and to are the same, use a simple where clause
-            $query->where('date', $from);
+            // Use DATE() to compare only the date part
+            $query->whereDate('date', $from);
         } else {
-            // Otherwise, use whereBetween
-            $query->whereBetween('date', [$from, $to]);
+            // Use whereBetween with DATE() for datetime fields
+            $query->whereBetween('date', [
+                Carbon::parse($from)->startOfDay()->toDateTimeString(),
+                Carbon::parse($to)->endOfDay()->toDateTimeString()
+            ]);
         }
     }
 
