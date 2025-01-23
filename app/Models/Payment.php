@@ -45,7 +45,7 @@ class Payment extends Model
         'response_data' => 'array', // Cast JSON data to an array
         'ipnResponse' => 'array', // Cast JSON data to an array
         'paid_at' => 'datetime', // Cast as a datetime
-        'date' => 'datetime', // Cast as a datetime
+        // 'date' => 'datetime', // Cast as a datetime
     ];
 
     // Define relationship with User model
