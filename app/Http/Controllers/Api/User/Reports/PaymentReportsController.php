@@ -50,11 +50,7 @@ class PaymentReportsController extends Controller
     $from = $request->from ?: Carbon::now()->subDays(7)->toDateString();
     $to = $request->to ?: Carbon::now()->toDateString();
 
-    // Check if from and to dates are the same
-    if ($from === $to) {
-        $from = Carbon::now()->toDateString();
-        $to = Carbon::now()->toDateString();
-    }
+
 
     $payment_type = $request->payment_type;
 
