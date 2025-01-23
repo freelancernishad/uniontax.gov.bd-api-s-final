@@ -17,61 +17,52 @@ class PaymentReportsController extends Controller
 {
 
     public function PaymentReports(Request $request)
-    {
-        ini_set('max_execution_time', '60000');
-        ini_set("pcre.backtrack_limit", "500000000000000000");
-        ini_set('memory_limit', '512M'); // Avoid excessively high memory limits
+{
+    ini_set('max_execution_time', '60000');
+    ini_set("pcre.backtrack_limit", "500000000000000000");
+    ini_set('memory_limit', '512M'); // Avoid excessively high memory limits
 
+    $token = $request->query('token');
 
-        $token = $request->query('token');
+    if (!$token) {
+        return response()->json(['error' => 'No token provided.'], 400);
+    }
 
-        if (!$token) {
-            return response()->json(['error' => 'No token provided.'], 400);
-        }
-        try {
-            $authenticatedEntity = JWTAuth::setToken($token)->authenticate();
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Unauthorized. Invalid token.'], 403);
-        }
+    try {
+        $authenticatedEntity = JWTAuth::setToken($token)->authenticate();
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Unauthorized. Invalid token.'], 403);
+    }
 
+    if (!$authenticatedEntity) {
+        return response()->json(['error' => 'Unauthorized. Invalid token.'], 403);
+    }
 
+    $union = $request->union;
+    $isUser = auth('user')->setToken($token)->check();
+    if ($isUser) {
+        $union = $authenticatedEntity->unioun;
+    }
 
-        if (!$authenticatedEntity) {
-            return response()->json(['error' => 'Unauthorized. Invalid token.'], 403);
-        }
+    $sonod_type = $request->sonod_type ?: 'all';
 
+    // Get values from the request or set default to the last 7 days
+    $from = $request->from ?: Carbon::now()->subDays(7)->toDateString();
+    $to = $request->to ?: Carbon::now()->toDateString();
 
+    // Check if from and to dates are the same
+    if ($from === $to) {
+        $from = Carbon::now()->toDateString();
+        $to = Carbon::now()->toDateString();
+    }
 
+    $payment_type = $request->payment_type;
 
+    // Build base query
+    $query = Payment::where('status', 'Paid');
 
-        $union = $request->union;
-        $isUser = auth('user')->setToken($token)->check();
-        if ($isUser) {
-            $union = $authenticatedEntity->unioun;
-        }
-
-
-
-
-
-
-
- 
-
-
-
-        $sonod_type = $request->sonod_type ?: 'all';
-        // Get values from the request or set default to the last 7 days
-        $from = $request->from ?: Carbon::now()->subDays(7)->toDateString();
-        $to = $request->to ?: Carbon::now()->toDateString();
-        $payment_type = $request->payment_type;
-
-
-        // Build base query
-        $query = Payment::where('status', 'Paid');
-
-
-        $query->select('id',
+    $query->select(
+        'id',
         'sonod_type',
         'payment_type',
         'amount',
@@ -81,66 +72,57 @@ class PaymentReportsController extends Controller
         'sonod_type',
         'created_at'
     );
-   
-        // Apply filters
-        if ($union !== 'all') {
-            $query->where('union', $union);
-        }
 
-      
-        
-        if ($payment_type === 'menual') {
-            $query->whereNull('payment_type');
-        } elseif ($payment_type === 'online') {
-            $query->where('payment_type', 'online');
-        }
-
-        if ($from && $to) {
-            $query->whereBetween('date', [$from, $to]);
-        }
-
-        if ($sonod_type && $sonod_type !== 'all') {
-            $query->where('sonod_type', $sonod_type);
-        }
-
-        // Use chunking to reduce memory usage
-        $rows = [];
-        $query->orderBy('id', 'asc')->chunk(1000, function ($chunk) use (&$rows) {
-            $rows = array_merge($rows, $chunk->toArray());
-        });
-
-
-   
-        // return response()->json($rows);
-  
-
-        // Retrieve Union information
-
-        $uniouninfo = Uniouninfo::where('short_name_e', $union)->first();
-        if (!$uniouninfo) {
-            return response()->json([
-                'error' => 'No Union information found for the given short name.'
-            ], 404); // Return a 404 Not Found status
-        }
-
-        // Generate HTML view for PDF
-        $htmlView = view('Reports.PaymentReports', compact('rows', 'uniouninfo', 'sonod_type', 'from', 'to', 'union'))->render();
-
-        // Define header and footer if needed
-        $header = null; // Add HTML for header if required
-        $footer = null; // Add HTML for footer if required
-
-
-        if($union != 'all'){
-            $footer = $this->pdfFooter($uniouninfo);
-        }
-
-        // File name
-        $filename = "Payment_Report_" . now()->format('Ymd_His') . ".pdf";
-
-        // Generate and stream the PDF
-        return generatePdf($htmlView, $header, $footer, $filename);
+    // Apply filters
+    if ($union !== 'all') {
+        $query->where('union', $union);
     }
+
+    if ($payment_type === 'menual') {
+        $query->whereNull('payment_type');
+    } elseif ($payment_type === 'online') {
+        $query->where('payment_type', 'online');
+    }
+
+    if ($from && $to) {
+        $query->whereBetween('date', [$from, $to]);
+    }
+
+    if ($sonod_type && $sonod_type !== 'all') {
+        $query->where('sonod_type', $sonod_type);
+    }
+
+    // Use chunking to reduce memory usage
+    $rows = [];
+    $query->orderBy('id', 'asc')->chunk(1000, function ($chunk) use (&$rows) {
+        $rows = array_merge($rows, $chunk->toArray());
+    });
+
+    // Retrieve Union information
+    $uniouninfo = Uniouninfo::where('short_name_e', $union)->first();
+    if (!$uniouninfo) {
+        return response()->json([
+            'error' => 'No Union information found for the given short name.'
+        ], 404); // Return a 404 Not Found status
+    }
+
+    // Generate HTML view for PDF
+    $htmlView = view('Reports.PaymentReports', compact('rows', 'uniouninfo', 'sonod_type', 'from', 'to', 'union'))->render();
+
+    // Define header and footer if needed
+    $header = null; // Add HTML for header if required
+    $footer = null; // Add HTML for footer if required
+
+    if ($union != 'all') {
+        $footer = $this->pdfFooter($uniouninfo);
+    }
+
+    // File name
+    $filename = "Payment_Report_" . now()->format('Ymd_His') . ".pdf";
+
+    // Generate and stream the PDF
+    return generatePdf($htmlView, $header, $footer, $filename);
+}
 
     public function pdfFooter($uniouninfo){
 
