@@ -470,6 +470,7 @@ class AdminUniouninfoController extends Controller
             }
         }
 
+        return $unionCodes;
         // If no union codes were found, return the Upazila name and JSON upazila names
         if (empty($unionCodes)) {
             return response()->json([
