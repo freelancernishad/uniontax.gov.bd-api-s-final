@@ -502,7 +502,7 @@ class AdminUniouninfoController extends Controller
 
     // Get the union names from the Upazila
     $unionNames = $upazila->unions->pluck('name')->toArray();
-
+    $unionNames = str_replace(' ', '', strtolower($unionNames));
     // Fetch Uniouninfo records where short_name_e matches the union names
     $uniouninfoList = Uniouninfo::whereIn('short_name_e', $unionNames)->get();
 
