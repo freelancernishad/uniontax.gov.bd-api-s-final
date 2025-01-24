@@ -442,7 +442,42 @@ class AdminUniouninfoController extends Controller
             ], 404);
         }
 
+        // Read the JSON file
+        $fileContent = Storage::disk('protected')->get('unionList-127-145-RANGPUR.json');
+        $jsonData = json_decode($fileContent, true);
 
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return response()->json([
+                'error' => 'Invalid JSON file',
+            ], 400);
+        }
+
+        // Get the union names and codes from the JSON data for the specific upazila
+        $unionCodes = [];
+        $jsonUpazilaNames = [];
+        $matchedUpazilaName = null;
+
+        foreach ($jsonData['zilas'] as $zila) {
+            foreach ($zila['upazilas'] as $upazilaData) {
+                $jsonUpazilaNames[] = $upazilaData['name']; // Collect all upazila names from JSON
+                if (strtolower($upazilaData['name']) === strtolower($Upazila->name)) {
+                    $matchedUpazilaName = $upazilaData['name']; // Store the matched upazila name
+                    foreach ($upazilaData['unions'] as $union) {
+                        $unionCodes[strtolower(str_replace(' ', '', $union['name']))] = $union['code'];
+                    }
+                    break 2; // Exit both loops once the upazila is found
+                }
+            }
+        }
+
+        // If no union codes were found, return the Upazila name and JSON upazila names
+        if (empty($unionCodes)) {
+            return response()->json([
+                'message' => 'No matching upazila found in JSON data',
+                'upazila_name' => $Upazila->name,
+                'json_upazila_names' => $jsonUpazilaNames,
+            ], 404);
+        }
 
         // Get the unions for the Upazila
         $unions = $Upazila->unions;
@@ -450,6 +485,7 @@ class AdminUniouninfoController extends Controller
         foreach ($unions as $union) {
             // Generate the union name in lowercase and without spaces
             $unionName = str_replace(' ', '', strtolower($union->name));
+            $unionCode = $unionCodes[$unionName] ?? uniqid();
 
             // Prepare the data for Uniouninfo
             $data = [
@@ -460,7 +496,7 @@ class AdminUniouninfoController extends Controller
                 'district' => $Upazila->district->bn_name,
                 'c_type' => "চেয়ারম্যান",
                 'c_type_en' => "Chairman",
-                'u_code' => uniqid(),
+                'u_code' => $unionCode,
                 "defaultColor" => "green",
                 "payment_type" => "Prepaid",
                 "full_name_en" => "$union->name union porisod",
@@ -509,38 +545,6 @@ class AdminUniouninfoController extends Controller
         }
 
 
-        $fileContent = Storage::disk('protected')->get('unionList-127-145-RANGPUR.json');
-        $jsonData = json_decode($fileContent, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            return response()->json([
-                'error' => 'Invalid JSON file',
-            ], 400);
-        }
-
-        // Get the union names and codes from the JSON data for the specific upazila
-        $unionCodes = [];
-        foreach ($jsonData['zilas'] as $zila) {
-            foreach ($zila['upazilas'] as $upazilaData) {
-                if (strtolower($upazilaData['name']) === strtolower($upazila->name)) {
-                    foreach ($upazilaData['unions'] as $union) {
-                        $unionCodes[strtolower(str_replace(' ', '', $union['name']))] = $union['code'];
-                    }
-                    break 2; // Exit both loops once the upazila is found
-                }
-            }
-        }
-
-
-
-
-
-
-
-
-
-
-
-
 
         // Get the union names from the Upazila and transform them
         $unionNames = $upazila->unions->pluck('name')->map(function ($name) {
@@ -553,13 +557,13 @@ class AdminUniouninfoController extends Controller
         // Format the Uniouninfo data
         $formattedUniouninfoList = $uniouninfoList->map(function ($uniouninfo) use ($upazila) {
                  // Get the union code from the JSON data
-        $unionCode = $unionCodes[$uniouninfo->short_name_e] ?? null;
+
             return [
                 'id' => $uniouninfo->id,
                 'full_name' => $uniouninfo->full_name,
                 'thana' => $uniouninfo->thana,
                 'district' => $uniouninfo->district,
-                'u_code' => $unionCode,
+                'u_code' => $uniouninfo->u_code,
                 'AKPAY_MER_REG_ID' => $uniouninfo->AKPAY_MER_REG_ID,
                 'AKPAY_MER_PASS_KEY' => $uniouninfo->AKPAY_MER_PASS_KEY,
             ];
