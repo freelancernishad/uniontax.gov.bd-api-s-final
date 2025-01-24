@@ -539,6 +539,8 @@ class AdminUniouninfoController extends Controller
                 'district_bn_name' => $upazila->district->bn_name,
                 'division_name' => $upazila->district->division->name,
                 'division_bn_name' => $upazila->district->division->bn_name,
+                'AKPAY_MER_REG_ID' => $uniouninfo->AKPAY_MER_REG_ID,
+                'AKPAY_MER_PASS_KEY' => $uniouninfo->AKPAY_MER_PASS_KEY,
             ];
         });
 
