@@ -7,8 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
 use App\Models\AllowedOrigin;
+use Devfaysal\BangladeshGeocode\Models\Upazila;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use PhpParser\Node\Stmt\Return_;
 
 class AdminUniouninfoController extends Controller
 {
@@ -272,7 +274,6 @@ class AdminUniouninfoController extends Controller
             'thana_en' => 'nullable|string',
             'socib_name_en' => 'nullable|string',
 
-
             'chairman_name' => 'nullable|string',
             'chairman_email' => 'nullable|email',
             'chairman_phone' => 'nullable|string',
@@ -288,63 +289,23 @@ class AdminUniouninfoController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
+        // Convert request data to an array
+        $data = $request->all();
+
         // Create the Uniouninfo record
-        $uniouninfo = Uniouninfo::create($request->only([
-            'full_name', 'short_name_e', 'domain', 'portal', 'short_name_b', 'thana', 'district',
-            'web_logo', 'sonod_logo', 'c_signture', 'c_name', 'c_type', 'c_type_en', 'c_email',
-            'socib_name', 'socib_signture', 'socib_email', 'format', 'u_image', 'u_description',
-            'u_notice', 'u_code', 'contact_email', 'google_map', 'defaultColor', 'payment_type',
-            'AKPAY_MER_REG_ID', 'AKPAY_MER_PASS_KEY', 'smsBalance', 'nidServicestatus', 'nidService',
-            'status', 'type', 'full_name_en', 'c_name_en', 'district_en', 'thana_en', 'socib_name_en',
-        ]));
+        $uniouninfo = $this->createUniouninfo($data);
 
         // Create the Chairman User
-        $chairman = User::create([
-            'unioun' => $request->short_name_e,
-            'names' => $request->chairman_name,
-            'email' => $request->chairman_email ?? "upc$request->short_name_e@gmail.com",
-            'phone' => $request->chairman_phone,
-            'password' => bcrypt("upsheba21"),
-            'position' => 'Chairman',
-            // 'unioun' => $uniouninfo->id,
-            'role' => 'Chairman', // Assuming you have a role field
-        ]);
+        $chairman = $this->createChairman($data);
 
         // Create the Secretary User
-        $secretary = User::create([
-            'unioun' => $request->short_name_e,
-            'names' => $request->secretary_name,
-            'email' => $request->secretary_email ?? "ups$request->short_name_e@gmail.com",
-            'phone' => $request->secretary_phone,
-            'password' => bcrypt("upsheba21"),
-            'position' => 'Secretary',
-            // 'unioun' => $uniouninfo->id,
-            'role' => 'Secretary', // Assuming you have a role field
-        ]);
+        $secretary = $this->createSecretary($data);
 
-        $origin_url =  "https://$request->short_name_e.uniontax.gov.bd";
-        $allowedAccess = AllowedOrigin::create(['origin_url'=>$origin_url]);
-
-        $origin_url =  "https://$request->short_name_e.unionservices.gov.bd";
-        $allowedAccess = AllowedOrigin::create(['origin_url'=>$origin_url]);
-
+        // Create allowed origins
+        $this->createAllowedOrigins($data['short_name_e']);
 
         // Handle file uploads if necessary
-        if ($request->hasFile('web_logo')) {
-            $uniouninfo->saveFile($request->file('web_logo'), 'web_logo');
-        }
-        if ($request->hasFile('sonod_logo')) {
-            $uniouninfo->saveFile($request->file('sonod_logo'), 'sonod_logo');
-        }
-        if ($request->hasFile('c_signture')) {
-            $uniouninfo->saveFile($request->file('c_signture'), 'c_signture');
-        }
-        if ($request->hasFile('socib_signture')) {
-            $uniouninfo->saveFile($request->file('socib_signture'), 'socib_signture');
-        }
-        if ($request->hasFile('u_image')) {
-            $uniouninfo->saveFile($request->file('u_image'), 'u_image');
-        }
+        $this->handleFileUploads($data, $uniouninfo);
 
         // Return a success response
         return response()->json([
@@ -354,5 +315,227 @@ class AdminUniouninfoController extends Controller
             'secretary' => $secretary,
         ], 201);
     }
+
+    /**
+     * Create Uniouninfo record.
+     */
+    protected function createUniouninfo(array $data)
+    {
+        return Uniouninfo::create([
+            'full_name' => $data['full_name'] ?? "",
+            'short_name_e' => $data['short_name_e'] ?? null,
+            'domain' => $data['domain'] ?? "",
+            'portal' => $data['portal'] ?? "",
+            'short_name_b' => $data['short_name_b'] ?? "",
+            'thana' => $data['thana'] ?? "",
+            'district' => $data['district'] ?? "",
+            'web_logo' => $data['web_logo'] ?? "",
+            'sonod_logo' => $data['sonod_logo'] ?? "",
+            'c_signture' => $data['c_signture'] ?? "",
+            'c_name' => $data['c_name'] ?? "",
+            'c_type' => $data['c_type'] ?? "",
+            'c_type_en' => $data['c_type_en'] ?? "",
+            'c_email' => $data['c_email'] ?? "",
+            'socib_name' => $data['socib_name'] ?? "",
+            'socib_signture' => $data['socib_signture'] ?? "",
+            'socib_email' => $data['socib_email'] ?? "",
+            'format' => $data['format'] ?? 2,
+            'u_image' => $data['u_image'] ?? "",
+            'u_description' => $data['u_description'] ?? "",
+            'u_notice' => $data['u_notice'] ?? "",
+            'u_code' => $data['u_code'] ?? "",
+            'contact_email' => $data['contact_email'] ?? "",
+            'google_map' => $data['google_map'] ?? "",
+            'defaultColor' => $data['defaultColor'] ?? "",
+            'payment_type' => $data['payment_type'] ?? "",
+            'AKPAY_MER_REG_ID' => $data['AKPAY_MER_REG_ID'] ?? "",
+            'AKPAY_MER_PASS_KEY' => $data['AKPAY_MER_PASS_KEY'] ?? "",
+            'smsBalance' => $data['smsBalance'] ?? 0,
+            'nidServicestatus' => $data['nidServicestatus'] ?? 0,
+            'nidService' => $data['nidService'] ?? 0,
+            'status' => $data['status'] ?? 0,
+            'type' => $data['type'] ?? "union",
+            'full_name_en' => $data['full_name_en'] ?? "",
+            'c_name_en' => $data['c_name_en'] ?? "",
+            'district_en' => $data['district_en'] ?? "",
+            'thana_en' => $data['thana_en'] ?? "",
+            'socib_name_en' => $data['socib_name_en'] ?? "",
+        ]);
+    }
+
+    /**
+     * Create Chairman User.
+     */
+    protected function createChairman(array $data)
+    {
+        return User::create([
+            'unioun' => $data['short_name_e'] ?? null,
+            'names' => $data['chairman_name'] ?? "চেয়ারম্যানের নাম",
+            'email' => $data['chairman_email'] ?? "upc{$data['short_name_e']}@gmail.com",
+            'phone' => $data['chairman_phone'] ?? "01909756552",
+            'password' => bcrypt($data['chairman_password'] ?? "upsheba21"),
+            'position' => 'Chairman',
+            'role' => 'Chairman',
+        ]);
+    }
+
+    /**
+     * Create Secretary User.
+     */
+    protected function createSecretary(array $data)
+    {
+        return User::create([
+            'unioun' => $data['short_name_e'] ?? null,
+            'names' => $data['secretary_name'] ?? "সেক্রেটারির নাম",
+            'email' => $data['secretary_email'] ?? "ups{$data['short_name_e']}@gmail.com",
+            'phone' => $data['secretary_phone'] ?? "01909756552",
+            'password' => bcrypt($data['secretary_password'] ?? "upsheba21"),
+            'position' => 'Secretary',
+            'role' => 'Secretary',
+        ]);
+    }
+
+    /**
+     * Create Allowed Origins.
+     */
+    protected function createAllowedOrigins($shortNameE)
+    {
+        $origin_url1 = "https://$shortNameE.uniontax.gov.bd";
+        AllowedOrigin::create(['origin_url' => $origin_url1]);
+
+        $origin_url2 = "https://$shortNameE.unionservices.gov.bd";
+        AllowedOrigin::create(['origin_url' => $origin_url2]);
+    }
+
+    /**
+     * Handle file uploads.
+     */
+    protected function handleFileUploads(array $data, $uniouninfo)
+    {
+        if (isset($data['web_logo']) && $data['web_logo'] instanceof \Illuminate\Http\UploadedFile) {
+            $uniouninfo->saveFile($data['web_logo'], 'web_logo');
+        }
+        if (isset($data['sonod_logo']) && $data['sonod_logo'] instanceof \Illuminate\Http\UploadedFile) {
+            $uniouninfo->saveFile($data['sonod_logo'], 'sonod_logo');
+        }
+        if (isset($data['c_signture']) && $data['c_signture'] instanceof \Illuminate\Http\UploadedFile) {
+            $uniouninfo->saveFile($data['c_signture'], 'c_signture');
+        }
+        if (isset($data['socib_signture']) && $data['socib_signture'] instanceof \Illuminate\Http\UploadedFile) {
+            $uniouninfo->saveFile($data['socib_signture'], 'socib_signture');
+        }
+        if (isset($data['u_image']) && $data['u_image'] instanceof \Illuminate\Http\UploadedFile) {
+            $uniouninfo->saveFile($data['u_image'], 'u_image');
+        }
+    }
+
+
+
+
+    function createUnion(Request $request, $id) {
+        // Fetch the Upazila with its related data
+        $Upazila = Upazila::with('district.division', 'unions')->find($id);
+
+        // Get the unions for the Upazila
+        $unions = $Upazila->unions;
+
+        foreach ($unions as $union) {
+            // Generate the union name in lowercase and without spaces
+            $unionName = str_replace(' ', '', strtolower($union->name));
+
+            // Prepare the data for Uniouninfo
+            $data = [
+                'full_name' => "$union->bn_name ইউনিয়ন পরিষদ",
+                'short_name_e' => $unionName,
+                'short_name_b' => $union->bn_name,
+                'thana' => $Upazila->bn_name,
+                'district' => $Upazila->district->bn_name,
+                'c_type' => "চেয়ারম্যান",
+                'c_type_en' => "Chairman",
+                'u_code' => uniqid(),
+                "defaultColor" => "green",
+                "payment_type" => "Prepaid",
+                "full_name_en" => "$union->name union porisod",
+                "district_en" => $Upazila->district->name,
+                "thana_en" => $Upazila->name,
+            ];
+
+            // Check if a Uniouninfo record with the same short_name_e already exists
+            $existingUniouninfo = Uniouninfo::where('short_name_e', $data['short_name_e'])->first();
+
+            if ($existingUniouninfo) {
+                // If it exists, skip this union and continue to the next one
+                continue;
+            }
+
+            // Create the Uniouninfo record
+            $uniouninfo = $this->createUniouninfo($data);
+
+            // Create the Chairman User
+            $chairman = $this->createChairman($data);
+
+            // Create the Secretary User
+            $secretary = $this->createSecretary($data);
+
+            // Create allowed origins
+            $this->createAllowedOrigins($data['short_name_e']);
+        }
+
+        // Return a success response
+        return response()->json([
+            'message' => 'Unions and users created successfully',
+        ], 201);
+    }
+
+
+
+    public function getUniouninfoByUpazila($upazilaId)
+{
+    // Fetch the Upazila with its related unions
+    $upazila = Upazila::with('unions')->find($upazilaId);
+
+    if (!$upazila) {
+        return response()->json([
+            'message' => 'Upazila not found',
+        ], 404);
+    }
+
+    // Get the union names from the Upazila
+    $unionNames = $upazila->unions->pluck('name')->toArray();
+
+    // Fetch Uniouninfo records where short_name_e matches the union names
+    $uniouninfoList = Uniouninfo::whereIn('short_name_e', $unionNames)->get();
+
+    // Format the Uniouninfo data
+    $formattedUniouninfoList = $uniouninfoList->map(function ($uniouninfo) use ($upazila) {
+        return [
+            'id' => $uniouninfo->id,
+            'full_name' => $uniouninfo->full_name,
+            'short_name_e' => $uniouninfo->short_name_e,
+            'short_name_b' => $uniouninfo->short_name_b,
+            'thana' => $uniouninfo->thana,
+            'district' => $uniouninfo->district,
+            'c_type' => $uniouninfo->c_type,
+            'c_type_en' => $uniouninfo->c_type_en,
+            'u_code' => $uniouninfo->u_code,
+            'defaultColor' => $uniouninfo->defaultColor,
+            'payment_type' => $uniouninfo->payment_type,
+            'full_name_en' => $uniouninfo->full_name_en,
+            'district_en' => $uniouninfo->district_en,
+            'thana_en' => $uniouninfo->thana_en,
+            'upazila_name' => $upazila->name,
+            'upazila_bn_name' => $upazila->bn_name,
+            'district_name' => $upazila->district->name,
+            'district_bn_name' => $upazila->district->bn_name,
+            'division_name' => $upazila->district->division->name,
+            'division_bn_name' => $upazila->district->division->bn_name,
+        ];
+    });
+
+    // Return the formatted Uniouninfo list
+    return response()->json($formattedUniouninfoList, 200);
+}
+
+
 
 }
