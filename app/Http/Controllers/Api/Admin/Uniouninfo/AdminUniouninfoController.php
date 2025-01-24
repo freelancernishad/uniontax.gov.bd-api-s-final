@@ -436,6 +436,14 @@ class AdminUniouninfoController extends Controller
         // Fetch the Upazila with its related data
         $Upazila = Upazila::with('district.division', 'unions')->find($id);
 
+        if (!$Upazila) {
+            return response()->json([
+                'message' => 'Upazila not found',
+            ], 404);
+        }
+
+
+
         // Get the unions for the Upazila
         $unions = $Upazila->unions;
 
@@ -493,21 +501,21 @@ class AdminUniouninfoController extends Controller
     {
         // Fetch the Upazila with its related unions
         $upazila = Upazila::with('unions')->find($upazilaId);
-    
+
         if (!$upazila) {
             return response()->json([
                 'message' => 'Upazila not found',
             ], 404);
         }
-    
+
         // Get the union names from the Upazila and transform them
         $unionNames = $upazila->unions->pluck('name')->map(function ($name) {
             return str_replace(' ', '', strtolower($name)); // Remove spaces and convert to lowercase
         })->toArray();
-    
+
         // Fetch Uniouninfo records where short_name_e matches the transformed union names
         $uniouninfoList = Uniouninfo::whereIn('short_name_e', $unionNames)->get();
-    
+
         // Format the Uniouninfo data
         $formattedUniouninfoList = $uniouninfoList->map(function ($uniouninfo) use ($upazila) {
             return [
@@ -533,7 +541,7 @@ class AdminUniouninfoController extends Controller
                 'division_bn_name' => $upazila->district->division->bn_name,
             ];
         });
-    
+
         // Return the formatted Uniouninfo list
         return response()->json($formattedUniouninfoList, 200);
     }
