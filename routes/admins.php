@@ -138,7 +138,7 @@ Route::prefix('admin')->group(function () {
         Route::post('/create-union', [AdminUniouninfoController::class, 'createUnionWithUsers']);
 
         Route::post('/upazilas/{upazilaId}/create-unions', [AdminUniouninfoController::class, 'createUnion']);
-        Route::get('/upazilas/{upazilaId}/uniouninfo', [AdminUniouninfoController::class, 'getUniouninfoByUpazila']);
+        Route::post('/upazilas/{upazilaId}/uniouninfo', [AdminUniouninfoController::class, 'getUniouninfoByUpazila']);
 
 
 
