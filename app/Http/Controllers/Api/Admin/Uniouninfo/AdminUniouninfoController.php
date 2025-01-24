@@ -490,51 +490,53 @@ class AdminUniouninfoController extends Controller
 
 
     public function getUniouninfoByUpazila($upazilaId)
-{
-    // Fetch the Upazila with its related unions
-    $upazila = Upazila::with('unions')->find($upazilaId);
-
-    if (!$upazila) {
-        return response()->json([
-            'message' => 'Upazila not found',
-        ], 404);
+    {
+        // Fetch the Upazila with its related unions
+        $upazila = Upazila::with('unions')->find($upazilaId);
+    
+        if (!$upazila) {
+            return response()->json([
+                'message' => 'Upazila not found',
+            ], 404);
+        }
+    
+        // Get the union names from the Upazila and transform them
+        $unionNames = $upazila->unions->pluck('name')->map(function ($name) {
+            return str_replace(' ', '', strtolower($name)); // Remove spaces and convert to lowercase
+        })->toArray();
+    
+        // Fetch Uniouninfo records where short_name_e matches the transformed union names
+        $uniouninfoList = Uniouninfo::whereIn('short_name_e', $unionNames)->get();
+    
+        // Format the Uniouninfo data
+        $formattedUniouninfoList = $uniouninfoList->map(function ($uniouninfo) use ($upazila) {
+            return [
+                'id' => $uniouninfo->id,
+                'full_name' => $uniouninfo->full_name,
+                'short_name_e' => $uniouninfo->short_name_e,
+                'short_name_b' => $uniouninfo->short_name_b,
+                'thana' => $uniouninfo->thana,
+                'district' => $uniouninfo->district,
+                'c_type' => $uniouninfo->c_type,
+                'c_type_en' => $uniouninfo->c_type_en,
+                'u_code' => $uniouninfo->u_code,
+                'defaultColor' => $uniouninfo->defaultColor,
+                'payment_type' => $uniouninfo->payment_type,
+                'full_name_en' => $uniouninfo->full_name_en,
+                'district_en' => $uniouninfo->district_en,
+                'thana_en' => $uniouninfo->thana_en,
+                'upazila_name' => $upazila->name,
+                'upazila_bn_name' => $upazila->bn_name,
+                'district_name' => $upazila->district->name,
+                'district_bn_name' => $upazila->district->bn_name,
+                'division_name' => $upazila->district->division->name,
+                'division_bn_name' => $upazila->district->division->bn_name,
+            ];
+        });
+    
+        // Return the formatted Uniouninfo list
+        return response()->json($formattedUniouninfoList, 200);
     }
-
-    // Get the union names from the Upazila
-    $unionNames = $upazila->unions->pluck('name')->toArray();
-    $unionNames = str_replace(' ', '', strtolower($unionNames));
-    // Fetch Uniouninfo records where short_name_e matches the union names
-    $uniouninfoList = Uniouninfo::whereIn('short_name_e', $unionNames)->get();
-
-    // Format the Uniouninfo data
-    $formattedUniouninfoList = $uniouninfoList->map(function ($uniouninfo) use ($upazila) {
-        return [
-            'id' => $uniouninfo->id,
-            'full_name' => $uniouninfo->full_name,
-            'short_name_e' => $uniouninfo->short_name_e,
-            'short_name_b' => $uniouninfo->short_name_b,
-            'thana' => $uniouninfo->thana,
-            'district' => $uniouninfo->district,
-            'c_type' => $uniouninfo->c_type,
-            'c_type_en' => $uniouninfo->c_type_en,
-            'u_code' => $uniouninfo->u_code,
-            'defaultColor' => $uniouninfo->defaultColor,
-            'payment_type' => $uniouninfo->payment_type,
-            'full_name_en' => $uniouninfo->full_name_en,
-            'district_en' => $uniouninfo->district_en,
-            'thana_en' => $uniouninfo->thana_en,
-            'upazila_name' => $upazila->name,
-            'upazila_bn_name' => $upazila->bn_name,
-            'district_name' => $upazila->district->name,
-            'district_bn_name' => $upazila->district->bn_name,
-            'division_name' => $upazila->district->division->name,
-            'division_bn_name' => $upazila->district->division->bn_name,
-        ];
-    });
-
-    // Return the formatted Uniouninfo list
-    return response()->json($formattedUniouninfoList, 200);
-}
 
 
 
