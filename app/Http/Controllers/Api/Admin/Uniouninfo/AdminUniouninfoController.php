@@ -470,7 +470,7 @@ class AdminUniouninfoController extends Controller
             }
         }
 
-        return $unionCodes;
+        // return $unionCodes;
         // If no union codes were found, return the Upazila name and JSON upazila names
         if (empty($unionCodes)) {
             return response()->json([
@@ -486,7 +486,7 @@ class AdminUniouninfoController extends Controller
         foreach ($unions as $union) {
             // Generate the union name in lowercase and without spaces
             $unionName = str_replace(' ', '', strtolower($union->name));
-            $unionCode = $unionCodes[$unionName] ?? uniqid();
+           return $unionCode = $unionCodes[$unionName] ?? uniqid();
 
             // Prepare the data for Uniouninfo
             $data = [
