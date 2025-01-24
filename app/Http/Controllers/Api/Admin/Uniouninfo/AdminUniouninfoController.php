@@ -486,7 +486,7 @@ class AdminUniouninfoController extends Controller
         foreach ($unions as $union) {
             // Generate the union name in lowercase and without spaces
             $unionName = str_replace(' ', '', strtolower($union->name));
-           return $unionCode = $unionCodes[$unionName] ?? uniqid();
+            $unionCode = $unionCodes[$unionName] ?? uniqid();
 
             // Prepare the data for Uniouninfo
             $data = [
