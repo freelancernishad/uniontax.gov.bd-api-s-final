@@ -508,6 +508,40 @@ class AdminUniouninfoController extends Controller
             ], 404);
         }
 
+
+        $fileContent = Storage::disk('protected')->get('unionList-127-145-RANGPUR.json');
+        $jsonData = json_decode($fileContent, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return response()->json([
+                'error' => 'Invalid JSON file',
+            ], 400);
+        }
+
+        // Get the union names and codes from the JSON data for the specific upazila
+        $unionCodes = [];
+        foreach ($jsonData['zilas'] as $zila) {
+            foreach ($zila['upazilas'] as $upazilaData) {
+                if (strtolower($upazilaData['name']) === strtolower($upazila->name)) {
+                    foreach ($upazilaData['unions'] as $union) {
+                        $unionCodes[strtolower(str_replace(' ', '', $union['name']))] = $union['code'];
+                    }
+                    break 2; // Exit both loops once the upazila is found
+                }
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
         // Get the union names from the Upazila and transform them
         $unionNames = $upazila->unions->pluck('name')->map(function ($name) {
             return str_replace(' ', '', strtolower($name)); // Remove spaces and convert to lowercase
@@ -518,12 +552,14 @@ class AdminUniouninfoController extends Controller
 
         // Format the Uniouninfo data
         $formattedUniouninfoList = $uniouninfoList->map(function ($uniouninfo) use ($upazila) {
+                 // Get the union code from the JSON data
+        $unionCode = $unionCodes[$uniouninfo->short_name_e] ?? null;
             return [
                 'id' => $uniouninfo->id,
                 'full_name' => $uniouninfo->full_name,
                 'thana' => $uniouninfo->thana,
                 'district' => $uniouninfo->district,
-                'u_code' => $uniouninfo->u_code,
+                'u_code' => $unionCode,
                 'AKPAY_MER_REG_ID' => $uniouninfo->AKPAY_MER_REG_ID,
                 'AKPAY_MER_PASS_KEY' => $uniouninfo->AKPAY_MER_PASS_KEY,
             ];
