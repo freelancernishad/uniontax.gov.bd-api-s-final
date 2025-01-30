@@ -53,42 +53,48 @@ use Illuminate\Support\Facades\Storage;
 
 
     function uploadDocumentsToS3($fileData, $filePath, $dateFolder, $sonodId)
-    {
-        if (!$fileData) {
-            return null;
-        }
-    
-        // Define the directory structure
-        $directory = "sonod/$filePath/$dateFolder/$sonodId";
-        $fileName = time() . '_' . Str::random(10);
-    
-        // Check if it's a base64-encoded string
-        if (is_string($fileData) && preg_match('/^data:image\/(\w+);base64,/', $fileData, $matches)) {
-            $base64Data = substr($fileData, strpos($fileData, ',') + 1);
-            $decodedData = base64_decode($base64Data);
-            $extension = $matches[1];
-    
-            $fileName .= '.' . $extension;
-            $filePath = "$directory/$fileName";
-    
-            // Upload to S3
-            Storage::disk('s3')->put($filePath, $decodedData);
-        }
-        // Handle regular file uploads
-        elseif ($fileData instanceof UploadedFile) {
-            $fileName .= '.' . $fileData->getClientOriginalExtension();
-            $filePath = Storage::disk('s3')->putFileAs($directory, $fileData, $fileName);
-        }
-        // Invalid file type
-        else {
-            Log::error('Invalid file upload: Not a file or base64 string');
-            throw new \Exception('Invalid file upload');
-        }
-    
-        Log::info('File uploaded to S3', ['file_path' => $filePath]);
-    
-        return $filePath;
+{
+    if (!$fileData) {
+        Log::error('No file data provided.');
+        return null;
     }
+
+    // Handle case where fileData is inside an array
+    if (is_array($fileData) && isset($fileData[0])) {
+        $fileData = $fileData[0];
+    }
+
+    // Define the directory structure
+    $directory = "sonod/$filePath/$dateFolder/$sonodId";
+    $fileName = time() . '_' . Str::random(10);
+
+    // Check if it's a base64-encoded string
+    if (is_string($fileData) && preg_match('/^data:image\/(\w+);base64,/', $fileData, $matches)) {
+        $base64Data = substr($fileData, strpos($fileData, ',') + 1);
+        $decodedData = base64_decode($base64Data);
+        $extension = $matches[1];
+
+        $fileName .= '.' . $extension;
+        $filePath = "$directory/$fileName";
+
+        // Upload to S3
+        Storage::disk('s3')->put($filePath, $decodedData);
+    }
+    // Handle regular file uploads
+    elseif ($fileData instanceof UploadedFile) {
+        $fileName .= '.' . $fileData->getClientOriginalExtension();
+        $filePath = Storage::disk('s3')->putFileAs($directory, $fileData, $fileName);
+    }
+    // Invalid file type
+    else {
+        Log::error('Invalid file upload', ['fileData' => $fileData, 'type' => gettype($fileData)]);
+        throw new \Exception('Invalid file upload');
+    }
+
+    Log::info('File uploaded to S3', ['file_path' => $filePath]);
+
+    return $filePath;
+}
 
 
 
