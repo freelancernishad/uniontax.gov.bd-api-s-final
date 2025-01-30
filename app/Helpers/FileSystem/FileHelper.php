@@ -83,6 +83,7 @@ use Illuminate\Support\Facades\Storage;
 
             Log::info('File uploaded to S3', ['file_path' => $filePath]);
 
+            return $filePath;
             return config('AWS_FILE_LOAD_BASE') . $filePath;
         }
 

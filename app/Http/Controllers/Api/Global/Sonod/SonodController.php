@@ -280,7 +280,8 @@ class SonodController extends Controller
         }
 
         $insertData['applicant_national_id_front_attachment'] = uploadDocumentsToS3(
-            $request->applicant_national_id_front_attachment,
+            $request->files['applicant_national_id_front_attachment'],
+            // $request->applicant_national_id_front_attachment,
             $filePath,
             $dateFolder,
             $sonodId
