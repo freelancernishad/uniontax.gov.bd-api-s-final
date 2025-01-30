@@ -68,28 +68,9 @@ use Illuminate\Support\Facades\Storage;
     $directory = "sonod/$filePath/$dateFolder/$sonodId";
     $fileName = time() . '_' . Str::random(10);
 
-    // Check if it's a base64-encoded string
-    if (is_string($fileData) && preg_match('/^data:image\/(\w+);base64,/', $fileData, $matches)) {
-        $base64Data = substr($fileData, strpos($fileData, ',') + 1);
-        $decodedData = base64_decode($base64Data);
-        $extension = $matches[1];
-
-        $fileName .= '.' . $extension;
-        $filePath = "$directory/$fileName";
-
-        // Upload to S3
-        Storage::disk('s3')->put($filePath, $decodedData);
-    }
-    // Handle regular file uploads
-    elseif ($fileData instanceof UploadedFile) {
         $fileName .= '.' . $fileData->getClientOriginalExtension();
         $filePath = Storage::disk('s3')->putFileAs($directory, $fileData, $fileName);
-    }
-    // Invalid file type
-    else {
-        Log::error('Invalid file upload', ['fileData' => $fileData, 'type' => gettype($fileData)]);
-        throw new \Exception('Invalid file upload');
-    }
+   
 
     Log::info('File uploaded to S3', ['file_path' => $filePath]);
 
