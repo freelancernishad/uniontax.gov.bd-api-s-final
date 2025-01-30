@@ -38,7 +38,7 @@ class SonodController extends Controller
             // Create Sonod and EnglishSonod entries (if enData is not empty)
             $sonod = $this->createSonod($bnData, $enData, $request);
 
-            return response()->json($sonod);
+
 
             // Generate redirect URL using sonod ID
             $urls = [
@@ -72,8 +72,8 @@ class SonodController extends Controller
     {
 
 
-         $this->handleFileUploads($request, $insertData, 'ddd', '$dateFolder', '$sonodId');
-        return response()->json($insertData);
+        //  $this->handleFileUploads($request, $insertData, 'ddd', '$dateFolder', '$sonodId');
+        // return response()->json($insertData);
 
         // Process successor_list for bnData
         $successorListFormatted = $bnData['successor_list'] ?? [];
@@ -119,7 +119,7 @@ class SonodController extends Controller
         $insertData = array_merge($insertData, $this->prepareSonodData($request, $sonodName, $successor_list, $unionName, $sonodId));
 
         // Handle file uploads securely
-       return $this->handleFileUploads($request, $insertData, $filePath, $dateFolder, $sonodId);
+        $this->handleFileUploads($request, $insertData, $filePath, $dateFolder, $sonodId);
 
         // Check if annual income is provided and process accordingly
         if (isset($bnData['Annual_income'])) {
@@ -144,7 +144,7 @@ class SonodController extends Controller
 
 
 
-            Log::info($sonod);
+
 
 
 
@@ -337,7 +337,7 @@ class SonodController extends Controller
                 $filePath = Storage::disk('protected')->putFileAs($directory, $fileData, $fileName);
             }
 
-            Log::info("$directory/$fileName");
+            // Log::info("$directory/$fileName");
 
             // Save the file path in the insertData array
             $insertData[$field] = "$directory/$fileName";
