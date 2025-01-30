@@ -28,7 +28,7 @@ class SonodController extends Controller
         }
 
         try {
-            Log::info($request->all(););
+            Log::info($request->all());
             // Extract bn and en data from the request
             $bnData = $request->bn; // Data for Sonod (Bengali)
             $enData = $request->en; // Data for EnglishSonod (English)
