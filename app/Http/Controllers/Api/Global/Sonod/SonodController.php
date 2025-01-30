@@ -30,8 +30,8 @@ class SonodController extends Controller
         try {
 
             // Extract bn and en data from the request
-            $bnData = json_decode($request->bn); // Data for Sonod (Bengali)
-            $enData = json_decode($request->en); // Data for EnglishSonod (English)
+            $bnData = json_decode($request->bn, true); // Data for Sonod (Bengali)
+            $enData = json_decode($request->en, true); // Data for EnglishSonod (English)
             Log::info($request->all());
             Log::info($bnData);
             // Check if enData is present and not empty
