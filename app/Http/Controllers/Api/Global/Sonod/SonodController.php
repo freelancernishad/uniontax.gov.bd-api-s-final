@@ -33,11 +33,11 @@ class SonodController extends Controller
 
             $bnData = is_array($request->bn) ? $request->bn : json_decode($request->bn, true);
             $enData = is_array($request->en) ? $request->en : json_decode($request->en, true);
-            
+
             // Ensure the data is not null before logging
             Log::info('Decoded bnData:', !empty($bnData) ? $bnData : ['bnData' => 'null']);
             Log::info('Decoded enData:', !empty($enData) ? $enData : ['enData' => 'null']);
-            
+
             // Check if enData is present and not empty
             $hasEnData = !empty($enData);
 
@@ -285,27 +285,34 @@ class SonodController extends Controller
             $this->uploadFile($request->bn['image'], $insertData, 'image', $filePath, $dateFolder, $sonodId);
         }
 
-        $insertData['applicant_national_id_front_attachment'] = uploadDocumentsToS3(
-            $request->applicant_national_id_front_attachment,
-            $filePath,
-            $dateFolder,
-            $sonodId
-        );
+        if ($request->hasFile('applicant_national_id_front_attachment')) {
+            $insertData['applicant_national_id_front_attachment'] = uploadDocumentsToS3(
+                $request->file('applicant_national_id_front_attachment'),
+                $filePath,
+                $dateFolder,
+                $sonodId
+            );
+        }
 
-        $insertData['applicant_national_id_back_attachment'] = uploadDocumentsToS3(
-            $request->applicant_national_id_back_attachment,
-            $filePath,
-            $dateFolder,
-            $sonodId
-        );
+        if ($request->hasFile('applicant_national_id_back_attachment')) {
+            $insertData['applicant_national_id_back_attachment'] = uploadDocumentsToS3(
+                $request->file('applicant_national_id_back_attachment'),
+                $filePath,
+                $dateFolder,
+                $sonodId
+            );
+        }
 
-        $insertData['applicant_birth_certificate_attachment'] = uploadDocumentsToS3(
-            $request->applicant_birth_certificate_attachment,
-            $filePath,
-            $dateFolder,
-            $sonodId
-        );
+        if ($request->hasFile('applicant_birth_certificate_attachment')) {
+            $insertData['applicant_birth_certificate_attachment'] = uploadDocumentsToS3(
+                $request->file('applicant_birth_certificate_attachment'),
+                $filePath,
+                $dateFolder,
+                $sonodId
+            );
+        }
     }
+
 
 
     private function uploadFile($fileData, &$insertData, $field, $filePath, $dateFolder, $sonodId)
