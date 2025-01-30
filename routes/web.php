@@ -1,10 +1,11 @@
 <?php
 
-use App\Http\Controllers\Api\Admin\Reports\ReportsController;
+use Aws\S3\S3Client;
 use App\Mail\TestMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\Api\Admin\Reports\ReportsController;
 use App\Http\Controllers\Api\Global\Sonod\SonodPdfController;
 use App\Http\Controllers\Api\Global\Sonod\InvoicePdfController;
 use App\Http\Controllers\Api\Global\Sonod\DocumentPdfController;
@@ -62,6 +63,12 @@ Route::get('send-test-email', function () {
 
 });
 
+Route::get('/file/{filename}', function ($filename) {
+
+    return getUploadDocumentsToS3($filename);
+
+
+})->where('filename', '.*');
 
 
 Route::get('/files/{path}', function ($path) {

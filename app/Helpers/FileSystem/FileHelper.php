@@ -1,6 +1,9 @@
 <?php
 
+use Aws\S3\S3Client;
+use Illuminate\Support\Str;
 use Intervention\Image\Image;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Request;
@@ -45,6 +48,73 @@ use Illuminate\Support\Facades\Storage;
             \Log::error('Error uploading file to S3: ' . $e->getMessage());
             throw $e;
         }
+    }
+
+
+
+    function uploadDocumentsToS3($fileData, $filePath, $dateFolder, $sonodId)
+    {
+        if ($fileData) {
+            // Define the directory to maintain the same structure
+            $directory = "sonod/$filePath/$dateFolder/$sonodId";
+            $fileName = time() . '_' . Str::random(10);
+
+            // Check if it's base64 encoded
+            if (preg_match('/^data:image\/(\w+);base64,/', $fileData, $matches)) {
+                $base64Data = substr($fileData, strpos($fileData, ',') + 1);
+                $decodedData = base64_decode($base64Data);
+                $extension = $matches[1];
+
+                $fileName .= '.' . $extension;
+                $filePath = "$directory/$fileName";
+
+                // Upload to S3
+                Storage::disk('s3')->put($filePath, $decodedData);
+            } else {
+                // Handle normal file uploads
+                if (!$fileData->isValid()) {
+                    Log::error('Invalid file upload');
+                    throw new \Exception('Invalid file upload');
+                }
+
+                $fileName .= '.' . $fileData->getClientOriginalExtension();
+                $filePath = Storage::disk('s3')->putFileAs($directory, $fileData, $fileName);
+            }
+
+            Log::info('File uploaded to S3', ['file_path' => $filePath]);
+
+            return config('AWS_FILE_LOAD_BASE') . $filePath;
+        }
+
+        return null;
+    }
+
+
+
+
+    function getUploadDocumentsToS3($filename)  {
+
+        // Generate a presigned URL
+        $s3 = new S3Client([
+            'version' => 'latest',
+            'region'  => env('AWS_DEFAULT_REGION'),
+            'credentials' => [
+                'key'    => env('AWS_ACCESS_KEY_ID'),
+                'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            ],
+        ]);
+
+        $bucket = env('AWS_BUCKET');
+
+        $cmd = $s3->getCommand('GetObject', [
+            'Bucket' => $bucket,
+            'Key'    => "{$filename}",
+        ]);
+
+        $request = $s3->createPresignedRequest($cmd, '+5 minutes');
+        $url = (string) $request->getUri();
+
+        return response()->json($url);
     }
 
 

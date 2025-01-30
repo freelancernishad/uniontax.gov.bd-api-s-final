@@ -38,6 +38,8 @@ class SonodController extends Controller
             // Create Sonod and EnglishSonod entries (if enData is not empty)
             $sonod = $this->createSonod($bnData, $enData, $request);
 
+            return response()->json($sonod);
+
             // Generate redirect URL using sonod ID
             $urls = [
                 "s_uri" => $bnData['s_uri'],
@@ -68,6 +70,11 @@ class SonodController extends Controller
 
     protected function createSonod($bnData, $enData, $request)
     {
+
+
+         $this->handleFileUploads($request, $insertData, 'ddd', '$dateFolder', '$sonodId');
+        return response()->json($insertData);
+
         // Process successor_list for bnData
         $successorListFormatted = $bnData['successor_list'] ?? [];
         $successor_list = json_encode($successorListFormatted);
@@ -112,7 +119,7 @@ class SonodController extends Controller
         $insertData = array_merge($insertData, $this->prepareSonodData($request, $sonodName, $successor_list, $unionName, $sonodId));
 
         // Handle file uploads securely
-        $this->handleFileUploads($request, $insertData, $filePath, $dateFolder, $sonodId);
+       return $this->handleFileUploads($request, $insertData, $filePath, $dateFolder, $sonodId);
 
         // Check if annual income is provided and process accordingly
         if (isset($bnData['Annual_income'])) {
@@ -267,17 +274,33 @@ class SonodController extends Controller
 
     private function handleFileUploads($request, &$insertData, $filePath, $dateFolder, $sonodId)
     {
-
-        // Handle file uploads with optimized code
-        if(isset($request->bn['image']) && $request->bn['image']){
+        // Handle file uploads to S3
+        if (isset($request->bn['image']) && $request->bn['image']) {
             $this->uploadFile($request->bn['image'], $insertData, 'image', $filePath, $dateFolder, $sonodId);
         }
 
-        $this->uploadFile($request->applicant_national_id_front_attachment, $insertData, 'applicant_national_id_front_attachment', $filePath, $dateFolder, $sonodId);
-        $this->uploadFile($request->applicant_national_id_back_attachment, $insertData, 'applicant_national_id_back_attachment', $filePath, $dateFolder, $sonodId);
-        $this->uploadFile($request->applicant_birth_certificate_attachment, $insertData, 'applicant_birth_certificate_attachment', $filePath, $dateFolder, $sonodId);
+        $insertData['applicant_national_id_front_attachment'] = uploadDocumentsToS3(
+            $request->applicant_national_id_front_attachment,
+            $filePath,
+            $dateFolder,
+            $sonodId
+        );
 
+        $insertData['applicant_national_id_back_attachment'] = uploadDocumentsToS3(
+            $request->applicant_national_id_back_attachment,
+            $filePath,
+            $dateFolder,
+            $sonodId
+        );
+
+        $insertData['applicant_birth_certificate_attachment'] = uploadDocumentsToS3(
+            $request->applicant_birth_certificate_attachment,
+            $filePath,
+            $dateFolder,
+            $sonodId
+        );
     }
+
 
     private function uploadFile($fileData, &$insertData, $field, $filePath, $dateFolder, $sonodId)
     {
