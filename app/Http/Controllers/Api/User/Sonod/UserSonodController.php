@@ -380,20 +380,20 @@ class UserSonodController extends Controller
             $sonod = Sonod::with(['english_sonod' => function ($query) {
                 $query->select('id', 'sonod_Id'); // Select only the id and sonod_Id (foreign key)
             }])->find($id);
-    
+
             // Check if the Sonod record exists
             if (!$sonod) {
                 return response()->json(['message' => 'Sonod not found'], 404);
             }
-    
+
             // Check if the EnglishSonod exists
             if (!$sonod->english_sonod) {
                 return response()->json(['message' => 'EnglishSonod not found for the given Sonod'], 404);
             }
-    
+
             // Find the existing EnglishSonod record
             $englishSonod = EnglishSonod::findOrFail($sonod->english_sonod->id);
-    
+
             // Filter the request data to only include fields that exist in the EnglishSonod model
             $updatableFields = [
                 'successor_father_name', 'successor_mother_name',
@@ -416,13 +416,13 @@ class UserSonodController extends Controller
                 'format', 'applicant_type_of_businessKhat', 'applicant_type_of_businessKhatAmount',
                 'khat'
             ];
-    
+
             // Extract only the fields that exist in the model from the request
             $dataToUpdate = $request->only($updatableFields);
-    
+
             // Update the EnglishSonod record (excluding sec_prottoyon for now)
             $englishSonod->update($dataToUpdate);
-    
+
             // Handle sec_prottoyon update after the main update is completed
             if ($englishSonod->sonod_name == 'বিবিধ প্রত্যয়নপত্র' || $englishSonod->sonod_name == 'অনাপত্তি সনদপত্র') {
                 // Update sec_prottoyon if provided in the request
@@ -433,13 +433,13 @@ class UserSonodController extends Controller
                 // Generate and update sec_prottoyon for other sonod_name values
                 $englishSonod->update(['sec_prottoyon' => generateSecProttoyon($englishSonod, true)]);
             }
-    
+
             // Return the updated record in the response
             return response()->json([
                 'message' => 'EnglishSonod updated successfully',
                 'englishSonod' => $englishSonod
             ], 200);
-    
+
         } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'EnglishSonod not found'], 404);
         } catch (\Exception $e) {
@@ -473,6 +473,19 @@ class UserSonodController extends Controller
                 return response()->json(['message' => 'No EnglishSonod record found for this Sonod'], 404);
             }
         }
+
+           // Validate if attachments exist before generating URLs
+    $sonod->applicant_national_id_front_attachment = !empty($sonod->applicant_national_id_front_attachment)
+    ? getUploadDocumentsToS3($sonod->applicant_national_id_front_attachment)
+    : null;
+
+$sonod->applicant_national_id_back_attachment = !empty($sonod->applicant_national_id_back_attachment)
+    ? getUploadDocumentsToS3($sonod->applicant_national_id_back_attachment)
+    : null;
+
+$sonod->applicant_birth_certificate_attachment = !empty($sonod->applicant_birth_certificate_attachment)
+    ? getUploadDocumentsToS3($sonod->applicant_birth_certificate_attachment)
+    : null;
 
         // Return the Sonod record
         return response()->json($sonod);

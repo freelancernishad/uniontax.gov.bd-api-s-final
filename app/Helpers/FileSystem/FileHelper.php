@@ -98,13 +98,16 @@ use Illuminate\Support\Facades\Storage;
 
 
 
+function getUploadDocumentsToS3($filename)
+{
+    if (!$filename) {
+        return null; // If filename is empty, return null instead of an error
+    }
 
-    function getUploadDocumentsToS3($filename)  {
-
-        // Generate a presigned URL
+    try {
         $s3 = new S3Client([
-            'version' => 'latest',
-            'region'  => env('AWS_DEFAULT_REGION'),
+            'version'     => 'latest',
+            'region'      => env('AWS_DEFAULT_REGION'),
             'credentials' => [
                 'key'    => env('AWS_ACCESS_KEY_ID'),
                 'secret' => env('AWS_SECRET_ACCESS_KEY'),
@@ -115,15 +118,16 @@ use Illuminate\Support\Facades\Storage;
 
         $cmd = $s3->getCommand('GetObject', [
             'Bucket' => $bucket,
-            'Key'    => "{$filename}",
+            'Key'    => $filename,
         ]);
 
         $request = $s3->createPresignedRequest($cmd, '+5 minutes');
-        $url = (string) $request->getUri();
-
-        return response()->json($url);
+        return (string) $request->getUri(); // Return only the presigned URL
+    } catch (\Exception $e) {
+        Log::error('Error generating S3 presigned URL: ' . $e->getMessage());
+        return null;
     }
-
+}
 
 
 

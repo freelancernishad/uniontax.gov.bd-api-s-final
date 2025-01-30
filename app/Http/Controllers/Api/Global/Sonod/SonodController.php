@@ -29,14 +29,14 @@ class SonodController extends Controller
 
         try {
 
-            Log::info($request->all());
+            // Log::info($request->all());
 
             $bnData = is_array($request->bn) ? $request->bn : json_decode($request->bn, true);
             $enData = is_array($request->en) ? $request->en : json_decode($request->en, true);
 
             // Ensure the data is not null before logging
-            Log::info('Decoded bnData:', !empty($bnData) ? $bnData : ['bnData' => 'null']);
-            Log::info('Decoded enData:', !empty($enData) ? $enData : ['enData' => 'null']);
+            // Log::info('Decoded bnData:', !empty($bnData) ? $bnData : ['bnData' => 'null']);
+            // Log::info('Decoded enData:', !empty($enData) ? $enData : ['enData' => 'null']);
 
             // Check if enData is present and not empty
             $hasEnData = !empty($enData);
