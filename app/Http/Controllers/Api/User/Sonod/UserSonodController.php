@@ -348,16 +348,27 @@ class UserSonodController extends Controller
             // Update the Sonod record (excluding sec_prottoyon for now)
             $sonod->update($dataToUpdate);
 
-            // Handle sec_prottoyon update after the main update is completed
-            if ($sonod->sonod_name == 'বিবিধ প্রত্যয়নপত্র' || $sonod->sonod_name == 'অনাপত্তি সনদপত্র') {
-                // Update sec_prottoyon if provided in the request
-                if ($request->has('sec_prottoyon')) {
-                    $sonod->update(['sec_prottoyon' => $request->sec_prottoyon]);
+
+
+            if ($request->has('sec_prottoyon')) {
+                $sonod->update(['sec_prottoyon' => $request->sec_prottoyon]);
+            }else{
+                // Handle sec_prottoyon update after the main update is completed
+                if ($sonod->sonod_name == 'বিবিধ প্রত্যয়নপত্র' || $sonod->sonod_name == 'অনাপত্তি সনদপত্র') {
+                    // Update sec_prottoyon if provided in the request
+                    if ($request->has('sec_prottoyon')) {
+                        $sonod->update(['sec_prottoyon' => $request->sec_prottoyon]);
+                    }
+                } else {
+                    // Generate and update sec_prottoyon for other sonod_name values
+                    $sonod->update(['sec_prottoyon' => generateSecProttoyon($sonod)]);
                 }
-            } else {
-                // Generate and update sec_prottoyon for other sonod_name values
-                $sonod->update(['sec_prottoyon' => generateSecProttoyon($sonod)]);
             }
+
+
+
+
+
 
             // Return the updated record in the response
             return response()->json([
@@ -423,16 +434,24 @@ class UserSonodController extends Controller
             // Update the EnglishSonod record (excluding sec_prottoyon for now)
             $englishSonod->update($dataToUpdate);
 
-            // Handle sec_prottoyon update after the main update is completed
-            if ($englishSonod->sonod_name == 'বিবিধ প্রত্যয়নপত্র' || $englishSonod->sonod_name == 'অনাপত্তি সনদপত্র') {
-                // Update sec_prottoyon if provided in the request
-                if ($request->has('sec_prottoyon')) {
-                    $englishSonod->update(['sec_prottoyon' => $request->sec_prottoyon]);
+
+
+            if ($request->has('sec_prottoyon')) {
+                $englishSonod->update(['sec_prottoyon' => $request->sec_prottoyon]);
+            }else{
+                // Handle sec_prottoyon update after the main update is completed
+                if ($englishSonod->sonod_name == 'বিবিধ প্রত্যয়নপত্র' || $englishSonod->sonod_name == 'অনাপত্তি সনদপত্র') {
+                    // Update sec_prottoyon if provided in the request
+                    if ($request->has('sec_prottoyon')) {
+                        $englishSonod->update(['sec_prottoyon' => $request->sec_prottoyon]);
+                    }
+                } else {
+                    // Generate and update sec_prottoyon for other sonod_name values
+                    $englishSonod->update(['sec_prottoyon' => generateSecProttoyon($englishSonod, true)]);
                 }
-            } else {
-                // Generate and update sec_prottoyon for other sonod_name values
-                $englishSonod->update(['sec_prottoyon' => generateSecProttoyon($englishSonod, true)]);
             }
+
+
 
             // Return the updated record in the response
             return response()->json([
