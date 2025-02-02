@@ -288,3 +288,84 @@ function isLocalRequest()
     $port = Request::getPort(); // Get the port number
     return in_array($host, ['localhost', '127.0.0.1']) && $port === 8000; // Adjust the port as needed
 }
+
+
+
+function handleFileUploads($request, &$insertData, $filePath, $dateFolder, $sonodId)
+{
+    // Handle file uploads to S3
+    if (isset($request->bn['image']) && $request->bn['image']) {
+        uploadFile($request->bn['image'], $insertData, 'image', $filePath, $dateFolder, $sonodId);
+    }
+
+    if ($request->hasFile('applicant_national_id_front_attachment')) {
+        $insertData['applicant_national_id_front_attachment'] = uploadDocumentsToS3(
+            $request->file('applicant_national_id_front_attachment'),
+            $filePath,
+            $dateFolder,
+            $sonodId
+        );
+    }
+
+    if ($request->hasFile('applicant_national_id_back_attachment')) {
+        $insertData['applicant_national_id_back_attachment'] = uploadDocumentsToS3(
+            $request->file('applicant_national_id_back_attachment'),
+            $filePath,
+            $dateFolder,
+            $sonodId
+        );
+    }
+
+    if ($request->hasFile('applicant_birth_certificate_attachment')) {
+        $insertData['applicant_birth_certificate_attachment'] = uploadDocumentsToS3(
+            $request->file('applicant_birth_certificate_attachment'),
+            $filePath,
+            $dateFolder,
+            $sonodId
+        );
+    }
+}
+
+
+
+function uploadFile($fileData, &$insertData, $field, $filePath, $dateFolder, $sonodId)
+{
+    if ($fileData) {
+        // Define the directory for the file
+        $directory = "sonod/$filePath/$dateFolder/$sonodId";
+
+        // Generate a unique file name
+        $fileName = time() . '_' . Str::random(10);
+
+        // Check if the input is base64 data
+        if (preg_match('/^data:image\/(\w+);base64,/', $fileData, $matches)) {
+            // Extract the base64 data
+            $base64Data = substr($fileData, strpos($fileData, ',') + 1);
+
+            // Decode the base64 data
+            $decodedData = base64_decode($base64Data);
+
+            // Determine the file extension from the MIME type
+            $extension = $matches[1]; // e.g., 'png', 'jpeg'
+
+            // Generate the full file name with extension
+            $fileName .= '.' . $extension;
+
+            // Store the file in the protected disk
+            $filePath = Storage::disk('protected')->put("$directory/$fileName", $decodedData);
+
+
+        } else {
+            // Handle file object (e.g., uploaded file)
+            $fileName .= '.' . $fileData->getClientOriginalExtension();
+
+            // Store the file in the protected disk
+            $filePath = Storage::disk('protected')->putFileAs($directory, $fileData, $fileName);
+        }
+
+        // Log::info("$directory/$fileName");
+
+        // Save the file path in the insertData array
+        $insertData[$field] = "$directory/$fileName";
+    }
+}

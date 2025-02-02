@@ -348,6 +348,16 @@ class UserSonodController extends Controller
             // Extract only the fields that exist in the model from the request
             $dataToUpdate = $request->only($updatableFields);
 
+
+            $sonodEnName = Sonodnamelist::where('bnname', $sonod->sonod_name)->first();
+
+
+            $filePath = str_replace(' ', '_', $sonodEnName->enname);
+            $dateFolder = date("Y/m/d");
+
+            handleFileUploads($request, $dataToUpdate, $filePath, $dateFolder, $sonod->sonod_Id);
+
+            Log::info($dataToUpdate);
             // Update the Sonod record (excluding sec_prottoyon for now)
             $sonod->update($dataToUpdate);
 
