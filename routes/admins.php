@@ -46,6 +46,10 @@ Route::prefix('admin')->group(function () {
         Route::put('english/sonod/update/{id}', [UserSonodController::class, 'updateEnglishSonod']);
 
 
+        Route::post('/sonod/update/{id}', [UserSonodController::class, 'update']);
+        Route::post('english/sonod/update/{id}', [UserSonodController::class, 'updateEnglishSonod']);
+
+
 
 
         Route::post('/system-setting', [SystemSettingController::class, 'storeOrUpdate']);
