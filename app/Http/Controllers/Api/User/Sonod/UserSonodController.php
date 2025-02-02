@@ -297,7 +297,7 @@ class UserSonodController extends Controller
         // Update the Sonod status and record cancellation details
         $sonod->update([
             'stutus' => 'cancel',
-            // 'cancel_reason' => $cancel_reason ?? 'No reason provided',
+            'cancel_reason' => $cancel_reason ?? 'No reason provided',
             'cancedby' => $user->position,
             'cancedbyUserid' => $user->id,
         ]);
@@ -306,7 +306,7 @@ class UserSonodController extends Controller
             'message' => 'Sonod has been cancelled',
             'canceled_by' => $user->position,
             'canceled_by_user_id' => $user->id,
-            // 'cancel_reason' => $cancel_reason
+            'cancel_reason' => $cancel_reason
         ], 200);
     }
 

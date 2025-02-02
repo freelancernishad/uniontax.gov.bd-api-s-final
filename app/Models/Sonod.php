@@ -107,6 +107,7 @@ class Sonod extends Model
         'format',
         'hasEnData',
         'font_family', // Add this line
+        'cancel_reason',
     ];
 
     protected $attributes = [
