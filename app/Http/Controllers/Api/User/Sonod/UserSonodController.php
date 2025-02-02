@@ -153,6 +153,9 @@ class UserSonodController extends Controller
         if ($user->position == 'Secretary' && $sonod->stutus == 'Pending') {
             // Secretary can approve, so set the status to 'sec_approved'
             $approveData = 'sec_approved';
+        } elseif ($user->position == 'Secretary' && $sonod->stutus == 'cancel') {
+            // Secretary can approve, so set the status to 'sec_approved'
+            $approveData = 'sec_approved';
         } elseif ($user->position == 'Chairman' && $sonod->stutus == 'sec_approved') {
             // Chairman can approve, so set the status to 'approved'
             $approveData = 'approved';
