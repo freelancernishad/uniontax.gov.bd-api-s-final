@@ -357,7 +357,7 @@ class UserSonodController extends Controller
 
             handleFileUploads($request, $dataToUpdate, $filePath, $dateFolder, $sonod->sonod_Id);
 
-            Log::info($dataToUpdate);
+            // Log::info($dataToUpdate);
             // Update the Sonod record (excluding sec_prottoyon for now)
             $sonod->update($dataToUpdate);
 
