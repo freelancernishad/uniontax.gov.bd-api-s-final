@@ -211,6 +211,15 @@ use Rakibhstu\Banglanumber\NumberToBangla;
                 "জনাব {$details['applicant_name']} কে আমি ব্যক্তিগতভাবে চিনি ও জানি। তার আনুমানিক বয়স {$this->age($details['applicant_date_of_birth'])} । সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং অত্র ইউনিয়ন পরিষদের {$details['applicant_resident_status']} বাসিন্দা। আমার জানামতে তার বিরুদ্ধে রাষ্ট্রদ্রোহিতার অভিযোগ নেই।";
             break;
 
+
+        case 'আর্থিক অস্বচ্ছলতার সনদপত্র':
+
+            $readonly = true;
+            $sec_prottoyon = $english ?
+                "Mr. {$details['applicant_name']} is personally known to me. He is a resident of my union, with a status of {$details['applicant_resident_status']}, and is financially very poor. He is a natural-born citizen of Bangladesh and a resident of this union council, with a status of {$details['applicant_resident_status']}. To my knowledge, there are no charges of treason against him." :
+                "জনাব {$details['applicant_name']} কে আমি ব্যক্তিগতভাবে চিনি ও জানি। সে আমার ইউনিয়নের {$details['applicant_resident_status']} বাসিন্দা এবং সে আর্থিকভাবে খুবি অসচ্ছল । সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং অত্র ইউনিয়ন পরিষদের {$details['applicant_resident_status']} বাসিন্দা। আমার জানামতে তার বিরুদ্ধে রাষ্ট্রদ্রোহিতার অভিযোগ নেই।";
+            break;
+
         case 'প্রত্যয়নপত্র':
             $readonly = false;
             $sec_prottoyon = $english ?
