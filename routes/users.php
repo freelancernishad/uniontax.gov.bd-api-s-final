@@ -49,8 +49,13 @@ Route::prefix('user')->group(function () {
         Route::get('english/sonod/single/{id}',[UserSonodController::class,'EnglishShow']);
 
         Route::post('sonod/action/{id}',[UserSonodController::class,'sonod_action']);
+
         Route::put('/sonod/update/{id}', [UserSonodController::class, 'update']);
         Route::put('english/sonod/update/{id}', [UserSonodController::class, 'updateEnglishSonod']);
+
+
+        Route::post('/sonod/update/{id}', [UserSonodController::class, 'update']);
+        Route::post('english/sonod/update/{id}', [UserSonodController::class, 'updateEnglishSonod']);
 
 
 
