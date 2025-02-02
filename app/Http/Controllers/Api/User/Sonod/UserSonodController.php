@@ -322,6 +322,7 @@ class UserSonodController extends Controller
             // Find the existing record
             $sonod = Sonod::with('english_sonod')->findOrFail($id);
 
+            Log::info($request->all());
             // Filter the request data to only include fields that exist in the Sonod model
             $updatableFields = [
                 'successor_father_name', 'successor_mother_name',
