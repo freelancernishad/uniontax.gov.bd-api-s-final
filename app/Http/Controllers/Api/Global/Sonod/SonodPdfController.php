@@ -86,6 +86,8 @@ class SonodPdfController extends Controller
         $uniouninfo->sonod_logo = handleFileUrl($uniouninfo->sonod_logo);
 
         // return $row;
+
+        Log::info($row->sonod_Id);
         Log::info($row);
         $htmlContent = $this->getHtmlContent($row, $sonod_name, $uniouninfo, $sonodnames,$sonod_Id,$en,$font_family);
 
