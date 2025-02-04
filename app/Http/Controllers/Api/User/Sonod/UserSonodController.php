@@ -347,7 +347,25 @@ class UserSonodController extends Controller
 
             // Handle successor_list separately to ensure proper JSON encoding
             if ($request->has('successor_list')) {
-                $successorListFormatted = $request->input('successor_list');
+                $successorList = $request->input('successor_list');
+
+                // Check if it's already a JSON string or an array
+                if (!is_array($successorList)) {
+                    // Try decoding it to check if it's a valid JSON string
+                    $decoded = json_decode($successorList, true);
+                    if (json_last_error() === JSON_ERROR_NONE) {
+                        // It was a JSON string, use the decoded array
+                        $successorListFormatted = $decoded;
+                    } else {
+                        // It's not a valid JSON, keep as is
+                        $successorListFormatted = $successorList;
+                    }
+                } else {
+                    // It's already an array, use it directly
+                    $successorListFormatted = $successorList;
+                }
+
+                // Convert to JSON for storing in the database
                 $dataToUpdate['successor_list'] = json_encode($successorListFormatted);
             }
 
