@@ -627,7 +627,7 @@ class AdminUniouninfoController extends Controller
     ])->render();
 
     $district_bn_name = $upazila->district->bn_name;
-    $pdfname = "$district_bn_name-জেলার-$upazila->thana-উপজেলার সকল ইউনিয়ন এর ওয়েবসাইট এবং ইমেইল পাসওয়ার্ড.pdf";
+    $pdfname = "$district_bn_name-জেলার-$upazila->bn_name-উপজেলার সকল ইউনিয়ন এর ওয়েবসাইট এবং ইমেইল পাসওয়ার্ড.pdf";
     // Call the generatePdf function to create the PDF
     generatePdf($html, null, null, "$pdfname",'A4','bangla');
 }
