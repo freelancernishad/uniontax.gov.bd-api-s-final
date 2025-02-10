@@ -152,8 +152,11 @@ Route::prefix('admin')->group(function () {
 
 
 
+
+
     });
 });
 
 
+Route::get('/upazilas/{upazilaId}/uniouninfo/pdf', [AdminUniouninfoController::class, 'getUniouninfoByUpazilaAndGenaratePdf']);
 

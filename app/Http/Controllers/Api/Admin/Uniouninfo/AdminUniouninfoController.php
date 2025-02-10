@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Api\Admin\Uniouninfo;
 use App\Models\User;
 use App\Models\Uniouninfo;
 use Illuminate\Http\Request;
+use App\Models\AllowedOrigin;
+use PhpParser\Node\Stmt\Return_;
 use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
-use App\Models\AllowedOrigin;
-use Devfaysal\BangladeshGeocode\Models\Upazila;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use PhpParser\Node\Stmt\Return_;
+use Devfaysal\BangladeshGeocode\Models\Upazila;
 
 class AdminUniouninfoController extends Controller
 {
@@ -573,6 +574,62 @@ class AdminUniouninfoController extends Controller
         // Return the formatted Uniouninfo list
         return response()->json($formattedUniouninfoList, 200);
     }
+
+
+    public function getUniouninfoByUpazilaAndGenaratePdf($upazilaId)
+{
+    // Fetch the Upazila with its related unions
+    $upazila = Upazila::with('unions')->find($upazilaId);
+
+    if (!$upazila) {
+        return response()->json([
+            'message' => 'Upazila not found',
+        ], 404);
+    }
+
+    // Get the union names from the Upazila and transform them
+    $unionNames = $upazila->unions->pluck('name')->map(function ($name) {
+        return str_replace(' ', '', strtolower($name)); // Remove spaces and convert to lowercase
+    })->toArray();
+
+    // Fetch Uniouninfo records where short_name_e matches the transformed union names
+    $uniouninfoList = Uniouninfo::whereIn('short_name_e', $unionNames)->get();
+
+    // Format the Uniouninfo data
+    $formattedUniouninfoList = $uniouninfoList->map(function ($uniouninfo) {
+
+        $unioun = $uniouninfo->short_name_e;
+        $Secretary = User::where(['unioun' => $unioun, 'position' => 'Secretary'])->first();
+        $Chairman = User::where(['unioun' => $unioun, 'position' => 'Chairman'])->first();
+
+        return [
+            'id' => $uniouninfo->id,
+            'full_name' => $uniouninfo->full_name,
+            'thana' => $uniouninfo->thana,
+            'district' => $uniouninfo->district,
+            'url1' => "https://$unioun.uniontax.gov.bd",
+            'url2' => "https://$unioun.unionservices.gov.bd",
+            'Secretary_email' => $Secretary->email,
+            'Secretary_password' => 'upsheba21',
+            'Chairman_email' => $Chairman->email,
+            'Chairman_password' => 'upsheba21',
+            'u_code' => $uniouninfo->u_code,
+            'AKPAY_MER_REG_ID' => $uniouninfo->AKPAY_MER_REG_ID,
+            'AKPAY_MER_PASS_KEY' => $uniouninfo->AKPAY_MER_PASS_KEY,
+        ];
+    });
+
+    // Render the Blade view and pass the data, including district and thana from the Upazila model
+    $html = View::make('pdf.union_info', [
+        'uniouninfoList' => $formattedUniouninfoList,
+        'district' => $upazila->district,  // Pass district
+        'thana' => $upazila->thana       // Pass thana
+    ])->render();
+
+    // Call the generatePdf function to create the PDF
+    generatePdf($html, null, null, 'union_info.pdf','A4','bangla');
+}
+
 
 
 
