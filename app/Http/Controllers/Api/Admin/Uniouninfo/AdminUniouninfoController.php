@@ -623,7 +623,7 @@ class AdminUniouninfoController extends Controller
     $html = View::make('pdf.union_info', [
         'uniouninfoList' => $formattedUniouninfoList,
         'district' => $upazila->district,  // Pass district
-        'thana' => $upazila->thana       // Pass thana
+        'thana' => $upazila->bn_name       // Pass thana
     ])->render();
 
     $district_bn_name = $upazila->district->bn_name;
