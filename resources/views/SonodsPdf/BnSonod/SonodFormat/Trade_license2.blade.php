@@ -91,17 +91,17 @@ $orthoBchor = explode('-',$row->orthoBchor);
         </tr>
     </table>
 
-
-
     @php
+    // Assuming the field name is correctly spelled as 'amount_details'
+    $amount_details = $row->amount_details;
 
-        $amount_deails = $row->amount_deails;
-        $amount_deails = json_decode($amount_deails);
-        $tredeLisenceFee = $amount_deails->tredeLisenceFee;
-        $vatAykor = ($tredeLisenceFee*$amount_deails->vatAykor)/100;
+    // Decode the JSON data and ensure it returns an object
+    $amount_details = json_decode($amount_details);
 
-
-    @endphp
+    // Check if the data was successfully decoded
+    $tredeLisenceFee = $amount_details->tredeLisenceFee ?? 0;
+    $vatAykor = isset($amount_details->vatAykor) ? ($tredeLisenceFee * $amount_details->vatAykor) / 100 : 0;
+@endphp
 
 
     <table width='100%' style="font-size: 12px;margin-top:10px">
