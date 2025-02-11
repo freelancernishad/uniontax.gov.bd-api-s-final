@@ -49,10 +49,10 @@ class UniouninfoExport implements FromCollection, WithHeadings, ShouldAutoSize, 
         return [
             'A' => 40, // Merchant ID
             'B' => 20, // Password
-            'C' => 40, // Server IP
-            'D' => 20, // Mobile
-            'E' => 20, // Organization
-            'F' => 40, // URL
+            'C' => 50, // Organization
+            'D' => 20, // Server IP
+            'E' => 20, // Mobile
+            'F' => 50, // URL
         ];
     }
 
