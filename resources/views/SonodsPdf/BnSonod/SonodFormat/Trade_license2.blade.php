@@ -93,14 +93,14 @@ $orthoBchor = explode('-',$row->orthoBchor);
 
     @php
     // Assuming the field name is correctly spelled as 'amount_details'
-    $amount_details = $row->amount_details;
+    $amount_deails = $row->amount_deails;
 
     // Decode the JSON data and ensure it returns an object
-    $amount_details = json_decode($amount_details);
+    $amount_deails = json_decode($amount_deails);
 
     // Check if the data was successfully decoded
-    $tredeLisenceFee = $amount_details->tredeLisenceFee ?? 0;
-    $vatAykor = isset($amount_details->vatAykor) ? ($tredeLisenceFee * $amount_details->vatAykor) / 100 : 0;
+    $tredeLisenceFee = $amount_deails->tredeLisenceFee ?? 0;
+    $vatAykor = isset($amount_deails->vatAykor) ? ($tredeLisenceFee * $amount_deails->vatAykor) / 100 : 0;
 @endphp
 
 
