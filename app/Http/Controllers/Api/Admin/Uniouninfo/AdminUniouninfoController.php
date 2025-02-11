@@ -664,7 +664,7 @@ class AdminUniouninfoController extends Controller
                 'pass' => '',
                 'organization' => "{$unioun} UP, {$upazila->name}, {$upazila->district->name}",
                 'ip' => $serverIp, // Assuming you have a server_ip column
-                'mobile' => optional($Secretary)->phone ?? '',
+                'mobile' => int_bn_to_en(optional($Secretary)->phone) ?? '',
                 'url' => "https://$unioun.uniontax.gov.bd",
             ];
         });
