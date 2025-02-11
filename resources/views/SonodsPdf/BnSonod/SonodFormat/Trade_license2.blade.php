@@ -112,7 +112,7 @@ $orthoBchor = explode('-',$row->orthoBchor);
                     <li>ট্রেড লাইসেন্স ফি (নবায়ন) :-</li>
                     <li>পারমিট ফি  : {{ int_en_to_bn($tredeLisenceFee) }} টাকা</li>
                     <li>সার্ভিস চার্জ : ০.০০ টাকা</li>
-                    <li>বকেয়া : {{ int_en_to_bn($amount_deails->last_years_money) }} টাকা</li>
+                    <li>বকেয়া : {{ int_en_to_bn($amount_deails->last_years_money ?? 0) }} টাকা</li>
                     <li>সাবচার্জ  : ০.০০ টাকা</li>
                 </ul>
             </td>
