@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ApiResponse
 {
@@ -29,11 +30,11 @@ class ApiResponse
         // Capture the response
         $response = $next($request);
 
+    // Skip formatting for redirect responses or file responses
+    if ($response->isRedirection() || $response instanceof BinaryFileResponse) {
+        return $response;
+    }
 
-        // Skip formatting for redirect responses
-        if ($response->isRedirection()) {
-            return $response;
-        }
 
         // Check if the response is a valid Response object
         if ($response instanceof Response) {
