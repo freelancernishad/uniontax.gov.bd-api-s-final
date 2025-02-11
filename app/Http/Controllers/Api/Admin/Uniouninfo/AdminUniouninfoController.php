@@ -670,7 +670,7 @@ class AdminUniouninfoController extends Controller
         });
 
         $district_bn_name = $upazila->district->bn_name;
-        $fileName = strtolower("$district_bn_name-জেলার-$upazila->bn_name-উপজেলার-ইউনিয়ন.xlsx");
+        $fileName = "Ekpay Credentials-".strtolower("$district_bn_name-জেলার-$upazila->bn_name-উপজেলার-ইউনিয়ন.xlsx");
 
 
         // return response()->json($formattedUniouninfoList);
