@@ -655,13 +655,13 @@ class AdminUniouninfoController extends Controller
         $uniouninfoList = Uniouninfo::whereIn('short_name_e', $unionNames)->get();
 
         $serverIp = $_SERVER['SERVER_ADDR'] ?? '';
-        $formattedUniouninfoList = $uniouninfoList->map(function ($uniouninfo) use ($districtShort, $upazilaShort,$serverIp) {
+        $formattedUniouninfoList = $uniouninfoList->map(function ($uniouninfo) use ($districtShort, $upazilaShort,$serverIp,$upazila) {
             $unioun = strtolower($uniouninfo->short_name_e); // Ensure lowercase
             $Secretary = User::where(['unioun' => $unioun, 'position' => 'Secretary'])->first();
 
             return [
                 'merchant_id' => "{$districtShort}_{$upazilaShort}_{$unioun}_up",
-                'organization' => "{$unioun} UP, {$uniouninfo->thana}, {$uniouninfo->district}",
+                'organization' => "{$unioun} UP, {$upazila->name}, {$upazila->district->name}",
                 'ip' => $serverIp, // Assuming you have a server_ip column
                 'mobile' => optional($Secretary)->phone ?? '',
                 'pass' => '',
