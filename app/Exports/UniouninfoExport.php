@@ -32,11 +32,11 @@ class UniouninfoExport implements FromCollection, WithHeadings, ShouldAutoSize, 
     public function headings(): array
     {
         return [
-            'Merchant ID', 
-            'Organization', 
-            'Server IP', 
-            'Mobile', 
-            'Password', 
+            'Merchant ID',
+            'Password',
+            'Organization',
+            'Server IP',
+            'Mobile',
             'URL'
         ];
     }
@@ -47,11 +47,11 @@ class UniouninfoExport implements FromCollection, WithHeadings, ShouldAutoSize, 
     public function columnWidths(): array
     {
         return [
-            'A' => 25, // Merchant ID
-            'B' => 40, // Organization
-            'C' => 20, // Server IP
-            'D' => 15, // Mobile
-            'E' => 15, // Password
+            'A' => 40, // Merchant ID
+            'B' => 20, // Password
+            'C' => 40, // Server IP
+            'D' => 20, // Mobile
+            'E' => 20, // Organization
             'F' => 40, // URL
         ];
     }
