@@ -23,7 +23,7 @@ class UniouninfoExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            'Merchant ID', 'Organization', 'IP', 'Mobile', 'Pass', 'URL'
+            'Merchant ID', 'Pass', 'Organization', 'IP', 'Mobile', 'URL'
         ];
     }
 }

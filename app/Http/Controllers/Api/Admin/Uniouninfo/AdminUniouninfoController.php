@@ -661,10 +661,10 @@ class AdminUniouninfoController extends Controller
 
             return [
                 'merchant_id' => "{$districtShort}_{$upazilaShort}_{$unioun}_up",
+                'pass' => '',
                 'organization' => "{$unioun} UP, {$upazila->name}, {$upazila->district->name}",
                 'ip' => $serverIp, // Assuming you have a server_ip column
                 'mobile' => optional($Secretary)->phone ?? '',
-                'pass' => '',
                 'url' => "https://$unioun.uniontax.gov.bd",
             ];
         });
