@@ -673,7 +673,7 @@ class AdminUniouninfoController extends Controller
         $fileName = strtolower("$district_bn_name-জেলার-$upazila->bn_name-উপজেলার-ইউনিয়ন.xlsx");
 
 
-        return response()->json($formattedUniouninfoList);
+        // return response()->json($formattedUniouninfoList);
 
         return Excel::download(new UniouninfoExport($formattedUniouninfoList), $fileName);
     }
