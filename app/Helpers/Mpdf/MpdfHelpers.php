@@ -41,9 +41,9 @@ use Mccarlosen\LaravelMpdf\LaravelMpdf;
     $mpdf->simpleTables = true;
 
 // Enable remote file access (to load images from external URLs)
-$mpdf->useActiveForms = true;
-$mpdf->options['isHtml5ParserEnabled'] = true;
-$mpdf->SetOption('isRemoteEnabled', true);
+// $mpdf->useActiveForms = true;
+// $mpdf->options['isHtml5ParserEnabled'] = true;
+// $mpdf->SetOption('isRemoteEnabled', true);
 
 
     $mpdf->showImageErrors = true;
