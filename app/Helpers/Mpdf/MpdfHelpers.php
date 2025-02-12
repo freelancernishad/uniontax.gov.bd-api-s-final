@@ -39,8 +39,15 @@ use Mccarlosen\LaravelMpdf\LaravelMpdf;
     $mpdf->WriteHTML($html);
     $mpdf->useSubstitutions = false;
     $mpdf->simpleTables = true;
-    $mpdf->setOption('isRemoteEnabled', true);
+
+// Enable remote file access (to load images from external URLs)
+$mpdf->useActiveForms = true;
+$mpdf->options['isHtml5ParserEnabled'] = true;
+$mpdf->SetOption('isRemoteEnabled', true);
+
+
     $mpdf->showImageErrors = true;
+
 
     // Stream the PDF to the browser
     $mpdf->Output($filename, 'I');
