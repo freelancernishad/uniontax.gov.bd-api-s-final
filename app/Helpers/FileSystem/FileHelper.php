@@ -268,11 +268,12 @@ function convertToBase64($filePath, $defaultImage = 'https://api.uniontax.gov.bd
     }
 
     try {
-        // If it's not a local request, fetch the image from the URL
-        if (!isLocalRequest()) {
-            $fileContent = file_get_contents(url("/files/{$filePath}"));
+        // Check if the file exists in the 'protected' disk
+        if (Storage::disk('protected')->exists($filePath)) {
+            // Get the file contents from the 'protected' disk
+            $fileContent = Storage::disk('protected')->get($filePath);
         } else {
-            // Fallback to the default image if the file path is local and doesn't exist
+            // Fallback to the default image if the file does not exist
             $fileContent = file_get_contents($defaultImage);
         }
 
@@ -283,7 +284,7 @@ function convertToBase64($filePath, $defaultImage = 'https://api.uniontax.gov.bd
         }
 
         // Get the MIME type of the image
-        $mimeType = mime_content_type($filePath);
+        $mimeType = mime_content_type(storage_path('app/protected/' . $filePath));
 
         // Return the Base64 encoded string
         return 'data:' . $mimeType . ';base64,' . base64_encode($fileContent);
