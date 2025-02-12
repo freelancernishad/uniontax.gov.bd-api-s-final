@@ -260,6 +260,38 @@ $ext =  pathinfo($Image, PATHINFO_EXTENSION);;
 }
 
 
+function convertToBase64($filePath, $defaultImage = 'https://api.uniontax.gov.bd/backend/image.png')
+{
+    if (!$filePath) {
+        // Return default image if no file path is provided
+        return $defaultImage;
+    }
+
+    try {
+        // If it's not a local request, fetch the image from the URL
+        if (!isLocalRequest()) {
+            $fileContent = file_get_contents(url("/files/{$filePath}"));
+        } else {
+            // Fallback to the default image if the file path is local and doesn't exist
+            $fileContent = file_get_contents($defaultImage);
+        }
+
+        // Convert the image content to base64 encoding
+        if ($fileContent === false) {
+            // Return the default image if reading the file fails
+            return $defaultImage;
+        }
+
+        // Get the MIME type of the image
+        $mimeType = mime_content_type($filePath);
+
+        // Return the Base64 encoded string
+        return 'data:' . $mimeType . ';base64,' . base64_encode($fileContent);
+    } catch (\Exception $e) {
+        // In case of an error, return the default image
+        return $defaultImage;
+    }
+}
 
 
 

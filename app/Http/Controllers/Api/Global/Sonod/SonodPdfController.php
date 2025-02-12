@@ -65,7 +65,7 @@ class SonodPdfController extends Controller
         // Handle signature fields first
         $signatureFields = ['socib_signture', 'chaireman_sign', 'image'];
         foreach ($signatureFields as $field) {
-            $row->$field = handleFileUrl($row->$field); // Ensure all URLs are resolved first
+            $row->$field = convertToBase64($row->$field); // Ensure all URLs are resolved first
         }
 
         // Load Uniouninfo and Sonodnamelist
@@ -74,7 +74,7 @@ class SonodPdfController extends Controller
         $filename = str_replace(" ", "_", $sonodnames->enname) . "-$row->sonod_Id.pdf";
 
         // Handle sonod_logo for Uniouninfo
-        $uniouninfo->sonod_logo = handleFileUrl($uniouninfo->sonod_logo);
+        $uniouninfo->sonod_logo = convertToBase64($uniouninfo->sonod_logo);
 
         // Log the data (for debugging)
         Log::info($row->image);
