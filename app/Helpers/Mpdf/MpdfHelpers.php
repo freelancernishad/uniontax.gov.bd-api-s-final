@@ -39,6 +39,8 @@ use Mccarlosen\LaravelMpdf\LaravelMpdf;
     $mpdf->WriteHTML($html);
     $mpdf->useSubstitutions = false;
     $mpdf->simpleTables = true;
+    $mpdf->SetOption('isRemoteEnabled', true); // Enable remote image loading
+    $mpdf->showImageErrors = true;
 
     // Stream the PDF to the browser
     $mpdf->Output($filename, 'I');

@@ -261,6 +261,9 @@ $ext =  pathinfo($Image, PATHINFO_EXTENSION);;
 
 
 
+
+
+
 function handleFileUrl($filePath, $defaultImage = 'https://api.uniontax.gov.bd/backend/image.png')
 {
     if (!$filePath) {
@@ -268,19 +271,16 @@ function handleFileUrl($filePath, $defaultImage = 'https://api.uniontax.gov.bd/b
     }
 
     try {
-        // Check if the application is running on localhost
         if (!isLocalRequest()) {
-            // Generate the full URL for the file
-            return URL::to('/files/' . $filePath);
+            return url("/files/{$filePath}");
         } else {
-            // Use the default image from the live server
             return $defaultImage;
         }
     } catch (\Exception $e) {
-        // If the file is not found or cannot be read, set the value to the default image
         return $defaultImage;
     }
 }
+
 
 function isLocalRequest()
 {
