@@ -77,7 +77,9 @@ class SonodPdfController extends Controller
         $uniouninfo->sonod_logo = handleFileUrl($uniouninfo->sonod_logo);
 
         // Log the data (for debugging)
-        Log::info($row->sonod_Id);
+        Log::info($row->image);
+        Log::info($row->chaireman_sign);
+        Log::info($row->socib_signture);
         Log::info($row);
 
         // Generate HTML content for PDF
