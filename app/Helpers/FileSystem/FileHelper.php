@@ -260,62 +260,53 @@ $ext =  pathinfo($Image, PATHINFO_EXTENSION);;
 }
 
 
-function convertToBase64($filePath, $defaultImage = 'https://api.uniontax.gov.bd/backend/image.png')
+
+
+function convertToBase64($filePath, $defaultImage = 'backend/image.png')
 {
     if (!$filePath) {
-        // Convert the default image to base64 if no file path is provided
-        return convertImageToBase64($defaultImage);
+        // Convert the default image (from root) to base64
+        return convertImageToBase64(base_path($defaultImage));
     }
 
     try {
-        // Check if the file exists in the 'protected' disk
+        // Check if the file exists in the 'protected' storage disk
         if (Storage::disk('protected')->exists($filePath)) {
             // Get the file contents from the 'protected' disk
             $fileContent = Storage::disk('protected')->get($filePath);
+            $mimeType = mime_content_type(storage_path('app/protected/' . $filePath));
         } else {
-            // Fallback to the default image if the file does not exist
-            $fileContent = convertImageToBase64($defaultImage);
+            // Fallback to default image in the root directory
+            return convertImageToBase64(base_path($defaultImage));
         }
 
-        // Convert the image content to base64 encoding
-        if ($fileContent === false) {
-            // Return the default image base64 if reading the file fails
-            return convertImageToBase64($defaultImage);
-        }
-
-        // Get the MIME type of the image
-        $mimeType = mime_content_type(storage_path('app/protected/' . $filePath));
-
-        // Return the Base64 encoded string
+        // Return Base64 encoded string
         return 'data:' . $mimeType . ';base64,' . base64_encode($fileContent);
     } catch (\Exception $e) {
-        // In case of an error, return the default image base64
-        return convertImageToBase64($defaultImage);
+        // If any error occurs, return the default image base64
+        return convertImageToBase64(base_path($defaultImage));
     }
 }
 
-// Function to convert any image URL to Base64
-function convertImageToBase64($imageUrl)
+// Helper function to convert a local image file to Base64
+function convertImageToBase64($fullPath)
 {
     try {
-        // Check if the image is a valid URL or local file
-        if (filter_var($imageUrl, FILTER_VALIDATE_URL)) {
-            $imageContent = file_get_contents($imageUrl);
-        } else {
-            // Handle the case where the file path is local
-            $imageContent = file_get_contents(storage_path('app/public/' . $imageUrl));
+        if (!file_exists($fullPath)) {
+            return ''; // Return empty string if file doesn't exist
         }
 
-        // Get the MIME type of the image
-        $mimeType = mime_content_type($imageUrl);
+        // Read file content
+        $imageContent = file_get_contents($fullPath);
+        $mimeType = mime_content_type($fullPath);
 
-        // Return the Base64 encoded string
+        // Convert to Base64
         return 'data:' . $mimeType . ';base64,' . base64_encode($imageContent);
     } catch (\Exception $e) {
-        // Return an empty string or a fallback image if the conversion fails
-        return '';
+        return ''; // Return empty string if an error occurs
     }
 }
+
 
 
 
