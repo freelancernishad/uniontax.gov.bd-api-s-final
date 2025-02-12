@@ -263,8 +263,8 @@ $ext =  pathinfo($Image, PATHINFO_EXTENSION);;
 function convertToBase64($filePath, $defaultImage = 'https://api.uniontax.gov.bd/backend/image.png')
 {
     if (!$filePath) {
-        // Return default image if no file path is provided
-        return $defaultImage;
+        // Convert the default image to base64 if no file path is provided
+        return convertImageToBase64($defaultImage);
     }
 
     try {
@@ -274,13 +274,13 @@ function convertToBase64($filePath, $defaultImage = 'https://api.uniontax.gov.bd
             $fileContent = Storage::disk('protected')->get($filePath);
         } else {
             // Fallback to the default image if the file does not exist
-            $fileContent = file_get_contents($defaultImage);
+            $fileContent = convertImageToBase64($defaultImage);
         }
 
         // Convert the image content to base64 encoding
         if ($fileContent === false) {
-            // Return the default image if reading the file fails
-            return $defaultImage;
+            // Return the default image base64 if reading the file fails
+            return convertImageToBase64($defaultImage);
         }
 
         // Get the MIME type of the image
@@ -289,11 +289,33 @@ function convertToBase64($filePath, $defaultImage = 'https://api.uniontax.gov.bd
         // Return the Base64 encoded string
         return 'data:' . $mimeType . ';base64,' . base64_encode($fileContent);
     } catch (\Exception $e) {
-        // In case of an error, return the default image
-        return $defaultImage;
+        // In case of an error, return the default image base64
+        return convertImageToBase64($defaultImage);
     }
 }
 
+// Function to convert any image URL to Base64
+function convertImageToBase64($imageUrl)
+{
+    try {
+        // Check if the image is a valid URL or local file
+        if (filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+            $imageContent = file_get_contents($imageUrl);
+        } else {
+            // Handle the case where the file path is local
+            $imageContent = file_get_contents(storage_path('app/public/' . $imageUrl));
+        }
+
+        // Get the MIME type of the image
+        $mimeType = mime_content_type($imageUrl);
+
+        // Return the Base64 encoded string
+        return 'data:' . $mimeType . ';base64,' . base64_encode($imageContent);
+    } catch (\Exception $e) {
+        // Return an empty string or a fallback image if the conversion fails
+        return '';
+    }
+}
 
 
 
