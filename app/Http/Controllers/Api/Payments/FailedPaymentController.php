@@ -114,19 +114,19 @@ class FailedPaymentController extends Controller
     }
 
 
-    if ($sonod->sonod_name !== $request->certificate) {
-        return response()->json([
-            'error' => 'Certificate mismatch',
-            'message' => 'The provided certificate does not match the sonod_name for the given sonod_id.',
-        ], 400); // Return a 400 Bad Request status
-    }
+    // if ($sonod->sonod_name !== $request->certificate) {
+    //     return response()->json([
+    //         'error' => 'Certificate mismatch',
+    //         'message' => 'The provided certificate does not match the sonod_name for the given sonod_id.',
+    //     ], 400); // Return a 400 Bad Request status
+    // }
 
-    if ($payment->amount !== $request->amount) {
-        return response()->json([
-            'error' => 'amount mismatch',
-            'message' => 'The provided amount does not match.',
-        ], 400); // Return a 400 Bad Request status
-    }
+    // if ($payment->amount !== $request->amount) {
+    //     return response()->json([
+    //         'error' => 'amount mismatch',
+    //         'message' => 'The provided amount does not match.',
+    //     ], 400); // Return a 400 Bad Request status
+    // }
 
     // Set default status if not provided
     $validatedData['status'] = "Pending";
