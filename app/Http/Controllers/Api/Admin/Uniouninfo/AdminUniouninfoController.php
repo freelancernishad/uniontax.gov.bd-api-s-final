@@ -659,9 +659,11 @@ class AdminUniouninfoController extends Controller
             $unioun = strtolower($uniouninfo->short_name_e); // Ensure lowercase
             $Secretary = User::where(['unioun' => $unioun, 'position' => 'Secretary'])->first();
 
+            $merchant_id = $uniouninfo->AKPAY_MER_REG_ID ?? "{$districtShort}_{$upazilaShort}_{$unioun}_up";
+            $pass = $uniouninfo->AKPAY_MER_PASS_KEY ?? "";
             return [
-                'merchant_id' => "{$districtShort}_{$upazilaShort}_{$unioun}_up",
-                'pass' => '',
+                'merchant_id' => $merchant_id,
+                'pass' => $pass,
                 'organization' => "{$unioun} UP, {$upazila->name}, {$upazila->district->name}",
                 'ip' => $serverIp, // Assuming you have a server_ip column
                 'mobile' => int_bn_to_en(optional($Secretary)->phone) ?? '',
