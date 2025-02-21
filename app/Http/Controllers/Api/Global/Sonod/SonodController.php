@@ -525,10 +525,6 @@ class SonodController extends Controller
                 ->where('sonod_Id', $sonodId)
                 ->where('sonod_name', $sonodName)
                 ->first();
-
-            return response()->json([
-                    'error' => 'Sonod not found by sonod_Id and sonod_name',
-                ], 404);
         }
 
 
