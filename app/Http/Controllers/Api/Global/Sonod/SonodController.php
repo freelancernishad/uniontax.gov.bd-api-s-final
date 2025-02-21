@@ -578,10 +578,7 @@ class SonodController extends Controller
                 }
             }
     
-            return response()->json([
-                'success' => true,
-                'data' => $sonod,
-            ]);
+            return response()->json( $sonod);
         }
     
         // If Sonod is not found, return an error response
