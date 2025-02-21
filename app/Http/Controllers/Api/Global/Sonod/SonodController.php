@@ -513,65 +513,7 @@ class SonodController extends Controller
 
         // Retrieve by ID if 'id' is provided
         if ($request->has('id')) {
-            $sonod = Sonod::select($columns)->find($request->input('id'));
-
-            if ($sonod) {
-                // Calculate the current orthoBchor
-                $currentYear = date('Y');
-                $currentMonth = date('m');
-
-                if ($currentMonth >= 7) {
-                    $currentOrthoBchor = $currentYear . '-' . substr(($currentYear + 1), -2);
-                } else {
-                    $currentOrthoBchor = ($currentYear - 1) . '-' . substr($currentYear, -2);
-                }
-
-                // Check if orthoBchor is not current
-                $isNotCurrentOrthoBchor = ($sonod->orthoBchor !== $currentOrthoBchor);
-
-                // Check if renewed_id is not null but renewed is null
-                $isRenewable = (
-                    ($sonod->renewed_id !== null && $sonod->renewed === null) || // Case 1
-                    ($sonod->renewed_id === null && $sonod->renewed === null)    // Case 2
-                );
-
-                // Set renew_able flag
-                $sonod->renew_able = ($isNotCurrentOrthoBchor && $isRenewable);
-
-                // Initialize download URLs
-                $sonod->download_url = '';
-                $sonod->download_url_en = '';
-
-                // Check if the Sonod is approved and paid
-                if ($sonod->stutus === 'Approved' && $sonod->payment_status === 'Paid') {
-                    // Generate the download URL
-                    if ($sonod->renew_able) {
-                        // If renew_able is true, generate the download URL for the renewed Sonod (if applicable)
-                        if ($sonod->renewed_id && $sonod->renewed) {
-                            $sonod->download_url = url("sonod/download/$sonod->renewed_id");
-                            if ($sonod->hasEnData) {
-                                $sonod->download_url_en = url("sonod/download/$sonod->renewed_id?en=true");
-                            }
-                        }
-                    } else {
-                        // If renew_able is false, generate the download URL for the main Sonod
-                        $sonod->download_url = url("sonod/download/$sonod->id");
-                        if ($sonod->hasEnData) {
-                            $sonod->download_url_en = url("sonod/download/$sonod->id?en=true");
-                        }
-                    }
-                }
-
-                return response()->json([
-                    'success' => true,
-                    'data' => $sonod,
-                ]);
-            }
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Sonod not found by ID',
-            ], 404);
+            $results = Sonod::select($columns)->find($request->input('id'));
         }
 
         // Search by `sonod_Id` and `sonod_name` if both are provided
@@ -583,6 +525,12 @@ class SonodController extends Controller
                 ->where('sonod_Id', $sonodId)
                 ->where('sonod_name', $sonodName)
                 ->first();
+
+            return response()->json([
+                    'error' => 'Sonod not found by sonod_Id and sonod_name',
+                ], 404);
+        }
+
 
             if ($results) {
                 // Calculate the current orthoBchor
@@ -635,13 +583,10 @@ class SonodController extends Controller
                 return response()->json($results);
             }
 
-            return response()->json([
-                'error' => 'Sonod not found by sonod_Id and sonod_name',
-            ], 404);
-        }
+     
 
 
-        
+
 
         return response()->json([
             'error' => 'Invalid search parameters provided',
