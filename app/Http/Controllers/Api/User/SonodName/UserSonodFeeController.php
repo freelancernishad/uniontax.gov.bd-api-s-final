@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api\User\SonodName;
 
 use App\Models\SonodFee;
+use App\Models\Uniouninfo;
 use Illuminate\Http\Request;
 use App\Models\Sonodnamelist;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Validator;
 
 class UserSonodFeeController extends Controller
@@ -100,8 +102,6 @@ class UserSonodFeeController extends Controller
      */
     public function getSonodnamelistsWithFees(Request $request)
     {
-
-
         if (Auth::guard('admin')->check()) {
             $user = Auth::guard('admin')->user();
             $userUnioun = $request->union;
@@ -110,17 +110,16 @@ class UserSonodFeeController extends Controller
             $userUnioun = $user->unioun;
         }
 
+        // Retrieve Union Information
+        $uniouninfo = Uniouninfo::where('short_name_e', $userUnioun)->first();
 
-
-
-        // Retrieve Sonodnamelists with fees for the user's unioun
+        // Retrieve Sonodnamelists with fees for the user's union
         $sonodnamelists = Sonodnamelist::with(['sonodFees' => function ($query) use ($userUnioun) {
-            $query->where('unioun', $userUnioun); // Filter fees by user's unioun
+            $query->where('unioun', $userUnioun);
         }])->get();
 
         // Transform the data
         $data = $sonodnamelists->map(function ($sonodnamelist) use ($userUnioun) {
-            // Retrieve the fee for the user's unioun
             $fee = $sonodnamelist->sonodFees->first();
 
             return [
@@ -130,12 +129,22 @@ class UserSonodFeeController extends Controller
                 'bnname' => $sonodnamelist->bnname,
                 'template' => $sonodnamelist->template,
                 'unioun' => $userUnioun,
-                'fees' => $fee ? $fee->fees : null, // Null if no fees exist for the unioun
+                'fees' => $fee ? $fee->fees : null,
             ];
-        })->filter(); // Remove null entries if no fees are available for the unioun
+        })->filter();
 
-        return response()->json($data);
+        // Check if the request wants a PDF
+        if ($request->has('pdf')) {
+            $html = View::make('pdf.SonodFees', ['data' => $data, 'uniouninfo' => $uniouninfo])->render();
+            return generatePdf($html);
+        }
+
+        return response()->json([
+            'data' => $data,
+            'uniouninfo' => $uniouninfo
+        ]);
     }
+
 
 
 

@@ -154,7 +154,8 @@ Route::prefix('admin')->group(function () {
             Route::post('/', [UserSonodFeeController::class, 'store']); // Create multiple SonodFees
             Route::put('/', [UserSonodFeeController::class, 'update']); // Update multiple SonodFees
         });
-        Route::get('sonodnamelists/with-fees', [UserSonodFeeController::class, 'getSonodnamelistsWithFees']);
+        Route::get('sonodnamelist/with-fees', [UserSonodFeeController::class, 'getSonodnamelistsWithFees']);
+        Route::post('sonodnamelist/with-fees', [UserSonodFeeController::class, 'getSonodnamelistsWithFees']);
 
 
 
