@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\User\Sonod\UserSonodController;
 use App\Http\Controllers\Api\Admin\Reports\ReportsController;
 use App\Http\Controllers\Api\Payments\FailedPaymentController;
 use App\Http\Controllers\Api\Admin\Package\AdminPackageController;
+use App\Http\Controllers\Api\User\SonodName\UserSonodFeeController;
 use App\Http\Controllers\Api\SystemSettings\SystemSettingController;
 use App\Http\Controllers\Api\Admin\Transitions\AdminPaymentController;
 use App\Http\Controllers\Api\Admin\Uniouninfo\AdminUniouninfoController;
@@ -149,6 +150,11 @@ Route::prefix('admin')->group(function () {
         Route::post('/upazilas/{upazilaId}/uniouninfo', [AdminUniouninfoController::class, 'getUniouninfoByUpazila']);
 
 
+        Route::prefix('/sonodfees')->group(function () {
+            Route::post('/', [UserSonodFeeController::class, 'store']); // Create multiple SonodFees
+            Route::put('/', [UserSonodFeeController::class, 'update']); // Update multiple SonodFees
+        });
+        Route::get('sonodnamelists/with-fees', [UserSonodFeeController::class, 'getSonodnamelistsWithFees']);
 
 
 

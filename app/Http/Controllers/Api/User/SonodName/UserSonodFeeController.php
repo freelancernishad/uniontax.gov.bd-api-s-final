@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Api\User\SonodName;
 
 use App\Models\SonodFee;
-use App\Models\Sonodnamelist;
 use Illuminate\Http\Request;
+use App\Models\Sonodnamelist;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class UserSonodFeeController extends Controller
@@ -97,10 +98,20 @@ class UserSonodFeeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getSonodnamelistsWithFees()
+    public function getSonodnamelistsWithFees(Request $request)
     {
-        // Get the authenticated user's unioun
-        $userUnioun = auth()->user()->unioun;
+
+
+        if (Auth::guard('admin')->check()) {
+            $user = Auth::guard('admin')->user();
+            $userUnioun = $request->union;
+        } elseif (Auth::guard('user')->check()) {
+            $user = Auth::guard('user')->user();
+            $userUnioun = $user->unioun;
+        }
+
+
+
 
         // Retrieve Sonodnamelists with fees for the user's unioun
         $sonodnamelists = Sonodnamelist::with(['sonodFees' => function ($query) use ($userUnioun) {
