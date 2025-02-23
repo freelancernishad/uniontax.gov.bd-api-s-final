@@ -102,12 +102,24 @@ class UserSonodFeeController extends Controller
      */
     public function getSonodnamelistsWithFees(Request $request)
     {
+        // Check if the request is from admin with Bearer token or request token
         if (Auth::guard('admin')->check()) {
+            // Admin authenticated via session (Bearer token already in place)
             $user = Auth::guard('admin')->user();
             $userUnioun = $request->union;
+        } elseif ($request->has('token')) {
+            // Admin authenticated via request token
+            $user = Auth::guard('api')->setToken($request->token)->user();
+            if (!$user) {
+                return response()->json(['error' => 'Unauthorized, invalid token'], 401); // Unauthorized if no valid token
+            }
+            $userUnioun = $request->union;
         } elseif (Auth::guard('user')->check()) {
+            // User authenticated directly via session
             $user = Auth::guard('user')->user();
             $userUnioun = $user->unioun;
+        } else {
+            return response()->json(['error' => 'Unauthorized, valid token or session required'], 401); // Unauthorized if neither admin nor user authenticated
         }
 
         // Retrieve Union Information
@@ -144,6 +156,8 @@ class UserSonodFeeController extends Controller
             'uniouninfo' => $uniouninfo
         ]);
     }
+
+
 
 
 

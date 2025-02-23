@@ -168,3 +168,4 @@ Route::prefix('admin')->group(function () {
 Route::get('/upazilas/{upazilaId}/uniouninfo/pdf', [AdminUniouninfoController::class, 'getUniouninfoByUpazilaAndGenaratePdf']);
 Route::get('/upazilas/{upazilaId}/uniouninfo/excel', [AdminUniouninfoController::class, 'getUniouninfoByUpazilaAndGenarateExcel']);
 
+Route::get('sonodnamelist/with-fees', [UserSonodFeeController::class, 'getSonodnamelistsWithFees']);
