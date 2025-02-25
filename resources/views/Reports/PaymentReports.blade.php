@@ -1,23 +1,81 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sonodnamelists</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
     <style>
-        body { font-family: 'bangla', sans-serif; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid black; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .header-table { margin-bottom: 20px; }
+        .td {
+            border: 1px dotted black;
+        }
+        .header-table td, .content-table td {
+            text-align: center;
+
+        }
+        .content-table  {
+            border-collapse: collapse;
+        }
+
+        .content-table th, .content-table td {
+            padding: 3px 5px;
+
+            font-weight: normal;
+        }
+
+.td{
+    font-size: 18px !important;
+}
+
+        .signature {
+            font-size: 16px;
+            text-align: center;
+        }
+        .signature b {
+            font-size: 18px;
+            color: #7230A0;
+        }
     </style>
 </head>
-<body>
+<body style="font-family: 'bangla', sans-serif;">
 
-    <!-- Header Section -->
+@if($union == 'all')
+    <table class="header-table" width="100%" style="border-collapse: collapse;" >
+        <tr>
+            <td width="20%"></td>
+            <td width="20%">
+                <img width="70px" src="{{ base64('backend/bd-logo.png') }}" alt="Logo">
+            </td>
+            <td width="20%"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td style="text-align: center;">
+                <p style="font-size: 20px">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</p>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td style="text-align: center;">
+                <h1 style="color: #7230A0; margin: 0; font-size: 28px">সকল ইউনিয়ন এর প্রতিবেদন</h1>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td style="text-align: center;">
+                <!-- Uncomment if needed -->
+                <!-- <p style="font-size: 20px">উপজেলা: {{ $uniouninfo->thana }}, জেলা: {{ $uniouninfo->district }} ।</p> -->
+            </td>
+            <td></td>
+        </tr>
+    </table>
+@else
     <table class="header-table" width="100%" style="border-collapse: collapse;">
         <tr>
             <td width="20%"></td>
-            <td width="20%" style="text-align: center;">
+            <td width="20%">
                 <img width="70px" src="{{ base64('backend/bd-logo.png') }}" alt="Logo">
             </td>
             <td width="20%"></td>
@@ -44,27 +102,92 @@
             <td></td>
         </tr>
     </table>
+@endif
 
-    <!-- Table Content -->
-    <h2 style="text-align: center;">সনদ নামের তালিকা</h2>
-    <table>
-        <thead>
+<h2 style="width:350px;background:green;padding:10px 10px;margin:10px auto;text-align:center;color:white;border-radius: 20px;font-size:20px">
+    সেবা প্রদান ও ফি আদায় সংক্রান্ত প্রতিবেদন
+</h2>
+
+<h3 style="text-align: center;font-weight: normal;">
+    @if($sonod_type == 'holdingtax')
+        হোল্ডিং ট্যাক্স
+    @elseif($sonod_type == 'all')
+        সকল ফি এর প্রতিবেদন
+    @else
+        {{ $sonod_type }}
+    @endif
+</h3>
+
+<table width="100%" class="content-table">
+    <tr>
+        <td colspan="2" style="text-align: left">
+            <span>প্রতিবেদনের সময়কালঃ</span>  {{ int_en_to_bn(date("d/m/Y", strtotime($from))) }} থেকে {{ int_en_to_bn(date("d/m/Y", strtotime($to))) }} পর্যন্ত
+        </td>
+        <td style="text-align: right">
+            অর্থ বছর: {{ int_en_to_bn(CurrentOrthoBochor(1, date("m", strtotime($from)),date("Y", strtotime($from)))) }}
+        </td>
+    </tr>
+</table>
+
+<table width="100%" class="content-table">
+    <thead>
+        <tr>
+            <th class="td" width="10%">ক্রমিক নং</th>
+            <th class="td" width="20%">তারিখ</th>
+
+            @if($sonod_type == 'all')
+                <th class="td" width="20%">সেবার ধরণ</th>
+            @endif
+
+            <th class="td" width="20%">সেবা গ্রহনকারীর নাম</th>
+            <th class="td" width="30%">ঠিকানা (হোল্ডিং ও গ্রাম)</th>
+            <th class="td" width="20%">মোবাইল নম্বর</th>
+            <th class="td" width="20%">আদায়কৃত ফি এর পরিমান</th>
+        </tr>
+    </thead>
+    <tbody>
+        @php
+            $total = 0;
+            $i = 1;
+        @endphp
+        @foreach ($rows as $row)
+
             <tr>
-                <th>ক্রমিক নং</th>
-                <th>সনদ নাম</th>
-                <th>ফী</th>
+                <td class="td" style="text-align:center">{{ int_en_to_bn($i) }}</td>
+                <td class="td" style="text-align:center">{{ int_en_to_bn(date("d-m-Y", strtotime($row['created_at']))) }}</td>
+
+                @if($sonod_type == 'all')
+                    <td class="td" style="text-align:center">
+                        {{ $row['sonod_type'] == 'holdingtax' ? 'হোল্ডিং ট্যাক্স' : $row['sonod_type'] }}
+                    </td>
+                @endif
+
+                @if($row['holding_tax'])
+                    <td class="td">{{ $row['holding_tax']['maliker_name'] }}</td>
+                    <td class="td">গ্রামঃ- {{ $row['holding_tax']['gramer_name'] }}, হোল্ডিং নং- {{ int_en_to_bn($row['holding_tax']['holding_no']) }}</td>
+                    <td class="td">{{ int_en_to_bn($row['holding_tax']['mobile_no']) }}</td>
+                @else
+                    <td class="td">@if($row['sonods']){{ $row['sonods']['applicant_name'] }}@endif</td>
+                    <td class="td">@if($row['sonods'])গ্রামঃ- {{ $row['sonods']['applicant_present_village'] }},
+                        হোল্ডিং নং- {{ int_en_to_bn($row['sonods']['applicant_holding_tax_number']) }}@endif</td>
+                    <td class="td">@if($row['sonods']){{ int_en_to_bn($row['sonods']['applicant_mobile']) }}@endif</td>
+                @endif
+
+                <td class="td" style="text-align:center">{{ int_en_to_bn(round($row['amount'], 2)) }}</td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach($data as $index => $item)
-                <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $item['bnname'] }}</td>
-                    <td>{{ $item['fees'] ?? 'N/A' }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+            @php
+                $i++;
+                $total += $row['amount'];
+            @endphp
+        @endforeach
+        <tr>
+            <td colspan="{{ $sonod_type == 'all' ? '6' : '5' }}" class="td" style="text-align: right">মোট</td>
+            <td class="td" style="text-align:center">{{ int_en_to_bn(round($total, 2)) }}</td>
+        </tr>
+    </tbody>
+</table>
+
+
 
 </body>
 </html>
