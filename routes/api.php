@@ -29,6 +29,10 @@ if (file_exists($adminRoutes = __DIR__.'/uddoktas.php')) {
     require $adminRoutes;
 }
 
+if (file_exists($adminRoutes = __DIR__.'/VillageCourt.php')) {
+    require $adminRoutes;
+}
+
 if (file_exists($stripeRoutes = __DIR__.'/Gateways/stripe.php')) {
     require $stripeRoutes;
 }
