@@ -282,7 +282,7 @@ class SonodController extends Controller
     {
         // Handle file uploads to S3
         if (isset($request->bn['image']) && $request->bn['image']) {
-            $this->uploadFile($request->bn['image'], $insertData, 'image', $filePath, $dateFolder, $sonodId);
+            $this->uploadBase64Image($request->bn['image'], $insertData, 'image', $filePath, $dateFolder, $sonodId);
         }
 
         if ($request->hasFile('applicant_national_id_front_attachment')) {
