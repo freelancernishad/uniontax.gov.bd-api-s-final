@@ -315,47 +315,32 @@ class SonodController extends Controller
 
 
 
-    private function uploadFile($fileData, &$insertData, $field, $filePath, $dateFolder, $sonodId)
-    {
-        if ($fileData) {
-            // Define the directory for the file
-            $directory = "sonod/$filePath/$dateFolder/$sonodId";
+    private function uploadBase64Image($fileData, &$insertData, $field, $filePath, $dateFolder, $sonodId)
+{
+    if ($fileData && preg_match('/^data:image\/(\w+);base64,/', $fileData, $matches)) {
+        // Define the directory for the file
+        $directory = "sonod/$filePath/$dateFolder/$sonodId";
 
-            // Generate a unique file name
-            $fileName = time() . '_' . Str::random(10);
+        // Extract the base64 data
+        $base64Data = substr($fileData, strpos($fileData, ',') + 1);
 
-            // Check if the input is base64 data
-            if (preg_match('/^data:image\/(\w+);base64,/', $fileData, $matches)) {
-                // Extract the base64 data
-                $base64Data = substr($fileData, strpos($fileData, ',') + 1);
+        // Decode the base64 data
+        $decodedData = base64_decode($base64Data);
 
-                // Decode the base64 data
-                $decodedData = base64_decode($base64Data);
+        // Determine the file extension from the MIME type
+        $extension = $matches[1]; // e.g., 'png', 'jpeg'
 
-                // Determine the file extension from the MIME type
-                $extension = $matches[1]; // e.g., 'png', 'jpeg'
+        // Generate a unique file name
+        $fileName = time() . '_' . Str::random(10) . '.' . $extension;
 
-                // Generate the full file name with extension
-                $fileName .= '.' . $extension;
+        // Store the file in the protected disk
+        Storage::disk('protected')->put("$directory/$fileName", $decodedData);
 
-                // Store the file in the protected disk
-                $filePath = Storage::disk('protected')->put("$directory/$fileName", $decodedData);
-
-
-            } else {
-                // Handle file object (e.g., uploaded file)
-                $fileName .= '.' . $fileData->getClientOriginalExtension();
-
-                // Store the file in the protected disk
-                $filePath = Storage::disk('protected')->putFileAs($directory, $fileData, $fileName);
-            }
-
-            // Log::info("$directory/$fileName");
-
-            // Save the file path in the insertData array
-            $insertData[$field] = "$directory/$fileName";
-        }
+        // Save the file path in the insertData array
+        $insertData[$field] = "$directory/$fileName";
     }
+}
+
 
     private function handleCharges($bnData, $enData, $sonodnamelist, &$insertData)
     {
@@ -579,7 +564,7 @@ class SonodController extends Controller
                 return response()->json($results);
             }
 
-     
+
 
 
 
