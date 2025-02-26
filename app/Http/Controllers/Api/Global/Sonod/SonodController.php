@@ -281,9 +281,20 @@ class SonodController extends Controller
     private function handleFileUploads($request, &$insertData, $filePath, $dateFolder, $sonodId)
     {
         // Handle file uploads to S3
+        // if (isset($request->bn['image']) && $request->bn['image']) {
+        //     $this->uploadBase64Image($request->bn['image'], $insertData, 'image', $filePath, $dateFolder, $sonodId);
+        // }
+
+
         if (isset($request->bn['image']) && $request->bn['image']) {
-            $this->uploadBase64Image($request->bn['image'], $insertData, 'image', $filePath, $dateFolder, $sonodId);
+            $insertData['image'] = $this->uploadBase64Image(
+                $request->bn['image'], 
+                $filePath,
+                $dateFolder,
+                $sonodId
+            );
         }
+
 
         if ($request->hasFile('applicant_national_id_front_attachment')) {
             $insertData['applicant_national_id_front_attachment'] = uploadDocumentsToS3(
@@ -315,31 +326,40 @@ class SonodController extends Controller
 
 
 
-    private function uploadBase64Image($fileData, &$insertData, $field, $filePath, $dateFolder, $sonodId)
-{
-    if ($fileData && preg_match('/^data:image\/(\w+);base64,/', $fileData, $matches)) {
-        // Define the directory for the file
-        $directory = "sonod/$filePath/$dateFolder/$sonodId";
-
-        // Extract the base64 data
-        $base64Data = substr($fileData, strpos($fileData, ',') + 1);
-
-        // Decode the base64 data
-        $decodedData = base64_decode($base64Data);
-
-        // Determine the file extension from the MIME type
-        $extension = $matches[1]; // e.g., 'png', 'jpeg'
-
-        // Generate a unique file name
-        $fileName = time() . '_' . Str::random(10) . '.' . $extension;
-
-        // Store the file in the protected disk
-        Storage::disk('protected')->put("$directory/$fileName", $decodedData);
-
-        // Save the file path in the insertData array
-        $insertData[$field] = "$directory/$fileName";
+    private function uploadBase64Image($fileData, $filePath, $dateFolder, $sonodId)
+    {
+        if ($fileData && preg_match('/^data:image\/(\w+);base64,/', $fileData, $matches)) {
+            // Define the directory for the file
+            $directory = "sonod/$filePath/$dateFolder/$sonodId";
+    
+            // Extract the base64 data
+            $base64Data = substr($fileData, strpos($fileData, ',') + 1);
+    
+            // Decode the base64 data
+            $decodedData = base64_decode($base64Data);
+            if ($decodedData === false) {
+                throw new \Exception("Invalid base64 data provided.");
+            }
+    
+            // Determine the file extension from the MIME type
+            $extension = $matches[1]; // e.g., 'png', 'jpeg'
+    
+            // Generate a unique file name
+            $fileName = time() . '_' . Str::random(10) . '.' . $extension;
+    
+            // Ensure directory exists if using local storage
+            if (!Storage::disk('protected')->exists($directory)) {
+                Storage::disk('protected')->makeDirectory($directory);
+            }
+    
+            // Store the file in the protected disk
+            Storage::disk('protected')->put("$directory/$fileName", $decodedData);
+    
+            // Return the file path
+            return "$directory/$fileName";
+        }
+        return null;
     }
-}
 
 
     private function handleCharges($bnData, $enData, $sonodnamelist, &$insertData)
