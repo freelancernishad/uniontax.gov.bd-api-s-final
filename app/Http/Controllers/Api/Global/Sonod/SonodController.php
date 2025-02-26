@@ -136,6 +136,19 @@ class SonodController extends Controller
         // Handle the status and charges
         $this->handleCharges($bnData, $enData, $sonodEnName, $insertData);
 
+
+            // Handle base64 image upload
+    if (isset($bnData['image']) && $bnData['image']) {
+        $insertData['image'] = $this->uploadBase64Image(
+            $bnData['image'],
+            $filePath,
+            $dateFolder,
+            $sonodId
+        );
+    }
+
+    Log::info($insertData);
+
         // Save the Sonod entry
         $sonod = Sonod::create($insertData);
 
@@ -280,15 +293,7 @@ class SonodController extends Controller
 
     private function handleFileUploads($request, &$insertData, $filePath, $dateFolder, $sonodId)
 {
-    // Handle base64 image upload
-    if (isset($request->bn['image']) && $request->bn['image']) {
-        $insertData['image'] = $this->uploadBase64Image(
-            $request->bn['image'],
-            $filePath,
-            $dateFolder,
-            $sonodId
-        );
-    }
+
 
     if ($request->hasFile('applicant_national_id_front_attachment')) {
         $insertData['applicant_national_id_front_attachment'] = uploadDocumentsToS3(
