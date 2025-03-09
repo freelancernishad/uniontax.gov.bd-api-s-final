@@ -80,18 +80,31 @@ class PaymentReportsController extends Controller
         $query->where('payment_type', 'online');
     }
 
+    // if ($from && $to) {
+    //     if ($from === $to) {
+    //         // Use DATE() to compare only the date part
+    //         $query->whereDate('date', $from);
+    //     } else {
+    //         // Use whereBetween with DATE() for datetime fields
+    //         $query->whereBetween('date', [
+    //             Carbon::parse($from)->startOfDay()->toDateTimeString(),
+    //             Carbon::parse($to)->endOfDay()->toDateTimeString()
+    //         ]);
+    //     }
+    // }
+
+
     if ($from && $to) {
         if ($from === $to) {
-            // Use DATE() to compare only the date part
+            // Use whereDate for a single day (ignores time component)
             $query->whereDate('date', $from);
         } else {
-            // Use whereBetween with DATE() for datetime fields
-            $query->whereBetween('date', [
-                Carbon::parse($from)->startOfDay()->toDateTimeString(),
-                Carbon::parse($to)->endOfDay()->toDateTimeString()
-            ]);
+            // Use whereBetween with whereDate to ignore time components
+            $query->whereDate('date', '>=', $from)
+                  ->whereDate('date', '<=', $to);
         }
     }
+
 
     if ($sonod_type && $sonod_type !== 'all') {
         $query->where('sonod_type', $sonod_type);
