@@ -51,7 +51,7 @@ Route::get('/holding/tax/certificate_of_honor/{id}', [HoldingTaxPdfController::c
 
 
 Route::get('/', function () {
-    return view('welcome');
+    return response()->json('success');
 });
 
 // For web routes
