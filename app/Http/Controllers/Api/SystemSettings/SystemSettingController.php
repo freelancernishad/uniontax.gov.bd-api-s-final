@@ -78,6 +78,15 @@ class SystemSettingController extends Controller
 
     public function clearCache()
     {
+
+        if (app()->bound('octane') && app('octane')->isRunning()) {
+            return response()->json(['status' => 'Octane is running']);
+        }
+    
+        return response()->json(['status' => 'Octane is not running']);
+
+
+
         try {
             // Clear and cache config
             Artisan::call('config:clear');
