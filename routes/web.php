@@ -16,6 +16,13 @@ use App\Http\Controllers\Api\Global\HoldingTax\HoldingTaxPdfController;
 
 
 
+Route::get('/check-octane', function () {
+    if (app()->bound('octane') && app('octane')->isRunning()) {
+        return response()->json(['status' => 'Octane is running']);
+    }
+
+    return response()->json(['status' => 'Octane is not running']);
+});
 
 
 Route::get('/sonod/d/{id}', [SonodPdfController::class,'sonodDownload']);
