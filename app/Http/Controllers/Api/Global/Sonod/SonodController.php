@@ -778,6 +778,8 @@ private function uploadBase64Image($fileData, $filePath, $dateFolder, $sonodId)
         // Generate the redirect URL using the sonodpayment function
         $redirectUrl = sonodpayment($sonodId, $urls, $hasEnData, $uddoktaId);
 
+
+        return redirect($redirectUrl);
         // Return the redirect URL (or use it as needed)
         return response()->json($redirectUrl);
     }
