@@ -61,7 +61,7 @@ class SonodController extends Controller
                 $f_uri = $bnData['f_uri'];
                 $c_uri = $bnData['c_uri'];
 
-            $redirectUrl= asset("/creating/payment/url/for/ekpay?sonod_id=$sonod->id&s_uri=$s_uri&f_uri=$f_uri&c_uri=$c_uri&hasEnData=$hasEnData&uddoktaId=$uddoktaId");
+            $redirectUrl= asset("/create/payment?sonod_id=$sonod->id&s_uri=$s_uri&f_uri=$f_uri&c_uri=$c_uri&hasEnData=$hasEnData&uddoktaId=$uddoktaId");
 
 
 
