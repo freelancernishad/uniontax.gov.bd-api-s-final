@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Global\UniouninfoController;
 use App\Http\Controllers\Api\Global\Sonod\SonodController;
 use App\Http\Controllers\Api\Gateway\Ekpay\EkpayController;
 use App\Http\Controllers\Api\Server\ServerStatusController;
+use App\Http\Controllers\Api\Global\Address\AddressController;
 use App\Http\Controllers\Api\Payments\FailedPaymentController;
 use App\Http\Controllers\Api\User\Package\UserPackageController;
 use App\Http\Controllers\Api\User\Holdingtax\HoldingtaxController;
@@ -55,6 +56,18 @@ Route::get('global/package/{id}', [UserPackageController::class, 'show']);
 Route::prefix('global/')->group(function () {
     Route::get('package-addons/', [UserPackageAddonController::class, 'index']); // List all addons
     Route::get('package-addons/{id}', [UserPackageAddonController::class, 'show']); // Get a specific addon
+
+
+
+
+
+    Route::get('/divisions', [AddressController::class, 'getDivisions']);
+    Route::get('/districts/{division_id}', [AddressController::class, 'getDistrictsByDivision']);
+    Route::get('/upazilas/{district_id}', [AddressController::class, 'getUpazilasByDistrict']);
+    Route::get('/unions/{upazila_id}', [AddressController::class, 'getUnionsByUpazila']);
+
+
+
 });
 
 Route::get('global/uniouninfo', [UniouninfoController::class, 'getByShortName']);
