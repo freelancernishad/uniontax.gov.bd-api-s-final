@@ -14,6 +14,10 @@ use App\Http\Controllers\Api\SystemSettings\SystemSettingController;
 use App\Http\Controllers\Api\Global\HoldingTax\HoldingTaxPdfController;
 use App\Http\Controllers\Api\Global\Sonod\SonodController;
 
+
+Route::get('create/payment', [SonodController::class,'creatingEkpayUrl']);
+
+
 Route::get('/check-octane', function () {
     if (app()->bound('octane') && app('octane')->isRunning()) {
         return response()->json(['status' => 'Octane is running']);

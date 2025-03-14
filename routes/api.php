@@ -82,4 +82,4 @@ Route::post('payment/failed/support/ticket', [FailedPaymentController::class, 'f
 
 
 
-Route::get('create/payment/url/for/ekpay', [SonodController::class,'creatingEkpayUrl']);
+
