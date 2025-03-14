@@ -61,7 +61,7 @@ class SonodController extends Controller
                 $f_uri = $bnData['f_uri'];
                 $c_uri = $bnData['c_uri'];
 
-            $redirectUrl= url("/creating/payment/url/for/ekpay?sonod_id=$sonod->id&s_uri=$s_uri&f_uri=$f_uri&c_uri=$c_uri&hasEnData=$hasEnData&uddoktaId=$uddoktaId");
+            $redirectUrl= asset("/creating/payment/url/for/ekpay?sonod_id=$sonod->id&s_uri=$s_uri&f_uri=$f_uri&c_uri=$c_uri&hasEnData=$hasEnData&uddoktaId=$uddoktaId");
 
 
 
@@ -755,7 +755,7 @@ private function uploadBase64Image($fileData, $filePath, $dateFolder, $sonodId)
     }
 
 
-    
+
 
     function creatingEkpayUrl(Request $request)
     {
