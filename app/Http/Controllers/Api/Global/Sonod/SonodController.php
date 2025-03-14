@@ -765,7 +765,7 @@ private function uploadBase64Image($fileData, $filePath, $dateFolder, $sonodId)
         $sUri = $request->query('s_uri');       // Get s_uri from the URL query string
         $fUri = $request->query('f_uri');       // Get f_uri from the URL query string
         $cUri = $request->query('c_uri');       // Get c_uri from the URL query string
-        $hasEnData = $request->query('hasEnData'); // Get hasEnData from the URL query string
+        $hasEnData = $request->query('hasEnData') ?? 0; // Get hasEnData from the URL query string
         $uddoktaId = $request->query('uddoktaId'); // Get uddoktaId from the URL query string
 
         // Prepare the URLs array
