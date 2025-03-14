@@ -142,5 +142,39 @@ class Sonod extends Model
     {
         return $this->hasOne(EnglishSonod::class,'sonod_Id','id');
     }
+
+
+
+    public static function generateSonodId($union, $sonodname, $orthoBchor)
+    {
+        // Determine the fiscal year
+        $sortYear = (date('m') < 7) ? date('y') - 1 : date('y');
+
+        // Retrieve union info in one query
+        $unionInfo = Uniouninfo::where('short_name_e', $union)->first();
+        if (!$unionInfo) {
+            return null; // Return null if union info doesn't exist
+        }
+
+        // Retrieve the latest sonod for the given union, sonod name, and orthoBchor
+        $latestSonod = self::where([
+            'unioun_name' => $union,
+            'sonod_name' => $sonodname,
+            'orthoBchor' => $orthoBchor,
+        ])->latest()->first();
+
+        // Generate the sonod_id
+        if ($latestSonod) {
+            // Increment the latest sonod_id
+            $sonodFinalId = $latestSonod->sonod_Id + 1;
+        } else {
+            // Default sonod_id if no previous sonods are found
+            $sonodId = str_pad(1, 5, '0', STR_PAD_LEFT); // Start from 00001
+            $sonodFinalId = $unionInfo->u_code . $sortYear . $sonodId;
+        }
+
+        return $sonodFinalId;
+    }
+
 }
 

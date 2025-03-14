@@ -47,13 +47,23 @@ class SonodController extends Controller
 
 
             // Generate redirect URL using sonod ID
-            $urls = [
-                "s_uri" => $bnData['s_uri'],
-                "f_uri" => $bnData['f_uri'],
-                "c_uri" => $bnData['c_uri'],
-            ];
+            // $urls = [
+            //     "s_uri" => $bnData['s_uri'],
+            //     "f_uri" => $bnData['f_uri'],
+            //     "c_uri" => $bnData['c_uri'],
+            // ];
 
-            $redirectUrl = sonodpayment($sonod->id, $urls, $hasEnData,$uddoktaId);
+            // $redirectUrl = sonodpayment($sonod->id, $urls, $hasEnData,$uddoktaId);
+
+
+
+                $s_uri = $bnData['s_uri'];
+                $f_uri = $bnData['f_uri'];
+                $c_uri = $bnData['c_uri'];
+
+            $redirectUrl= url("/creating/payment/url/for/ekpay?sonod_id=$sonod->id&s_uri=$s_uri&f_uri=$f_uri&c_uri=$c_uri&hasEnData=$hasEnData&uddoktaId=$uddoktaId");
+
+
 
             // Return the response
             return response()->json([
@@ -147,7 +157,7 @@ class SonodController extends Controller
         );
     }
 
-    Log::info($insertData);
+
 
         // Save the Sonod entry
         $sonod = Sonod::create($insertData);
@@ -744,6 +754,31 @@ private function uploadBase64Image($fileData, $filePath, $dateFolder, $sonodId)
         }
     }
 
+
+
+    function creatingEkpayUrl(Request $request)
+    {
+        // Extract parameters from the request URL
+        $sonodId = $request->query('sonod_id'); // Get sonod_id from the URL query string
+        $sUri = $request->query('s_uri');       // Get s_uri from the URL query string
+        $fUri = $request->query('f_uri');       // Get f_uri from the URL query string
+        $cUri = $request->query('c_uri');       // Get c_uri from the URL query string
+        $hasEnData = $request->query('hasEnData'); // Get hasEnData from the URL query string
+        $uddoktaId = $request->query('uddoktaId'); // Get uddoktaId from the URL query string
+
+        // Prepare the URLs array
+        $urls = [
+            "s_uri" => $sUri,
+            "f_uri" => $fUri,
+            "c_uri" => $cUri,
+        ];
+
+        // Generate the redirect URL using the sonodpayment function
+        $redirectUrl = sonodpayment($sonodId, $urls, $hasEnData, $uddoktaId);
+
+        // Return the redirect URL (or use it as needed)
+        return $redirectUrl;
+    }
 
 
 

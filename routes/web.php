@@ -12,9 +12,7 @@ use App\Http\Controllers\Api\Global\Sonod\DocumentPdfController;
 use App\Http\Controllers\Api\User\Reports\PaymentReportsController;
 use App\Http\Controllers\Api\SystemSettings\SystemSettingController;
 use App\Http\Controllers\Api\Global\HoldingTax\HoldingTaxPdfController;
-
-
-
+use App\Http\Controllers\Api\Global\Sonod\SonodController;
 
 Route::get('/check-octane', function () {
     if (app()->bound('octane') && app('octane')->isRunning()) {
@@ -23,6 +21,14 @@ Route::get('/check-octane', function () {
 
     return response()->json(['status' => 'Octane is not running']);
 });
+
+
+
+
+
+Route::get('/creating/payment/url/for/ekpay', [SonodController::class,'creatingEkpayUrl']);
+
+
 
 
 Route::get('/sonod/d/{id}', [SonodPdfController::class,'sonodDownload']);
