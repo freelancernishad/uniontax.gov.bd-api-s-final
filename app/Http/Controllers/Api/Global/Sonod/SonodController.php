@@ -755,6 +755,7 @@ private function uploadBase64Image($fileData, $filePath, $dateFolder, $sonodId)
     }
 
 
+    
 
     function creatingEkpayUrl(Request $request)
     {
