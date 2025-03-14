@@ -759,7 +759,7 @@ private function uploadBase64Image($fileData, $filePath, $dateFolder, $sonodId)
 
     function creatingEkpayUrl(Request $request)
     {
-        return response()->json('tst');
+        // return response()->json('tst');
         // Extract parameters from the request URL
         $sonodId = $request->query('sonod_id'); // Get sonod_id from the URL query string
         $sUri = $request->query('s_uri');       // Get s_uri from the URL query string
