@@ -26,7 +26,7 @@ Route::get('/check-octane', function () {
 
 
 
-Route::get('/creating/payment/url/for/ekpay', [SonodController::class,'creatingEkpayUrl']);
+Route::get('creating/payment/url/for/ekpay', [SonodController::class,'creatingEkpayUrl']);
 
 
 
