@@ -77,10 +77,10 @@ class SonodPdfController extends Controller
         $uniouninfo->sonod_logo = convertToBase64($uniouninfo->sonod_logo);
 
         // Log the data (for debugging)
-        Log::info($row->image);
-        Log::info($row->chaireman_sign);
-        Log::info($row->socib_signture);
-        Log::info($row);
+        // Log::info($row->image);
+        // Log::info($row->chaireman_sign);
+        // Log::info($row->socib_signture);
+        // Log::info($row);
 
         // Generate HTML content for PDF
         $htmlContent = $this->getHtmlContent($row, $sonod_name, $uniouninfo, $sonodnames, $sonod_Id, $en, $font_family);
