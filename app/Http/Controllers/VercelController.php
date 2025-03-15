@@ -340,12 +340,14 @@ public function createDomainsByUpazila($upazilaId)
             $domain2 = $uniounInfo->short_name_e . '.uniontax.gov.bd';
 
             // Call the addDomainToVercel method for both domains
-            $response1 = $this->addDomainToVercelForSpecificDomain($domain1);
+            // $response1 = $this->addDomainToVercelForSpecificDomain($domain1);
+            $response1 = $this->deleteVercelDomain($domain1);
 
             // Optional delay to prevent hitting Vercel API rate limits
-            sleep(1);
+            // sleep(1);
 
-            $response2 = $this->addDomainToVercelForSpecificDomain($domain2);
+            // $response2 = $this->addDomainToVercelForSpecificDomain($domain2);
+            $response2 = $this->deleteVercelDomain($domain2);
 
             // Collect the responses
             $responses[] = [
