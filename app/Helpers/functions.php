@@ -99,35 +99,4 @@ function getBanglaPositionText($position)
 
 
 
-function addDomainToVercelForSpecificDomain($domain)
-    {
-        $projectId = 'prj_1hTOq9QsiazXq4m213FOBcPc3zTg'; // Your Vercel Project ID
-        $apiToken = 'BhVmO2fRpmXh4ZtGjhtQ1Y3d'; // Your Vercel API Token
 
-        $data = [
-            'name' => $domain,
-            'redirect' => null,
-            'redirectStatusCode' => 307,
-        ];
-
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $apiToken,
-            'Content-Type' => 'application/json',
-        ])
-        ->post("https://api.vercel.com/v10/projects/{$projectId}/domains", $data);
-
-        if ($response->successful()) {
-            return [
-                'status' => 'success',
-                'domain' => $domain,
-                'response' => $response->json()
-            ];
-        } else {
-            return [
-                'status' => 'failed',
-                'domain' => $domain,
-                'error' => $response->json(),
-                'status_code' => $response->status()
-            ];
-        }
-    }

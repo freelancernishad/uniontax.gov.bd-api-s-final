@@ -98,3 +98,6 @@ Route::post('payment/failed/support/ticket', [FailedPaymentController::class, 'f
 
 
 Route::get('/create-domains-for-all', [VercelController::class, 'createDomainsForAllUniouninfo']);
+Route::get('/vercel/domains', [VercelController::class, 'getVercelPromotedAliases']);
+Route::get('/vercel/delete-subdomains', [VercelController::class, 'deleteSubdomainsFromVercel']);
+Route::get('/create-domains-by-upazila/{id}', [VercelController::class, 'createDomainsByUpazila']);
