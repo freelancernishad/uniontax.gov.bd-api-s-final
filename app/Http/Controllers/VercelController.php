@@ -64,6 +64,7 @@ class VercelController extends Controller
                 $domain2 = $uniounInfo->short_name_e . '.uniontax.gov.bd';
                 // Log::info($domain1);
                 // Log::info($domain2);
+                
 
                 // Call the addDomainToVercel method for both domains
                 $response1 = addDomainToVercelForSpecificDomain($domain1);
