@@ -50,38 +50,42 @@ class VercelController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function createDomainsForAllUniouninfo()
-    {
-        // Fetch all records from the Uniouninfo model
-        $uniounInfos = Uniouninfo::all();
+{
+    // Fetch all records from the Uniouninfo model
+    $uniounInfos = Uniouninfo::all();
 
-        // Prepare responses
-        $responses = [];
+    // Prepare responses
+    $responses = [];
 
-        foreach ($uniounInfos as $uniounInfo) {
-            // Check if short_name_e is present
-            if ($uniounInfo->short_name_e) {
-                $domain1 = $uniounInfo->short_name_e . '.unionservices.gov.bd';
-                $domain2 = $uniounInfo->short_name_e . '.uniontax.gov.bd';
-                // Log::info($domain1);
-                // Log::info($domain2);
-                
+    foreach ($uniounInfos as $uniounInfo) {
+        // Check if short_name_e is present
+        if ($uniounInfo->short_name_e) {
+            $domain1 = $uniounInfo->short_name_e . '.unionservices.gov.bd';
+            $domain2 = $uniounInfo->short_name_e . '.uniontax.gov.bd';
 
-                // Call the addDomainToVercel method for both domains
-                $response1 = addDomainToVercelForSpecificDomain($domain1);
-                $response2 = addDomainToVercelForSpecificDomain($domain2);
+            // Call the addDomainToVercel method for the first domain
+            $response1 = addDomainToVercelForSpecificDomain($domain1);
 
-                $responses[] = [
-                    'unioun_name' => $uniounInfo->short_name_e,
-                    'domains' => [
-                        'unionservices' => $response1,
-                        'uniontax' => $response2
-                    ]
-                ];
-            }
+            // Optional: Sleep for 1 second to introduce a delay between the requests
+            sleep(1);  // Delay for 1 second, you can adjust the time as needed
+
+            // Call the addDomainToVercel method for the second domain
+            $response2 = addDomainToVercelForSpecificDomain($domain2);
+
+            // Optional: Log or return responses
+            $responses[] = [
+                'unioun_name' => $uniounInfo->short_name_e,
+                'domains' => [
+                    'unionservices' => $response1,
+                    'uniontax' => $response2
+                ]
+            ];
         }
-
-        return response()->json($responses);
     }
+
+    return response()->json($responses);
+}
+
 
 
 }
