@@ -329,7 +329,7 @@ public function createDomainsByUpazila($upazilaId)
 
     // Fetch all Uniouninfo entries that belong to this Upazila
     $uniounInfos = Uniouninfo::select('short_name_e','thana')->where('thana', $Upazila->bn_name)->get();
-    return response()->json($uniounInfos);
+    // return response()->json($uniounInfos);
     // Prepare responses
     $responses = [];
 
