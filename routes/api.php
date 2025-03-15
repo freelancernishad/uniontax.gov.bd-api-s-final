@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\VercelController;
 use App\Http\Controllers\Api\Global\UniouninfoController;
 use App\Http\Controllers\Api\Global\Sonod\SonodController;
 use App\Http\Controllers\Api\Gateway\Ekpay\EkpayController;
@@ -96,3 +97,4 @@ Route::post('payment/failed/support/ticket', [FailedPaymentController::class, 'f
 
 
 
+Route::get('/create-domains-for-all', [VercelController::class, 'createDomainsForAllUniouninfo']);
