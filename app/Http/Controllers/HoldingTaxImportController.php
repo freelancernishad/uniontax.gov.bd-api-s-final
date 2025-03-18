@@ -29,11 +29,19 @@ class HoldingTaxImportController extends Controller
         $user = Auth::user();
         $unioun = $user->unioun;  // Assuming the 'unioun' field exists on the 'User' model
 
-        // Import the Excel file
-        Excel::import(new HoldingTaxImport($unioun), $request->file('file'));
+        // Initialize an array to hold imported data
+        $importedData = [];
 
-        return response()->json(['message' => 'Holding taxes imported successfully'], 200);
+        // Import the Excel file
+        Excel::import(new HoldingTaxImport($unioun, $importedData), $request->file('file'));
+
+        // Return the imported data along with a success message
+        return response()->json([
+            'message' => 'Holding taxes imported successfully',
+            'imported_data' => $importedData  // Include the imported records
+        ], 200);
     }
+
 
 
     public function export(Request $request)

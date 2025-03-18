@@ -12,10 +12,12 @@ class HoldingTaxImport implements ToModel, WithHeadingRow
 {
     protected $unioun;
     protected $holdingCache = [];
+    protected $importedData;  // Store the imported data
 
-    public function __construct($unioun)
+    public function __construct($unioun, &$importedData)
     {
         $this->unioun = $unioun;
+        $this->importedData = &$importedData;  // Pass by reference
     }
 
     public function model(array $row)
@@ -95,6 +97,13 @@ class HoldingTaxImport implements ToModel, WithHeadingRow
         if (!empty($row['bokeya_year']) && !empty($row['bokeya_price'])) {
             $this->createHoldingBokeya($holding->id, $row['bokeya_year'], $row['bokeya_price']);
         }
+
+
+        // if ($holding) {
+
+        //     $this->importedData[] = $holding;
+        // }
+
 
         return $holding;
     }
