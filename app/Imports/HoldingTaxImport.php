@@ -4,9 +4,10 @@ namespace App\Imports;
 
 use App\Models\Holdingtax;
 use App\Models\HoldingBokeya;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class HoldingTaxImport implements ToModel, WithHeadingRow
 {
@@ -79,8 +80,8 @@ class HoldingTaxImport implements ToModel, WithHeadingRow
 
 
 
-            $currentYearKor = 0;
-            if ($row['griher_barsikh_mullo'] != 0 && $row['jomir_vara'] != 0 && $row['barsikh_vara'] != 0) {
+
+
                         // If no record found, proceed with creating a new one
             $calculationResults = $this->calculateHoldingTax(
                 $row['category'],
@@ -90,7 +91,7 @@ class HoldingTaxImport implements ToModel, WithHeadingRow
             );
             $currentYearKor = $calculationResults['current_year_kor'];
 
-            }
+
 
 
 
@@ -105,11 +106,18 @@ class HoldingTaxImport implements ToModel, WithHeadingRow
             $holding = Holdingtax::create($data);
             $this->holdingCache[$row['holding_no']] = $holding->id;
 
-            $this->createHoldingBokeya($holding->id, CurrentOrthoBochor(1), $currentYearKor);
+
+
+
+            if ($currentYearKor > 0) {
+                $this->createHoldingBokeya($holding->id, CurrentOrthoBochor(1), $currentYearKor);
+            }
+
+
 
             if ($holding) {
 
-                $this->importedData[] = $holding;
+                // $this->importedData[] = $holding;
             }
 
 
