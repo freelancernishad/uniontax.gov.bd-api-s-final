@@ -113,7 +113,7 @@ class HoldingTaxPdfController extends Controller
         $holdingBokeya = HoldingBokeya::find($id);
         $holdingTax = Holdingtax::find($holdingBokeya->holdingTax_id);
         $holdingTax->image = handleFileUrl($holdingTax->image);
-        
+
         $uniouninfo = Uniouninfo::where('short_name_e', $holdingTax->unioun)->first();
         $uniouninfo->sonod_logo = handleFileUrl($uniouninfo->sonod_logo);
         $uniouninfo->c_signture = handleFileUrl($uniouninfo->c_signture);
@@ -135,6 +135,90 @@ class HoldingTaxPdfController extends Controller
     }
 
 
+    public function bokeyaReport(Request $request)
+    {
+        ini_set('max_execution_time', '60000');
+        ini_set("pcre.backtrack_limit", "50000000000000000");
+        ini_set('memory_limit', '12008M');
+
+        $word = $request->word;
+        $union = $request->union;
+        $status = 'Unpaid';
+        $uniouninfo = Uniouninfo::where(['short_name_e' => $union])->first();
+
+        if (!$word && !$union) {
+            $holdingtaxs = Holdingtax::with(['holdingBokeyas' => function ($query) use ($status) {
+                $query->where('status', $status)->where('price', '!=', '0');
+            }])->orderBy('id', 'desc')->get();
+
+            $holdingtaxs = $holdingtaxs->filter(function ($holdingTax) {
+                return !$holdingTax->holdingBokeyas->isEmpty();
+            });
+
+            $htmlView = view('pdf.unpaidHolding', compact('uniouninfo', 'holdingtaxs', 'word'))->render();
+            $fileName = 'report-' . date('Y-m-d H:m:s');
+
+            // Optional: Add header and footer if needed
+            $header = null;
+            $footer = null;
+
+            generatePdf($htmlView, $header, $footer, "$fileName.pdf", 'A4');
+            return response()->stream(function () use ($htmlView) {
+                echo $htmlView;
+            }, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $fileName . '.pdf"',
+            ]);
+        }
+
+        if (!$word) {
+            $holdingtaxs = Holdingtax::with(['holdingBokeyas' => function ($query) use ($status) {
+                $query->where('status', $status)->where('price', '!=', '0');
+            }])->where(['unioun' => $union])->orderBy('id', 'desc')->get();
+
+            $holdingtaxs = $holdingtaxs->filter(function ($holdingTax) {
+                return !$holdingTax->holdingBokeyas->isEmpty();
+            });
+
+            $htmlView = view('pdf.unpaidHolding', compact('uniouninfo', 'holdingtaxs', 'word'))->render();
+            $fileName = 'Invoice-' . date('Y-m-d H:m:s');
+
+            // Optional: Add header and footer if needed
+            $header = null;
+            $footer = null;
+
+            generatePdf($htmlView, $header, $footer, "$fileName.pdf", 'A4');
+            return response()->stream(function () use ($htmlView) {
+                echo $htmlView;
+            }, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $fileName . '.pdf"',
+            ]);
+        }
+
+        $holdingtaxs = Holdingtax::with(['holdingBokeyas' => function ($query) use ($status) {
+            $query->where('status', $status)->where('price', '!=', '0');
+        }])->where(['unioun' => $union, 'word_no' => $word])->orderBy('id', 'desc')->get();
+
+        $holdingtaxs = $holdingtaxs->filter(function ($holdingTax) {
+            return !$holdingTax->holdingBokeyas->isEmpty();
+        });
+
+        $htmlView = view('pdf.unpaidHolding', compact('uniouninfo', 'holdingtaxs', 'word'))->render();
+        $fileName = 'Invoice-' . date('Y-m-d H:m:s');
+
+        // Optional: Add header and footer if needed
+        $header = null;
+        $footer = null;
+
+        generatePdf($htmlView, $header, $footer, "$fileName.pdf", 'A4');
+        return response()->stream(function () use ($htmlView) {
+            echo $htmlView;
+        }, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $fileName . '.pdf"',
+        ]);
+    }
 
 
 

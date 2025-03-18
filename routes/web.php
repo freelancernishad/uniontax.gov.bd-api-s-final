@@ -55,6 +55,8 @@ Route::get('payment/report/download', [PaymentReportsController::class,'PaymentR
 Route::get('/download/reports/get-reports', [ReportsController::class,'downloadReports']);
 
 
+Route::get('holding/tax/bokeya/list',[HoldingTaxPdfController::class,'bokeyaReport']);
+
 
 Route::get('holding/tax/invoice/{id}', [HoldingTaxPdfController::class,'holdingPaymentInvoice']);
 Route::get('/holding/tax/certificate_of_honor/{id}', [HoldingTaxPdfController::class,'holdingCertificate_of_honor']);
