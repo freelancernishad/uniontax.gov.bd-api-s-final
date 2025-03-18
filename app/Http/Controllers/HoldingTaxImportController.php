@@ -45,49 +45,50 @@ class HoldingTaxImportController extends Controller
 
 
     public function export(Request $request)
-{
-    $token = $request->query('token');
+    {
+        $token = $request->query('token');
+        $word_no = $request->query('word_no');
 
-    if (!$token) {
-        return response()->json(['error' => 'No token provided.'], 400);
+        if (!$token) {
+            return response()->json(['error' => 'No token provided.'], 400);
+        }
+
+        try {
+            $authenticatedEntity = JWTAuth::setToken($token)->authenticate();
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Unauthorized. Invalid token.'], 403);
+        }
+
+        if (!$authenticatedEntity) {
+            return response()->json(['error' => 'Unauthorized. Invalid token.'], 403);
+        }
+
+        // Get the 'unioun_name' from the authenticated entity
+        $uniounName = $authenticatedEntity->unioun;
+
+        // Filter HoldingTax records by unioun_name and select specific columns
+        $holdingTaxRecords = Holdingtax::where(['unioun'=> $uniounName,'word_no' => $word_no])
+                                    ->select(
+                                            'id',
+                                            'category',
+                                            'holding_no',
+                                            'maliker_name',
+                                            'father_or_samir_name',
+                                            'gramer_name',
+                                            'word_no',
+                                            'nid_no',
+                                            'mobile_no',
+                                            'griher_barsikh_mullo',
+                                            'jomir_vara',
+                                            'barsikh_vara',
+                                            'image',
+                                            'busnessName'
+                                            )
+                                    ->get();
+
+        // Generate the Excel export with the filtered records
+        return Excel::download(new HoldingTaxExport($holdingTaxRecords), 'holding_tax.xlsx');
     }
-
-    try {
-        $authenticatedEntity = JWTAuth::setToken($token)->authenticate();
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'Unauthorized. Invalid token.'], 403);
-    }
-
-    if (!$authenticatedEntity) {
-        return response()->json(['error' => 'Unauthorized. Invalid token.'], 403);
-    }
-
-    // Get the 'unioun_name' from the authenticated entity
-    $uniounName = $authenticatedEntity->unioun;
-
-    // Filter HoldingTax records by unioun_name and select specific columns
-    $holdingTaxRecords = Holdingtax::where('unioun', $uniounName)
-                                   ->select(
-                                        'id',
-                                        'category',
-                                        'holding_no',
-                                        'maliker_name',
-                                        'father_or_samir_name',
-                                        'gramer_name',
-                                        'word_no',
-                                        'nid_no',
-                                        'mobile_no',
-                                        'griher_barsikh_mullo',
-                                        'jomir_vara',
-                                        'barsikh_vara',
-                                        'image',
-                                        'busnessName'
-                                        )
-                                   ->get();
-
-    // Generate the Excel export with the filtered records
-    return Excel::download(new HoldingTaxExport($holdingTaxRecords), 'holding_tax.xlsx');
-}
 
 
 
