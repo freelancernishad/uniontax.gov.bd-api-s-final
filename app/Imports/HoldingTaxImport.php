@@ -73,15 +73,31 @@ class HoldingTaxImport implements ToModel, WithHeadingRow
         }
 
         // Check if Holdingtax already exists for this holding_no
-        if (!isset($this->holdingCache[$row['holding_no']])) {
+        $holding = Holdingtax::where('holding_no', $row['holding_no'])->first();
+
+        if (!$holding) {
+
+
+
+            $currentYearKor = 0;
+            if ($row['griher_barsikh_mullo'] != 0 && $row['jomir_vara'] != 0 && $row['barsikh_vara'] != 0) {
+                        // If no record found, proceed with creating a new one
             $calculationResults = $this->calculateHoldingTax(
                 $row['category'],
                 $row['griher_barsikh_mullo'],
                 $row['jomir_vara'],
                 $row['barsikh_vara']
             );
-
             $currentYearKor = $calculationResults['current_year_kor'];
+
+            }
+
+
+
+
+
+
+
             $data = array_merge($row, $calculationResults);
             $data['unioun'] = $this->unioun;
             $data['total_bokeya'] = $currentYearKor;
@@ -90,19 +106,23 @@ class HoldingTaxImport implements ToModel, WithHeadingRow
             $this->holdingCache[$row['holding_no']] = $holding->id;
 
             $this->createHoldingBokeya($holding->id, CurrentOrthoBochor(1), $currentYearKor);
+
+            if ($holding) {
+
+                $this->importedData[] = $holding;
+            }
+
+
+
         } else {
-            $holding = Holdingtax::find($this->holdingCache[$row['holding_no']]);
+            // If holding already exists, use the existing holding
+            $this->holdingCache[$row['holding_no']] = $holding->id;
         }
 
         if (!empty($row['bokeya_year']) && !empty($row['bokeya_price'])) {
             $this->createHoldingBokeya($holding->id, $row['bokeya_year'], $row['bokeya_price']);
         }
 
-
-        // if ($holding) {
-
-        //     $this->importedData[] = $holding;
-        // }
 
 
         return $holding;
