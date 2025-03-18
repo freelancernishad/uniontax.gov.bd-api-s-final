@@ -86,8 +86,13 @@ class HoldingTaxImportController extends Controller
                                             )
                                     ->get();
 
-        // Generate the Excel export with the filtered records
-        return Excel::download(new HoldingTaxExport($holdingTaxRecords), 'holding_tax.xlsx');
+
+    // Generate dynamic filename with Word No, Union Name, and Current Date-Time
+    $dateTime = now()->format('Y-m-d_H-i-s');
+    $fileName = "holding_tax_{$uniounName}_word_{$word_no}_{$dateTime}.xlsx";
+
+    // Generate the Excel export with the filtered records
+    return Excel::download(new HoldingTaxExport($holdingTaxRecords), $fileName);
     }
 
 
