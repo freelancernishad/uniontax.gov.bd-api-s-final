@@ -6,6 +6,7 @@ use App\Models\Sonod;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Uniouninfo;
 use Illuminate\Support\Facades\Auth;
 
 class UserDashboardMatricsController extends Controller
@@ -17,33 +18,35 @@ class UserDashboardMatricsController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function getSonodMetrics(Request $request)
-{
-    // Fetch union name from the authenticated user
-    $unionName = Auth::user()->unioun;
-    // return response()->json($unionName);
+    {
+        // Fetch union name from the authenticated user
+        $unionName = Auth::user()->unioun;
+        // return response()->json($unionName);
 
-    // Fetch metrics from the database for the specific union
-    $totalSonod = Sonod::where('unioun_name', $unionName)->count();
-    $pendingSonod = Sonod::where('unioun_name', $unionName)->where('stutus', 'Pending')->count();
-    $approvedSonod = Sonod::where('unioun_name', $unionName)->where('stutus', 'approved')->count();
-    $cancelSonod = Sonod::where('unioun_name', $unionName)->where('stutus', 'cancel')->count();
+        $smsBalance = Uniouninfo::select('short_name_e','smsBalance')->where('short_name_e',$unionName)->first()->smsBalance;
+        // Fetch metrics from the database for the specific union
+        $totalSonod = Sonod::where('unioun_name', $unionName)->count();
+        $pendingSonod = Sonod::where('unioun_name', $unionName)->where('stutus', 'Pending')->count();
+        $approvedSonod = Sonod::where('unioun_name', $unionName)->where('stutus', 'approved')->count();
+        $cancelSonod = Sonod::where('unioun_name', $unionName)->where('stutus', 'cancel')->count();
 
-    // Calculate total payment amount with 'Paid' status for the union
-    $totalRevenue = Payment::where('union', $unionName)
-        ->where('status', 'Paid')
-        ->sum('amount');
+        // Calculate total payment amount with 'Paid' status for the union
+        $totalRevenue = Payment::where('union', $unionName)
+            ->where('status', 'Paid')
+            ->sum('amount');
 
-    // Prepare response data
-    $data = [
-        'totalSonod' => $totalSonod,
-        'pendingSonod' => $pendingSonod,
-        'approvedSonod' => $approvedSonod,
-        'cancelSonod' => $cancelSonod,
-        'totalRevenue' => $totalRevenue,
-    ];
+        // Prepare response data
+        $data = [
+            'totalSonod' => $totalSonod,
+            'pendingSonod' => $pendingSonod,
+            'approvedSonod' => $approvedSonod,
+            'cancelSonod' => $cancelSonod,
+            'totalRevenue' => $totalRevenue,
+            'sms_balance' => $smsBalance,
+        ];
 
-    // Return response
-    return response()->json($data, 200);
-}
+        // Return response
+        return response()->json($data, 200);
+    }
 
 }
