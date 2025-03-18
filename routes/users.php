@@ -118,9 +118,7 @@ Route::prefix('user')->group(function () {
 
 
         Route::post('/sms-purchase', [PurchaseSmsController::class, 'createSmsPurchase']);
-        Route::post('/sms-purchase/{trx_id}/payment', [PurchaseSmsController::class, 'processPayment']);
-        Route::put('/sms-purchase/{trx_id}/approve', [PurchaseSmsController::class, 'approveSmsPurchase']);
-        Route::put('/sms-purchase/{trx_id}/reject', [PurchaseSmsController::class, 'rejectSmsPurchase']); 
+
 
 
 

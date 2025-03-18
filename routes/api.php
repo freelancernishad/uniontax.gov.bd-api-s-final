@@ -88,6 +88,7 @@ Route::get('sonod/search', [SonodController::class, 'findSonod']);
 Route::post('sonod/renew/{id}', [SonodController::class, 'renewSonod']);
 
 Route::post('ekpay/ipn',[EkpayController::class ,'ipn']);
+Route::post('ekpay/smspurchase/ipn',[EkpayController::class ,'ipnCallbackForSmsPurchase']);
 Route::post('ekpay/check/payments/ipn',[EkpayController::class ,'CheckPayment']);
 
 

@@ -5,6 +5,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Models\Uniouninfo;
 use App\Models\PurchaseSms;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -74,7 +75,7 @@ class PurchaseSmsController extends Controller
                 'f_uri' => $validated['f_uri'],
                 's_uri' => $validated['s_uri'],
             ],
-            'ipn_url' => "http://localhost:8000/api/call/ipn",  // Use dynamic URL for IPN
+            'ipn_url' => url("api/ekpay/smspurchase/ipn"),  // Use dynamic URL for IPN
         ];
 
         // Call Ekpay's createUrl function to generate the payment URL
@@ -130,7 +131,20 @@ class PurchaseSmsController extends Controller
             return response()->json(['error' => 'Payment is not completed yet'], 400);
         }
 
-        // Set status to 'approved'
+        // Fetch the union details based on the union name
+        $unionDetails = Uniouninfo::where('short_name_e', $smsPurchase->union_name)->first();
+
+        if (!$unionDetails) {
+            return response()->json(['error' => 'Union not found'], 404);
+        }
+
+        // Add the SMS amount to the union's balance
+        $unionDetails->smsBalance += $smsPurchase->sms_amount;
+
+        // Save the updated balance
+        $unionDetails->save();
+
+        // Set SMS purchase status to 'approved'
         $smsPurchase->status = 'approved';
         $smsPurchase->save();
 
@@ -140,7 +154,7 @@ class PurchaseSmsController extends Controller
         ], 200);
     }
 
-    // Function to reject the SMS purchase (admin function)
+   // Function to reject the SMS purchase (admin function)
     public function rejectSmsPurchase($trx_id)
     {
         $smsPurchase = PurchaseSms::where('trx_id', $trx_id)->first();
@@ -149,7 +163,20 @@ class PurchaseSmsController extends Controller
             return response()->json(['error' => 'SMS purchase not found'], 404);
         }
 
-        // Reject the purchase
+        // Fetch the union details based on the union name
+        $unionDetails = Uniouninfo::where('short_name_e', $smsPurchase->union_name)->first();
+
+        if (!$unionDetails) {
+            return response()->json(['error' => 'Union not found'], 404);
+        }
+
+        // If the SMS purchase was approved, deduct the sms_amount from smsBalance
+        if ($smsPurchase->status == 'approved') {
+            $unionDetails->smsBalance -= $smsPurchase->sms_amount;
+            $unionDetails->save(); // Save the updated smsBalance
+        }
+
+        // Reject the SMS purchase (if it's pending, no change to smsBalance)
         $smsPurchase->status = 'rejected';
         $smsPurchase->save();
 
@@ -158,4 +185,80 @@ class PurchaseSmsController extends Controller
             'data' => $smsPurchase
         ], 200);
     }
+
+
+
+
+
+
+
+
+    public function ipnCallbackForSmsPurchase(Request $request)
+    {
+        // Log the incoming IPN request data for debugging
+        $data = $request->all();
+        Log::info('Received IPN data: ' . json_encode($data));
+
+        // Validate that the data is not empty
+        if (empty($data)) {
+            Log::error('IPN data is empty');
+            return response()->json(['error' => 'IPN data is empty'], 400);
+        }
+
+        // Validate that required keys exist in the data
+        $requiredKeys = ['msg_code', 'trnx_info', 'cust_info'];
+        foreach ($requiredKeys as $key) {
+            if (!isset($data[$key])) {
+                Log::error('Missing key in IPN data: ' . $key);
+                return response()->json(['error' => 'Missing key: ' . $key], 400);
+            }
+        }
+
+        // Fetch the transaction ID and related SmsPurchase record
+        $trnx_id = $data['trnx_info']['mer_trnx_id'];  // Transaction ID
+        $smsPurchase = PurchaseSms::where('trx_id', $trnx_id)->first();
+
+        if (!$smsPurchase) {
+            Log::error('SmsPurchase not found for trx_id: ' . $trnx_id);
+            return response()->json(['error' => 'SmsPurchase not found'], 404);
+        }
+
+        // Check the msg_code for payment status
+        $Insertdata = [];
+        if ($data['msg_code'] == '1020') {
+            // Payment was successful
+            $Insertdata = [
+                'status' => 'approved',
+                'payment_status' => 'paid',  // Update payment status to 'paid'
+            ];
+
+            // Update the SmsPurchase record with the approved status
+            $smsPurchase->update($Insertdata);
+
+            // Fetch the union details and update the sms balance
+            $unionName = $smsPurchase->union_name;
+            $unionDetails = unionname($unionName);
+
+            if ($unionDetails) {
+                $newBalance = $unionDetails->smsBalance + $smsPurchase->sms_amount;
+                $unionDetails->update(['smsBalance' => $newBalance]);
+            }
+
+        } else {
+            // Payment failed or is not successful
+            $smsPurchase->update([
+                'status' => 'rejected',
+                'payment_status' => 'failed',  // Mark as failed
+            ]);
+        }
+
+        // Log the response
+        $Insertdata['ipnResponse'] = $data;
+
+        return response()->json(['message' => 'IPN processed successfully'], 200);
+    }
+
+
+
+
 }

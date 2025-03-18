@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\AuthenticateAdmin;
+use App\Http\Controllers\PurchaseSmsController;
 use App\Http\Controllers\Api\AllowedOriginController;
 use App\Http\Controllers\Api\Coupon\CouponController;
 use App\Http\Controllers\Api\Admin\Users\UserController;
@@ -157,7 +158,8 @@ Route::prefix('admin')->group(function () {
         Route::get('sonodnamelist/with-fees', [UserSonodFeeController::class, 'getSonodnamelistsWithFees']);
         Route::post('sonodnamelist/with-fees', [UserSonodFeeController::class, 'getSonodnamelistsWithFees']);
 
-
+        Route::put('/sms-purchase/{trx_id}/approve', [PurchaseSmsController::class, 'approveSmsPurchase']);
+        Route::put('/sms-purchase/{trx_id}/reject', [PurchaseSmsController::class, 'rejectSmsPurchase']);
 
 
 
