@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Api\Global\HoldingTax;
 
+use App\Models\Payment;
 use App\Models\Holdingtax;
 use App\Models\Uniouninfo;
 use Illuminate\Http\Request;
 use App\Models\HoldingBokeya;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
-use App\Models\Payment;
 
 class HoldingTaxPdfController extends Controller
 {
@@ -141,8 +142,30 @@ class HoldingTaxPdfController extends Controller
         ini_set("pcre.backtrack_limit", "50000000000000000");
         ini_set('memory_limit', '12008M');
 
+
+        $token = $request->query('token');
+
+        if (!$token) {
+            return response()->json(['error' => 'No token provided.'], 400);
+        }
+
+        try {
+            $authenticatedEntity = JWTAuth::setToken($token)->authenticate();
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Unauthorized. Invalid token.'], 403);
+        }
+
+        if (!$authenticatedEntity) {
+            return response()->json(['error' => 'Unauthorized. Invalid token.'], 403);
+        }
+
+        // Get the 'unioun_name' from the authenticated entity
+        $union = $authenticatedEntity->unioun;
+
+        // $union = $request->union;
+
+
         $word = $request->word;
-        $union = $request->union;
         $status = 'Unpaid';
         $uniouninfo = Uniouninfo::where(['short_name_e' => $union])->first();
 
