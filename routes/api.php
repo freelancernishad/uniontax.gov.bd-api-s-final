@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VercelController;
+use App\Http\Controllers\PurchaseSmsController;
 use App\Http\Controllers\Api\Global\UniouninfoController;
 use App\Http\Controllers\Api\Global\Sonod\SonodController;
 use App\Http\Controllers\Api\Gateway\Ekpay\EkpayController;
@@ -88,7 +89,7 @@ Route::get('sonod/search', [SonodController::class, 'findSonod']);
 Route::post('sonod/renew/{id}', [SonodController::class, 'renewSonod']);
 
 Route::post('ekpay/ipn',[EkpayController::class ,'ipn']);
-Route::post('ekpay/smspurchase/ipn',[EkpayController::class ,'ipnCallbackForSmsPurchase']);
+Route::post('ekpay/smspurchase/ipn',[PurchaseSmsController::class ,'ipnCallbackForSmsPurchase']);
 Route::post('ekpay/check/payments/ipn',[EkpayController::class ,'CheckPayment']);
 
 
