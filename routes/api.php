@@ -101,3 +101,7 @@ Route::get('/create-domains-for-all', [VercelController::class, 'createDomainsFo
 Route::get('/vercel/domains', [VercelController::class, 'getVercelPromotedAliases']);
 Route::get('/vercel/delete-subdomains', [VercelController::class, 'deleteSubdomainsFromVercel']);
 Route::get('/create-domains-by-upazila/{id}', [VercelController::class, 'createDomainsByUpazila']);
+
+
+
+Route::post('/ekpay/create-url', [EkpayController::class, 'createUrl']);

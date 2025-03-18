@@ -12,6 +12,7 @@ use App\Helpers\SmsNocHelper;
 use App\Models\HoldingBokeya;
 use App\Models\TanderInvoice;
 use App\Models\UddoktaSearch;
+use App\Models\EkpayCredential;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
@@ -206,6 +207,112 @@ class EkpayController extends Controller
             'myserver' => $myserver,
             'akpay' => json_decode($response1),
         ]);
+    }
+
+
+
+
+
+
+
+
+
+
+
+    public function createUrl(Request $request)
+    {
+        // Validate the incoming request to ensure `merchant_id` is provided
+        $validated = $request->validate([
+            'merchant_id' => 'required|string',
+            'trnx_id' => 'required|string', // Ensure `trnx_id` is provided
+            'trns_info' => 'required|array', // Make sure the transaction information is passed
+            'cust_info' => 'required|array', // Customer information should be passed
+            'urls' => 'required|array', // URL info should be passed
+        ]);
+
+        // Fetch Ekpay credentials based on the provided merchant_id
+        $credential = EkpayCredential::where('merchant_id', $validated['merchant_id'])->first();
+
+        if (!$credential) {
+            return response()->json(['error' => 'Merchant credentials not found'], 404);
+        }
+
+        $AKPAY_MER_REG_ID = $credential->merchant_id;
+        $AKPAY_MER_PASS_KEY = $credential->mer_pas_key;
+        $Apiurl = $credential->base_url;
+        $whitelistip = $credential->whitelistip;
+        $ipn_uri = $credential->callback_url;
+
+
+
+
+
+
+        // Set the URL and IP based on the merchant's registration ID
+        // if ($AKPAY_MER_REG_ID == 'tetulia_test') {
+        //     $Apiurl = 'https://sandbox.ekpay.gov.bd/ekpaypg/v1';
+        //     $whitelistip = '1.1.1.1';
+        // } else {
+        //     $Apiurl = 'https://pg.ekpay.gov.bd/ekpaypg/v1';
+        //     $whitelistip = config('WHITE_LIST_IP');
+        // }
+
+        // Prepare the post data for EKPay API
+        $post = [
+            'mer_info' => [
+                "mer_reg_id" => $AKPAY_MER_REG_ID,
+                "mer_pas_key" => $AKPAY_MER_PASS_KEY,
+            ],
+            'req_timestamp' => date('Y-m-d H:i:s') . ' GMT+6',
+            'feed_uri' => [
+                "c_uri" => $validated['urls']['c_uri'],
+                "f_uri" => $validated['urls']['f_uri'],
+                "s_uri" => $validated['urls']['s_uri'],
+            ],
+            'cust_info' => $validated['cust_info'],
+            'trns_info' => $validated['trns_info'],
+            'ipn_info' => [
+                "ipn_channel" => "3",
+                "ipn_email" => "freelancernishad123@gmail.com",
+                "ipn_uri" => "$ipn_uri",
+            ],
+            'mac_addr' => $whitelistip,
+        ];
+
+        // Encode the post data as JSON
+        $post = json_encode($post);
+
+        // Log the request data for debugging
+        Log::info($post);
+
+        // Initialize cURL to make the request to EKPay API
+        $ch = curl_init($Apiurl . '/merchant-api');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        // Log the response from EKPay API
+        Log::info($response);
+
+        // Decode the response
+        $response = json_decode($response);
+
+        // Check if the response contains a secure token
+        if (isset($response->secure_token) && !empty($response->secure_token)) {
+            return response()->json([
+                'payment_url' => "{$Apiurl}?sToken={$response->secure_token}&trnsID={$validated['trnx_id']}"
+            ]);
+        }
+
+        // Return the error response if no secure token is found
+        return response()->json([
+            'error' => 'Failed to generate payment URL',
+            'details' => $response,
+        ], 500);
     }
 
 
