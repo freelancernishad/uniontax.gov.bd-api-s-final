@@ -1,0 +1,86 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Holdingtax;
+use Illuminate\Http\Request;
+use App\Models\HoldingBokeya;
+use App\Exports\HoldingTaxExport;
+use App\Imports\HoldingTaxImport;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Validator;
+
+class HoldingTaxImportController extends Controller
+{
+    public function import(Request $request)
+    {
+        // Validate the uploaded file
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|mimes:xlsx,xls',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Retrieve 'unioun' from the authenticated user
+        $user = Auth::user();
+        $unioun = $user->unioun;  // Assuming the 'unioun' field exists on the 'User' model
+
+        // Import the Excel file
+        Excel::import(new HoldingTaxImport($unioun), $request->file('file'));
+
+        return response()->json(['message' => 'Holding taxes imported successfully'], 200);
+    }
+
+
+    public function export(Request $request)
+{
+    $token = $request->query('token');
+
+    if (!$token) {
+        return response()->json(['error' => 'No token provided.'], 400);
+    }
+
+    try {
+        $authenticatedEntity = JWTAuth::setToken($token)->authenticate();
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Unauthorized. Invalid token.'], 403);
+    }
+
+    if (!$authenticatedEntity) {
+        return response()->json(['error' => 'Unauthorized. Invalid token.'], 403);
+    }
+
+    // Get the 'unioun_name' from the authenticated entity
+    $uniounName = $authenticatedEntity->unioun;
+
+    // Filter HoldingTax records by unioun_name and select specific columns
+    $holdingTaxRecords = Holdingtax::where('unioun', $uniounName)
+                                   ->select(
+                                        'id',
+                                        'category',
+                                        'holding_no',
+                                        'maliker_name',
+                                        'father_or_samir_name',
+                                        'gramer_name',
+                                        'word_no',
+                                        'nid_no',
+                                        'mobile_no',
+                                        'griher_barsikh_mullo',
+                                        'jomir_vara',
+                                        'barsikh_vara',
+                                        'image',
+                                        'busnessName'
+                                        )
+                                   ->get();
+
+    // Generate the Excel export with the filtered records
+    return Excel::download(new HoldingTaxExport($holdingTaxRecords), 'holding_tax.xlsx');
+}
+
+
+
+}
