@@ -227,7 +227,8 @@ class EkpayController extends Controller
             'trnx_id' => 'required|string', // Ensure `trnx_id` is provided
             'trns_info' => 'required|array', // Make sure the transaction information is passed
             'cust_info' => 'required|array', // Customer information should be passed
-            'urls' => 'required|array', // URL info should be passed
+            'urls' => 'required|array', 
+            'ipn_url' => 'required', 
         ]);
 
         // Fetch Ekpay credentials based on the provided merchant_id
@@ -241,7 +242,7 @@ class EkpayController extends Controller
         $AKPAY_MER_PASS_KEY = $credential->mer_pas_key;
         $Apiurl = $credential->base_url;
         $whitelistip = $credential->whitelistip;
-        $ipn_uri = $credential->callback_url;
+        $ipn_uri = $request->ipn_url;
 
 
 
