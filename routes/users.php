@@ -3,6 +3,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\AuthenticateUser;
+use App\Http\Controllers\PurchaseSmsController;
 use App\Http\Controllers\HoldingTaxImportController;
 use App\Http\Controllers\Api\Coupon\CouponController;
 use App\Http\Controllers\Api\Auth\User\AuthUserController;
@@ -112,6 +113,17 @@ Route::prefix('user')->group(function () {
 
 
         Route::get('/failed-payments', [FailedPaymentController::class, 'index']);
+
+
+
+
+        Route::post('/sms-purchase', [PurchaseSmsController::class, 'createSmsPurchase']);
+        Route::post('/sms-purchase/{trx_id}/payment', [PurchaseSmsController::class, 'processPayment']);
+        Route::put('/sms-purchase/{trx_id}/approve', [PurchaseSmsController::class, 'approveSmsPurchase']);
+        Route::put('/sms-purchase/{trx_id}/reject', [PurchaseSmsController::class, 'rejectSmsPurchase']); 
+
+
+
 
 
 

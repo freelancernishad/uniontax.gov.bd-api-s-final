@@ -304,9 +304,7 @@ class EkpayController extends Controller
 
         // Check if the response contains a secure token
         if (isset($response->secure_token) && !empty($response->secure_token)) {
-            return response()->json([
-                'payment_url' => "{$Apiurl}?sToken={$response->secure_token}&trnsID={$validated['trnx_id']}"
-            ]);
+            return response()->json("{$Apiurl}?sToken={$response->secure_token}&trnsID={$validated['trnx_id']}");
         }
 
         // Return the error response if no secure token is found
