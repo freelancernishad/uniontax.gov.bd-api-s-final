@@ -224,7 +224,6 @@ class EkpayController extends Controller
         // Validate the incoming request to ensure `merchant_id` is provided
         $validated = $request->validate([
             'merchant_id' => 'required|string',
-            'trnx_id' => 'required|string', // Ensure `trnx_id` is provided
             'trns_info' => 'required|array', // Make sure the transaction information is passed
             'cust_info' => 'required|array', // Customer information should be passed
             'urls' => 'required|array',
@@ -245,6 +244,8 @@ class EkpayController extends Controller
         $ipn_uri = $request->ipn_url;
 
 
+
+        $trnx_id = $validated['trns_info']['trnx_id'];
 
 
 
@@ -304,7 +305,7 @@ class EkpayController extends Controller
 
         // Check if the response contains a secure token
         if (isset($response->secure_token) && !empty($response->secure_token)) {
-            return response()->json("{$Apiurl}?sToken={$response->secure_token}&trnsID={$validated['trnx_id']}");
+            return response()->json("{$Apiurl}?sToken={$response->secure_token}&trnsID={$trnx_id}");
         }
 
         // Return the error response if no secure token is found
