@@ -14,6 +14,26 @@ use App\Models\Payment;  // Assuming you have a Payment model
 
 class PurchaseSmsController extends Controller
 {
+
+
+    public function getSmsPurchaseListByUnion(Request $request)
+    {
+        // Get the authenticated user's union_name
+        $unionName = auth()->user()->unioun;
+
+        // Get the 'per_page' query parameter (default to 10 if not provided)
+        $perPage = $request->input('per_page', 10);
+
+        // Fetch the SMS purchases for the user's union with pagination
+        $smsPurchases = PurchaseSms::where('union_name', $unionName)
+                                    ->orderBy('created_at', 'desc')  // Optional: order by the created_at column
+                                    ->paginate($perPage);
+
+        // Return the paginated results
+        return response()->json($smsPurchases, 200);
+    }
+
+
     // Function to create the SMS purchase record
     public function createSmsPurchase(Request $request)
     {
