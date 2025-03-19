@@ -37,12 +37,12 @@ class UserDashboardMatricsController extends Controller
 
         // Prepare response data
         $data = [
-            'totalSonod' => $totalSonod,
-            'pendingSonod' => $pendingSonod,
-            'approvedSonod' => $approvedSonod,
-            'cancelSonod' => $cancelSonod,
-            'totalRevenue' => $totalRevenue,
-            'sms_balance' => $smsBalance,
+            'totalSonod' => (int) $totalSonod,
+            'pendingSonod' => (int) $pendingSonod,
+            'approvedSonod' => (int) $approvedSonod,
+            'cancelSonod' => (int) $cancelSonod,
+            'totalRevenue' => (int) $totalRevenue,
+            'sms_balance' => (int) $smsBalance,
         ];
 
         // Return response
