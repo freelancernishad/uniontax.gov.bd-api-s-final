@@ -121,19 +121,25 @@ class UserSonodFeeController extends Controller
         } else {
             return response()->json(['error' => 'Unauthorized, valid token or session required'], 401); // Unauthorized if neither admin nor user authenticated
         }
-
+    
         // Retrieve Union Information
         $uniouninfo = Uniouninfo::where('short_name_e', $userUnioun)->first();
-
+    
         // Retrieve Sonodnamelists with fees for the user's union
         $sonodnamelists = Sonodnamelist::with(['sonodFees' => function ($query) use ($userUnioun) {
             $query->where('unioun', $userUnioun);
         }])->get();
-
+    
         // Transform the data
         $data = $sonodnamelists->map(function ($sonodnamelist) use ($userUnioun) {
             $fee = $sonodnamelist->sonodFees->first();
-
+            $fees = $fee ? $fee->fees : null;
+    
+            // Set fee to 200 if sonodnamelist_id is 2
+            if ($sonodnamelist->id == 2) {
+                $fees = 200;
+            }
+    
             return [
                 'sonod_fees_id' => $fee->id ?? null,
                 'sonodnamelist_id' => $sonodnamelist->id,
@@ -141,21 +147,22 @@ class UserSonodFeeController extends Controller
                 'bnname' => $sonodnamelist->bnname,
                 'template' => $sonodnamelist->template,
                 'unioun' => $userUnioun,
-                'fees' => $fee ? $fee->fees : null,
+                'fees' => $fees,
             ];
         })->filter();
-
+    
         // Check if the request wants a PDF
         if ($request->has('pdf')) {
             $html = View::make('pdf.SonodFees', ['data' => $data, 'uniouninfo' => $uniouninfo])->render();
             return generatePdf($html);
         }
-
+    
         return response()->json([
             'data' => $data,
             'uniouninfo' => $uniouninfo
         ]);
     }
+    
 
 
 
