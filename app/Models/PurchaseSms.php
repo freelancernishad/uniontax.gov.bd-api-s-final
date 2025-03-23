@@ -16,6 +16,8 @@ class PurchaseSms extends Model
         'union_name',
         'mobile',
         'trx_id',
+        'bank_trx_id',
+        'method',
         'amount',
         'sms_amount',
         'payment_status',

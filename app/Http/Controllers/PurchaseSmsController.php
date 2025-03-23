@@ -114,6 +114,53 @@ class PurchaseSmsController extends Controller
         ], 201);
     }
 
+
+
+    public function createMenualSmsPurchase(Request $request)
+    {
+        // Validate incoming request
+        $validated = $request->validate([
+            'sms_amount' => 'required|integer|min:1',  // Validate that sms_amount is an integer and at least 1
+            'mobile' => 'required|string',
+            'bank_trx_id' => 'nullable|string', // Optional bank transaction ID
+            'method' => 'nullable|string', // Optional payment method
+        ]);
+
+        // Get the authenticated user's union_name
+        $unionName = auth()->user()->unioun;
+
+        // Generate a unique transaction ID
+        $trxId = 'TRX_' . strtoupper(\Illuminate\Support\Str::random(10));
+
+        // Calculate the total amount based on sms_amount (1 TK per SMS)
+        $amount = $validated['sms_amount'] * 1;  // 1 TK per SMS
+
+        // Create the SMS purchase record
+        $smsPurchase = PurchaseSms::create([
+            'union_name' => $unionName,
+            'trx_id' => $trxId,
+            'bank_trx_id' => $validated['bank_trx_id'] ?? null, // Set default to null if not provided
+            'method' => $validated['method'] ?? null, // Set default to null if not provided
+            'amount' => $amount,
+            'mobile' => $validated['mobile'],
+            'sms_amount' => $validated['sms_amount'],
+            'payment_status' => 'pending',  // Initially set to 'pending'
+            'status' => 'pending',  // Initially set to 'pending'
+        ]);
+
+        // Fetch union details using the union name
+        $unionDetails = unionname($unionName);
+        if (!$unionDetails || !$unionDetails->AKPAY_MER_REG_ID) {
+            return response()->json(['error' => 'Invalid union details'], 400);
+        }
+
+        // Return the payment URL along with the SMS purchase data
+        return response()->json([
+            'message' => 'SMS purchase created successfully!',
+            'data' => $smsPurchase,
+        ], 201);
+    }
+
     // Function to create the Ekpay payment URL
     private function createUrl($data)
     {
@@ -147,8 +194,8 @@ class PurchaseSmsController extends Controller
             return response()->json(['error' => 'SMS purchase not found'], 404);
         }
 
-        if ($smsPurchase->payment_status != 'paid') {
-            return response()->json(['error' => 'Payment is not completed yet'], 400);
+        if ($smsPurchase->payment_status === 'paid') {
+            return response()->json(['message' => 'This SMS purchase is already approved'], 200);
         }
 
         // Fetch the union details based on the union name
@@ -164,8 +211,9 @@ class PurchaseSmsController extends Controller
         // Save the updated balance
         $unionDetails->save();
 
-        // Set SMS purchase status to 'approved'
+        // Set SMS purchase status to 'approved' and update payment_status to 'paid'
         $smsPurchase->status = 'approved';
+        $smsPurchase->payment_status = 'paid'; // Updating the payment status to 'paid'
         $smsPurchase->save();
 
         return response()->json([
