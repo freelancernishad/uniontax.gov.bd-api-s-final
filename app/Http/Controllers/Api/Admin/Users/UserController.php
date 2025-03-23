@@ -14,23 +14,27 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $query = User::query();
-
-        // Apply search filter
-        if ($request->has('search')) {
-            $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%")
-                  ->orWhere('id', 'LIKE', "%{$search}%")
-                  ->orWhere('email', 'LIKE', "%{$search}%");
-            });
-        }
-
-        // Set dynamic pagination
-        $perPage = $request->input('per_page', 10); // Default to 10 if not specified
+    
+        // Apply search filter if provided
+        $search = trim($request->input('search', ''));
+        $query->when($search, function ($q) use ($search) {
+            $q->where('name', 'LIKE', "%{$search}%")
+              ->orWhere('id', 'LIKE', "%{$search}%")
+              ->orWhere('email', 'LIKE', "%{$search}%");
+        });
+    
+        // Order by latest created users
+        $query->latest('created_at');
+    
+        // Get per-page value (default to 10, ensuring it's a positive integer)
+        $perPage = max(1, (int) $request->input('per_page', 10));
+    
+        // Paginate results
         $users = $query->paginate($perPage);
-
+    
         return response()->json($users);
     }
+    
 
 
 
