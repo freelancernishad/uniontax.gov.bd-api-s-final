@@ -3,6 +3,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\AuthenticateUser;
+use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\PurchaseSmsController;
 use App\Http\Controllers\HoldingTaxImportController;
 use App\Http\Controllers\Api\Coupon\CouponController;
@@ -122,7 +123,8 @@ Route::prefix('user')->group(function () {
 
 
 
-
+        Route::get('/bank-accounts', [BankAccountController::class, 'getByUnion']);
+        Route::post('/bank-accounts', [BankAccountController::class, 'updateOrCreateByUnion']);
 
 
 
