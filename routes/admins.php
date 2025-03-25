@@ -130,7 +130,7 @@ Route::prefix('admin')->group(function () {
         Route::post('uniouninfo', [AdminUniouninfoController::class, 'store']);          // Create new union info
         Route::post('uniouninfo/{id}', [AdminUniouninfoController::class, 'update']);     // Update union info
         Route::delete('uniouninfo/{id}', [AdminUniouninfoController::class, 'destroy']); // Delete union info
-        Route::get('uniouninfo/phone/list/{upazilaId}', [AdminUniouninfoController::class, 'getAllWithPhones']);
+        Route::get('uniouninfo/phone/list', [AdminUniouninfoController::class, 'getAllWithPhones']);
 
 
 

@@ -19,50 +19,19 @@ class AdminUniouninfoController extends Controller
 {
 
 
-    public function getAllWithPhones($upazilaId)
+    public function getAllWithPhones()
     {
-        // Fetch the Upazila with its related unions
-        $upazila = Upazila::with('unions')->find($upazilaId);
-
-        if (!$upazila) {
-            return response()->json([
-                'message' => 'Upazila not found',
-            ], 404);
-        }
-
-        // Get the union names from the Upazila and transform them
-        $unionNames = $upazila->unions->pluck('name')->map(function ($name) {
-            return str_replace(' ', '', strtolower($name)); // Remove spaces and convert to lowercase
-        })->toArray();
-
-        // Fetch Uniouninfo records where short_name_e matches the transformed union names
-        // and at least one of the phone fields is not null or empty
-        $uniouninfoList = Uniouninfo::select(
-                'id',
-                'full_name',
-                'thana',
-                'district',
-                'u_code',
-                'chairman_phone',
-                'secretary_phone',
-                'udc_phone',
-                'user_phone'
-            )
-            ->whereIn('short_name_e', $unionNames)
-            ->where(function ($query) {
-                $query->whereNotNull('chairman_phone')->where('chairman_phone', '!=', '')
-                      ->orWhereNotNull('secretary_phone')->where('secretary_phone', '!=', '')
-                      ->orWhereNotNull('udc_phone')->where('udc_phone', '!=', '')
-                      ->orWhereNotNull('user_phone')->where('user_phone', '!=', '');
-            })
+        $uniouninfos = Uniouninfo::select('full_name','thana','district','chairman_phone', 'secretary_phone', 'udc_phone', 'user_phone')->whereNotNull('chairman_phone')
+            ->orWhereNotNull('secretary_phone')
+            ->orWhereNotNull('udc_phone')
+            ->orWhereNotNull('user_phone')
             ->get();
 
-        if ($uniouninfoList->isEmpty()) {
-            return response()->json(['message' => 'No Uniouninfo records with phone numbers found in this Upazila'], 404);
+        if ($uniouninfos->isEmpty()) {
+            return response()->json(['message' => 'No Uniouninfo records with phone numbers found'], 404);
         }
 
-        // Return the formatted Uniouninfo list
-        return response()->json($uniouninfoList, 200);
+        return response()->json(['uniouninfos' => $uniouninfos], 200);
     }
 
 
