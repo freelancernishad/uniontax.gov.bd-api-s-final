@@ -72,7 +72,7 @@ function getBanglaPositionText($position)
         'super_admin' => 'সুপার এডমিনের ড্যাশবোর্ড',
         'Sub_District_admin' => 'উপ-পরিচালকের ড্যাশবোর্ড',
         'Chairman' => 'চেয়ারম্যানের ড্যাশবোর্ড',
-        'Secretary' => 'সচিবের ড্যাশবোর্ড',
+        'Secretary' => 'প্রশাসনিক কর্মকর্তার ড্যাশবোর্ড',
     ];
 
     // Return the Bangla text for the position, or a default value if not found
@@ -88,7 +88,7 @@ function getBanglaPositionText($position)
         'super_admin' => 'সুপার এডমিন',
         'Sub_District_admin' => 'উপ-পরিচালক',
         'Chairman' => 'চেয়ারম্যান',
-        'Secretary' => 'সচিব',
+        'Secretary' => 'প্রশাসনিক কর্মকর্তা',
     ];
 
     // Return the Bangla text for the designation, or a default value if not found
