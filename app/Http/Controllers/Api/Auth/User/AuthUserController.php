@@ -259,6 +259,8 @@ class AuthUserController extends Controller
                 return response()->json(['message' => 'Token is invalid or user not found.'], 401);
             }
 
+            // Retrieve Uniouninfo details (assuming the user has a 'unioun' relationship)
+            $uniouninfo = Uniouninfo::where('short_name_e', $user->unioun)->first();
             $payload = [
                 'unioun' => $user->unioun,
                 'email' => $user->email,
@@ -268,6 +270,7 @@ class AuthUserController extends Controller
                 'designation' => getBanglaDesignationText($user->position),
                 'category' => $user->category,
                 'email_verified' => $user->hasVerifiedEmail(), // Checks verification status
+                'is_popup' => $uniouninfo ? $uniouninfo->is_popup : false, // Check if Uniouninfo exists
             ];
 
             return response()->json(['message' => 'Token is valid.','user'=>$payload], 200);
