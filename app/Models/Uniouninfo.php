@@ -49,9 +49,26 @@ class Uniouninfo extends Model
         'district_en',
         'thana_en',
         'socib_name_en',
+        'chairman_phone',  // New column
+        'secretary_phone', // New column
+        'udc_phone',       // New column
+        'user_phone',      // New column
     ];
 
+    protected $appends = ['is_popup'];
 
+    /**
+     * Get the value of is_popup.
+     *
+     * @return bool
+     */
+    public function getIsPopupAttribute()
+    {
+        return empty($this->chairman_phone) ||
+               empty($this->secretary_phone) ||
+               empty($this->udc_phone) || 
+               empty($this->user_phone);
+    }
         /**
      * Save a file to S3 and update the model attribute with the file path.
      *

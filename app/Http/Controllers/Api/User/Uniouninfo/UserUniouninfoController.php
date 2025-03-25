@@ -54,7 +54,11 @@ class UserUniouninfoController extends Controller
                                    'c_signture',
                                    'socib_signture',
                                    'u_image',
-                                   'portal'
+                                   'portal',
+                                   'chairman_phone',
+                                   'secretary_phone',
+                                   'udc_phone',
+                                   'user_phone',
                                ) // Only select the specified columns
                                ->first();
 
@@ -127,6 +131,10 @@ class UserUniouninfoController extends Controller
             'u_notice' => 'nullable|string',
             'defaultColor' => 'nullable|string|max:7',
             'portal' => 'nullable|string|max:255',
+            'chairman_phone' => 'nullable',
+            'secretary_phone' => 'nullable',
+            'udc_phone' => 'nullable',
+            'user_phone' => 'nullable',
         ]);
 
         // Check for validation failure
