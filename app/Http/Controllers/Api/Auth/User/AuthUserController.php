@@ -4,16 +4,17 @@ namespace App\Http\Controllers\Api\Auth\User;
 
 use App\Models\User;
 use App\Mail\VerifyEmail;
+use App\Models\Uniouninfo;
 use Illuminate\Support\Str;
+
 use Illuminate\Http\Request;
-
 use App\Mail\OtpNotification;
+
+
 use App\Models\TokenBlacklist;
-
-
 use Tymon\JWTAuth\Facades\JWTAuth;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -106,7 +107,6 @@ class AuthUserController extends Controller
      */
     public function login(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email',
             'password' => 'required|string',
@@ -121,7 +121,10 @@ class AuthUserController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
-            // Custom payload data, including email verification status
+            // Retrieve Uniouninfo details (assuming the user has a 'unioun' relationship)
+            $uniouninfo = Uniouninfo::where('short_name_e', $user->unioun)->first();
+
+            // Custom payload data, including email verification status and is_popup
             $payload = [
                 'unioun' => $user->unioun,
                 'email' => $user->email,
@@ -131,6 +134,7 @@ class AuthUserController extends Controller
                 'designation' => getBanglaDesignationText($user->position),
                 'category' => $user->category,
                 'email_verified' => $user->hasVerifiedEmail(), // Checks verification status
+                'is_popup' => $uniouninfo ? $uniouninfo->is_popup : false, // Check if Uniouninfo exists
             ];
 
             try {
@@ -148,6 +152,7 @@ class AuthUserController extends Controller
 
         return response()->json(['message' => 'Invalid credentials'], 401);
     }
+
 
 
 
