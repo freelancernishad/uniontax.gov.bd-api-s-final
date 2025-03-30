@@ -66,7 +66,7 @@ class Uniouninfo extends Model
     {
         return empty($this->chairman_phone) ||
                empty($this->secretary_phone) ||
-               empty($this->udc_phone) || 
+               empty($this->udc_phone) ||
                empty($this->user_phone);
     }
         /**
@@ -97,4 +97,17 @@ class Uniouninfo extends Model
 
         return null;
     }
+
+
+    public function villages()
+    {
+        return $this->hasMany(Village::class, 'unioninfo_id');
+    }
+
+    public function postOffices()
+    {
+        return $this->hasMany(PostOffice::class, 'unioninfo_id');
+    }
+
+
 }

@@ -9,8 +9,10 @@ use App\Http\Controllers\Api\Gateway\Ekpay\EkpayController;
 use App\Http\Controllers\Api\Server\ServerStatusController;
 use App\Http\Controllers\Api\Global\Address\AddressController;
 use App\Http\Controllers\Api\Payments\FailedPaymentController;
+use App\Http\Controllers\Api\User\Uniouninfo\VillageController;
 use App\Http\Controllers\Api\User\Package\UserPackageController;
 use App\Http\Controllers\Api\User\Holdingtax\HoldingtaxController;
+use App\Http\Controllers\Api\User\Uniouninfo\PostOfficeController;
 use App\Http\Controllers\Api\Auth\Uddokta\CitizenInformationController;
 use App\Http\Controllers\Api\User\PackageAddon\UserPackageAddonController;
 
@@ -67,6 +69,11 @@ Route::prefix('global/')->group(function () {
     Route::get('/districts/{division_id}', [AddressController::class, 'getDistrictsByDivision']);
     Route::get('/upazilas/{district_id}', [AddressController::class, 'getUpazilasByDistrict']);
     Route::get('/unions/{upazila_id}', [AddressController::class, 'getUnionsByUpazila']);
+
+
+
+
+
 
 
 
