@@ -22,6 +22,19 @@ class VillageController extends Controller
         return response()->json($union->villages);
     }
 
+
+    function getVillageByUnionWord($union,$word) {
+
+        $unioninfo_id = Uniouninfo::where('short_name_e', $union)->firstOrFail()->id;
+        $word_no = $word;
+        $village = Village::where('unioninfo_id', $unioninfo_id)->where('word_no', $word_no)->get();
+        return response()->json($village);
+
+    }
+
+
+
+
     /**
      * Store a new Village (Authenticated).
      */

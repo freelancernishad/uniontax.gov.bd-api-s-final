@@ -68,7 +68,7 @@ class UniouninfoController extends Controller
         $columns = ['id', 'short_name_e', 'short_name_b', 'thana', 'district', 'web_logo', 'format', 'google_map', 'defaultColor', 'payment_type', 'nidServicestatus', 'nidService', 'u_image', 'u_description', 'u_notice'];
 
         // Fetch Uniouninfo data
-        $uniouninfos = Uniouninfo::where('short_name_e', $shortName)
+        $uniouninfos = Uniouninfo::with('postOffices')->where('short_name_e', $shortName)
             ->select($columns)
             ->first();
 
@@ -132,6 +132,7 @@ class UniouninfoController extends Controller
         $returnData = [
             'uniouninfos' => $uniouninfos,
             'sonod_name_lists' => $sonod_name_lists,
+            // 'villages' => $uniouninfos->villages,
         ];
 
         return response()->json($returnData, 200);
