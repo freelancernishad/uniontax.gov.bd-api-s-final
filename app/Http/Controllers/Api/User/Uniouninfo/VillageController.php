@@ -19,7 +19,13 @@ class VillageController extends Controller
 
         $union = Uniouninfo::where('short_name_e', $short_name_e)->firstOrFail();
 
-        return response()->json($union->villages);
+        $villagesQuery = $union->villages();
+
+        if ($request->has('word_no')) {
+            $villagesQuery->where('word_no', $request->word_no);
+        }
+
+        return response()->json($villagesQuery->get());
     }
 
 
