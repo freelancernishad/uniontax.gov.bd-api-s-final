@@ -93,8 +93,14 @@ Route::post('/pay/holding/tax/{id}', [HoldingtaxController::class,'holding_tax_p
 
 
 Route::post('sonod/submit', [SonodController::class, 'sonodSubmit']);
+
 Route::post('sonod/search', [SonodController::class, 'findSonod']);
 Route::get('sonod/search', [SonodController::class, 'findSonod']);
+
+Route::post('my/sonod/search', [SonodController::class, 'findMySonod']);
+Route::get('my/sonod/search', [SonodController::class, 'findMySonod']);
+
+
 Route::post('sonod/renew/{id}', [SonodController::class, 'renewSonod']);
 
 Route::post('ekpay/ipn',[EkpayController::class ,'ipn']);

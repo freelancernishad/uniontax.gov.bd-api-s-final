@@ -562,6 +562,54 @@ private function uploadBase64Image($fileData, $filePath, $dateFolder, $sonodId)
 
     }
 
+    public function findMySonod(Request $request)
+    {
+        $searchTerm = $request->input('query'); // Get search term
+
+        if (!$searchTerm) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Please provide a search term.'
+            ], 400);
+        }
+
+        // Search for Sonods if any field matches
+        $sonods = Sonod::select(
+                'id',
+                'sonod_name',
+                'unioun_name',
+                'applicant_name',
+                'applicant_father_name',
+                'applicant_present_word_number',
+                'created_at',
+                'stutus',
+                'payment_status',
+                'sonod_Id',
+                'prottoyon',
+                'hasEnData',
+                'created_at',
+                'updated_at'
+            )
+            ->where('sonod_Id', 'LIKE', "%{$searchTerm}%")
+            ->orWhere('applicant_name', 'LIKE', "%{$searchTerm}%")
+            ->orWhere('applicant_national_id_number', 'LIKE', "%{$searchTerm}%")
+            ->orWhere('applicant_birth_certificate_number', 'LIKE', "%{$searchTerm}%")
+            ->orWhere('applicant_passport_number', 'LIKE', "%{$searchTerm}%")
+            ->orWhere('applicant_mobile', 'LIKE', "%{$searchTerm}%")
+            ->paginate(10); // Get list directly
+
+        if ($sonods->isNotEmpty()) {
+            return response()->json([
+                'status' => 'success',
+                'data' => $sonods
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'not_found',
+            'message' => 'No Sonod found with the provided information.'
+        ], 404);
+    }
 
 
 
@@ -629,7 +677,7 @@ private function uploadBase64Image($fileData, $filePath, $dateFolder, $sonodId)
                 ->where('sonod_Id', $sonodId)
                 ->where('sonod_name', $sonodName)
                 ->first();
-         
+
         }
 
 
