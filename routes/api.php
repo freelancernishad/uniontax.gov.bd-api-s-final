@@ -83,7 +83,7 @@ Route::get('global/uniouninfo', [UniouninfoController::class, 'getByShortName'])
 Route::post('global/uniouninfo', [UniouninfoController::class, 'getByShortName']);
 
 Route::get('global/get/village/{union}/{word}', [VillageController::class, 'getVillageByUnionWord']);
-Route::get('global/get/post/office/{upazila_id}', [PostOfficeController::class, 'getPostOfficeByUnion']);
+Route::get('global/get/post/office/{upazila_id}', [PostOfficeController::class, 'getPostOfficesByUnionName']);
 
 
 Route::get('holdingtax/search', [HoldingtaxController::class, 'holdingSearch']);
