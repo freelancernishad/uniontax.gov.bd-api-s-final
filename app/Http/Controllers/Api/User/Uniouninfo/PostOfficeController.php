@@ -21,19 +21,36 @@ class PostOfficeController extends Controller
         $union = Uniouninfo::where('short_name_e', $short_name_e)->firstOrFail();
         return response()->json($union->postOffices);
     }
+
+
+    
     public function getPostOfficesByUnionName($upazila_id)
     {
         // Fetch union names and their corresponding unioninfo_id
-        $unions = Union::where('upazila_id', $upazila_id)->pluck('name');
+        $unions = $upazila_id;
 
         // Fetch UnionInfo IDs using the union names
-        $unioninfoIds = Uniouninfo::whereIn('short_name_e', $unions)->pluck('id');
+        $unioninfoIds = Uniouninfo::where('short_name_e', $unions)->pluck('id');
 
         // Get the Post Offices using these UnionInfo IDs
         $postOffices = PostOffice::whereIn('unioninfo_id', $unioninfoIds)->get();
 
         return response()->json($postOffices);
     }
+
+    // public function getPostOfficesByUnionName($upazila_id)
+    // {
+    //     // Fetch union names and their corresponding unioninfo_id
+    //     $unions = Union::where('upazila_id', $upazila_id)->pluck('name');
+
+    //     // Fetch UnionInfo IDs using the union names
+    //     $unioninfoIds = Uniouninfo::whereIn('short_name_e', $unions)->pluck('id');
+
+    //     // Get the Post Offices using these UnionInfo IDs
+    //     $postOffices = PostOffice::whereIn('unioninfo_id', $unioninfoIds)->get();
+
+    //     return response()->json($postOffices);
+    // }
 
 
     /**
