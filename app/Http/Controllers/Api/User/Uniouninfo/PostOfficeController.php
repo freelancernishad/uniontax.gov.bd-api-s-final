@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\PostOffice;
 use App\Models\Uniouninfo;
+use Devfaysal\BangladeshGeocode\Models\Union;
 use Illuminate\Support\Facades\Auth;
 
 class PostOfficeController extends Controller
@@ -22,9 +23,12 @@ class PostOfficeController extends Controller
     }
     function getPostOfficeByUnion($union) {
 
+
+$unions = Union::all();
+
         $unioninfo_id = Uniouninfo::where('short_name_e', $union)->firstOrFail()->id;
         $post_office = PostOffice::where('unioninfo_id', $unioninfo_id)->get();
-        return response()->json($post_office);
+        return response()->json($unions);
 
     }
 
