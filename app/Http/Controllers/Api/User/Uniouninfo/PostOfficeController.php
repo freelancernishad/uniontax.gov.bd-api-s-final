@@ -20,6 +20,13 @@ class PostOfficeController extends Controller
         $union = Uniouninfo::where('short_name_e', $short_name_e)->firstOrFail();
         return response()->json($union->postOffices);
     }
+    function getPostOfficeByUnion($union) {
+
+        $unioninfo_id = Uniouninfo::where('short_name_e', $union)->firstOrFail()->id;
+        $post_office = PostOffice::where('unioninfo_id', $unioninfo_id)->get();
+        return response()->json($post_office);
+
+    }
 
     /**
      * Store a new Post Office (Authenticated).
