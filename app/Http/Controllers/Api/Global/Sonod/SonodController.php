@@ -596,6 +596,7 @@ private function uploadBase64Image($fileData, $filePath, $dateFolder, $sonodId)
             ->orWhere('applicant_birth_certificate_number', 'LIKE', "%{$searchTerm}%")
             ->orWhere('applicant_passport_number', 'LIKE', "%{$searchTerm}%")
             ->orWhere('applicant_mobile', 'LIKE', "%{$searchTerm}%")
+            ->orderBy('created_at', 'desc') // Order by latest created_at
             ->paginate(10); // Get list directly
 
         if ($sonods->isNotEmpty()) {
