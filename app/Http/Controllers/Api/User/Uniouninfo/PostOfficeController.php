@@ -23,11 +23,13 @@ class PostOfficeController extends Controller
     }
 
 
-    
+
     public function getPostOfficesByUnionName($upazila_id)
     {
         // Fetch union names and their corresponding unioninfo_id
-        $unions = Union::where('id', $upazila_id)->pluck('name');
+        $unions = Union::where('id', $upazila_id)->pluck('name')->map(function ($name) {
+            return strtolower(str_replace(' ', '', $name));
+        });
 
         // Fetch UnionInfo IDs using the union names
         $unioninfoIds = Uniouninfo::where('short_name_e', $unions)->pluck('id');

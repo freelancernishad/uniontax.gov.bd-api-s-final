@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Api\User\Uniouninfo;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Village;
 use App\Models\Uniouninfo;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Devfaysal\BangladeshGeocode\Models\Union;
 
 class VillageController extends Controller
 {
@@ -31,7 +32,10 @@ class VillageController extends Controller
 
     function getVillageByUnionWord($union,$word) {
 
-        $unioninfo_id = Uniouninfo::where('short_name_e', $union)->firstOrFail()->id;
+        $unions = Union::where('id', $union)->pluck('name')->map(function ($name) {
+            return strtolower(str_replace(' ', '', $name));
+        });
+        $unioninfo_id = Uniouninfo::where('short_name_e', $unions)->firstOrFail()->id;
         $word_no = $word;
         $village = Village::where('unioninfo_id', $unioninfo_id)->where('word_no', $word_no)->get();
         return response()->json($village);
