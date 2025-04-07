@@ -577,6 +577,7 @@ private function uploadBase64Image($fileData, $filePath, $dateFolder, $sonodId)
         $sonods = Sonod::select(
                 'id',
                 'sonod_name',
+                'uniqeKey',
                 'unioun_name',
                 'applicant_name',
                 'applicant_father_name',
