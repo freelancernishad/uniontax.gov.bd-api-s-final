@@ -564,6 +564,11 @@ private function uploadBase64Image($fileData, $filePath, $dateFolder, $sonodId)
 
     public function findMySonod(Request $request)
     {
+
+
+
+
+
         $searchTerm = $request->input('query'); // Get search term
 
         if (!$searchTerm) {
@@ -663,6 +668,11 @@ private function uploadBase64Image($fileData, $filePath, $dateFolder, $sonodId)
             'renewed', // Include renewed in the response
             'hasEnData',
         ];
+
+        // Retrieve by ID if 'id' is provided
+        if ($request->has('uniqeKey')) {
+            $results = Sonod::select($columns)->where("uniqeKey" , $request->input('uniqeKey'))->first();
+        }
 
         // Retrieve by ID if 'id' is provided
         if ($request->has('id')) {
