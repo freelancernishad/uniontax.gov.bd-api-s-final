@@ -102,6 +102,9 @@ Route::post('my/sonod/search', [SonodController::class, 'findMySonod']);
 Route::get('my/sonod/search', [SonodController::class, 'findMySonod']);
 
 
+Route::get('sonod/search/for/re-applicaion', [SonodController::class, 'findMySonodForReApplication']);
+
+
 Route::post('sonod/renew/{id}', [SonodController::class, 'renewSonod']);
 
 Route::post('ekpay/ipn',[EkpayController::class ,'ipn']);

@@ -620,6 +620,31 @@ private function uploadBase64Image($fileData, $filePath, $dateFolder, $sonodId)
 
 
 
+    function findMySonodForReApplication(Request $request)
+    {
+        $searchTerm = $request->input('id'); // Get search term
+
+        if (!$searchTerm) {
+            return response()->json([
+            'status' => 'error',
+            'message' => 'Please provide a search term.'
+            ], 400);
+        }
+
+        // Search for the Sonod by unique key and get the first match
+        $sonod = Sonod::where('uniqeKey', $searchTerm)->first(); // Get the first match
+
+        if ($sonod) {
+            return response()->json($sonod);
+        }
+
+        return response()->json([
+            'status' => 'not_found',
+            'message' => 'No Sonod found with the provided unique key.'
+        ], 404);
+    }
+
+
 
     public function findSonod(Request $request)
     {
