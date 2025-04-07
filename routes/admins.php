@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Auth\Admin\AdminAuthController;
 use App\Http\Controllers\Api\User\Sonod\UserSonodController;
 use App\Http\Controllers\Api\Admin\Reports\ReportsController;
 use App\Http\Controllers\Api\Payments\FailedPaymentController;
+use App\Http\Controllers\Api\SiteSettings\SiteSettingController;
 use App\Http\Controllers\Api\Admin\Package\AdminPackageController;
 use App\Http\Controllers\Api\User\SonodName\UserSonodFeeController;
 use App\Http\Controllers\Api\SystemSettings\SystemSettingController;
@@ -52,6 +53,10 @@ Route::prefix('admin')->group(function () {
         Route::post('english/sonod/update/{id}', [UserSonodController::class, 'updateEnglishSonod']);
 
 
+        Route::prefix('site-settings')->group(function () {
+            Route::post('/store-or-update', [SiteSettingController::class, 'storeOrUpdate']);
+            Route::get('/list', [SiteSettingController::class, 'getList']);
+        });
 
 
         Route::post('/system-setting', [SystemSettingController::class, 'storeOrUpdate']);

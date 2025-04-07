@@ -9,6 +9,7 @@ use App\Models\Sonodnamelist;
 use App\Models\TradeLicenseKhat;
 use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
+use App\Models\SiteSetting;
 use Illuminate\Support\Facades\Auth;
 
 class UniouninfoController extends Controller
@@ -129,9 +130,13 @@ class UniouninfoController extends Controller
                 ];
             });
 
+        $site_settings = SiteSetting::pluck('value', 'key')->toArray();
+
+
         $returnData = [
             'uniouninfos' => $uniouninfos,
             'sonod_name_lists' => $sonod_name_lists,
+            'site_settings' => $site_settings,
             // 'villages' => $uniouninfos->villages,
         ];
 
