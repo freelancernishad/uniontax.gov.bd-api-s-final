@@ -533,6 +533,14 @@ $sonod->applicant_birth_certificate_attachment = !empty($sonod->applicant_birth_
     ? getUploadDocumentsToS3($sonod->applicant_birth_certificate_attachment)
     : null;
 
+        // Decode successor_list JSON
+        if (!empty($sonod->successor_list)) {
+            $decodedSuccessorList = json_decode($sonod->successor_list, true);
+            $sonod->successor_list = (json_last_error() === JSON_ERROR_NONE && is_array($decodedSuccessorList)) ? $decodedSuccessorList : [];
+        }
+
+
+
         // Return the Sonod record
         return response()->json($sonod);
     }
