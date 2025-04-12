@@ -18,6 +18,7 @@ class DocumentPdfController extends Controller
         ini_set("pcre.backtrack_limit", "50000000000000000");
         ini_set('memory_limit', '12008M');
 
+        $is_union = SiteSetting::where('key','union')->first()->value;
         // Fetch necessary data
         $row = Sonod::find($id);
         $isUnion = SiteSetting::where('key','union')->first()->value;
