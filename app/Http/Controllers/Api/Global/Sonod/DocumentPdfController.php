@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Api\Global\Sonod;
 
-use App\Http\Controllers\Controller;
 use App\Models\Sonod;
-use App\Models\Sonodnamelist;
 use App\Models\Uniouninfo;
+use App\Models\SiteSetting;
 use Illuminate\Http\Request;
+use App\Models\Sonodnamelist;
+use App\Http\Controllers\Controller;
 
 class DocumentPdfController extends Controller
 {
@@ -19,7 +20,7 @@ class DocumentPdfController extends Controller
 
         // Fetch necessary data
         $row = Sonod::find($id);
-
+        $isUnion = SiteSetting::where('key','union')->first()->value;
         // Check if the Sonod record exists
         if (!$row) {
             return response()->json([
@@ -57,7 +58,7 @@ class DocumentPdfController extends Controller
 
 
 
-            $htmlView = view('ApplicationPdf.ApplicationCopyWayaris', compact('row', 'sonod', 'uniouninfo'))->render();
+            $htmlView = view('ApplicationPdf.ApplicationCopyWayaris', compact('row', 'sonod', 'uniouninfo','is_union'))->render();
         // } elseif (in_array($EnsonodName, ['Miscellaneous_certificates', 'Certification_of_the_same_name'])) {
             // $htmlView = view('ApplicationPdf.ApplicationCopyFromat2', compact('row', 'sonod', 'uniouninfo'))->render();
         }
@@ -65,7 +66,7 @@ class DocumentPdfController extends Controller
 
             $header = null;
             $footer = null;
-            $htmlView = view('ApplicationPdf.ApplicationCopyFromat1', compact('row', 'sonod', 'uniouninfo'))->render();
+            $htmlView = view('ApplicationPdf.ApplicationCopyFromat1', compact('row', 'sonod', 'uniouninfo','is_union'))->render();
         }
 
         // Generate the PDF with the appropriate header and footer

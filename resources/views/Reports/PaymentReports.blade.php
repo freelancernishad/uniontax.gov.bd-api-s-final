@@ -58,7 +58,11 @@
         <tr>
             <td></td>
             <td style="text-align: center;">
-                <h1 style="color: #7230A0; margin: 0; font-size: 28px">সকল ইউনিয়ন এর প্রতিবেদন</h1>
+                @if($is_union)
+                    <h1 style="color: #7230A0; margin: 0; font-size: 28px">সকল ইউনিয়ন এর প্রতিবেদন</h1>
+                @else
+                    <h1 style="color: #7230A0; margin: 0; font-size: 28px">সকল পৌরসভা এর প্রতিবেদন</h1>
+                @endif
             </td>
             <td></td>
         </tr>

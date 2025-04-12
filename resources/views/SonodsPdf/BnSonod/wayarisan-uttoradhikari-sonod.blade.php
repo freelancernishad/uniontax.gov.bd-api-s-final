@@ -97,11 +97,15 @@
             আবেদনকারীর নামঃ {{ $row->applicant_name }}।  পিতা/স্বামীর নামঃ {{ $row->applicant_father_name }}।  মাতার নামঃ {{ $row->applicant_mother_name }}
         </p><br>
 
-        <p style="margin-top:-10px;margin-bottom:5px">
-            সংশ্লিষ্ট ওয়ার্ডের ইউপি সদস্য কর্তৃক আবেদনকারীর দাখিলকৃত তথ্য যাচাই/সত্যায়নের পরিপ্রেক্ষিতে অত্র সনদপত্র প্রদান করা হলো।
-        </p> <br/>
-
-        <p style="margin-top:-10px; margin-bottom:0px">
+            <p style="margin-top:-10px;margin-bottom:5px">
+                সংশ্লিষ্ট ওয়ার্ডের
+                @if($is_union)
+                ইউপি সদস্য
+                @else
+                পৌরসভা কাউন্সিলর
+                @endif
+                কর্তৃক আবেদনকারীর দাখিলকৃত তথ্য যাচাই/সত্যায়নের পরিপ্রেক্ষিতে অত্র সনদপত্র প্রদান করা হলো।
+            </p> <br/>     <p style="margin-top:-10px; margin-bottom:0px">
             &nbsp;&nbsp;&nbsp; আমি তাঁর/তাঁদের সর্বাঙ্গীন উন্নতি ও মঙ্গল কামনা করছি।
         </p>
     </div>

@@ -196,9 +196,15 @@ $style = '';
                 </table>
 
 
-                <p style="background: #787878; color: white; text-align: center; padding: 2px 2px;font-size: 13px; margin-top: 0px; margin-bottom: 0px;" class="m-0">
-                    "সময়মত ইউনিয়ন কর পরিশোধ করুন। ইউনিয়নের উন্নয়নমূলক কাজে সহায়তা করুন"
-                </p>
+                @if($is_union)
+                    <p style="background: #787878; color: white; text-align: center; padding: 2px 2px;font-size: 13px; margin-top: 0px; margin-bottom: 0px;" class="m-0">
+                        "সময়মত ইউনিয়ন কর পরিশোধ করুন। ইউনিয়নের উন্নয়নমূলক কাজে সহায়তা করুন"
+                    </p>
+                @else
+                    <p style="background: #787878; color: white; text-align: center; padding: 2px 2px;font-size: 13px; margin-top: 0px; margin-bottom: 0px;" class="m-0">
+                        "সময়মত পৌরসভা কর পরিশোধ করুন। পৌরসভার উন্নয়নমূলক কাজে সহায়তা করুন"
+                    </p>
+                @endif
                 <p class="m-0" style="font-size:12px;text-align:center;margin:0 !important">ইস্যুকৃত সনদটি যাচাই করতে <span class="english_text">QR</span> কোড স্ক্যান করুন অথবা ভিজিট করুন <span class="english_text">{{ $uniouninfo->domain }}</span></p>
 
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Global\HoldingTax;
 use App\Models\Payment;
 use App\Models\Holdingtax;
 use App\Models\Uniouninfo;
+use App\Models\SiteSetting;
 use Illuminate\Http\Request;
 use App\Models\HoldingBokeya;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -120,9 +121,9 @@ class HoldingTaxPdfController extends Controller
         $uniouninfo->c_signture = handleFileUrl($uniouninfo->c_signture);
         // Generate the file name
         $fileName = 'Certificate_of_Honor-' . date('Y-m-d_H:m:s');
-
+        $is_union = SiteSetting::where('key','union')->first()->value;
         // Prepare the view data
-        $htmlView = view('HoldingTaxCertificate.certificate_of_honor', compact('uniouninfo', 'holdingTax', 'holdingBokeya'))->render();
+        $htmlView = view('HoldingTaxCertificate.certificate_of_honor', compact('uniouninfo', 'holdingTax', 'holdingBokeya','is_union'))->render();
 
         // Optional header and footer (could be passed as null for simplicity)
         $header = null;

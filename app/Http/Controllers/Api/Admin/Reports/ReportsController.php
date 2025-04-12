@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Api\Admin\Reports;
 
 use App\Models\Sonod;
 use App\Models\Payment;
+use App\Models\SiteSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -73,11 +74,12 @@ class ReportsController extends Controller
 
     private function genratePdf($data,$reportTitle,$detials=null) {
 
+        $is_union = SiteSetting::where('key','union')->first()->value;
 
         if($detials){
-            $htmlView = view('Reports.DownloadDetailsReports', compact('data','reportTitle'))->render();
+            $htmlView = view('Reports.DownloadDetailsReports', compact('data','reportTitle','is_union'))->render();
         }else{
-            $htmlView = view('Reports.DownloadReports', compact('data','reportTitle'))->render();
+            $htmlView = view('Reports.DownloadReports', compact('data','reportTitle','is_union'))->render();
         }
 
 

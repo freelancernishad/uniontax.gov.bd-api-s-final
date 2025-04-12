@@ -88,7 +88,9 @@
                 <tr>
                     <td style="text-align: center; vertical-align: bottom;" width="40%">
                         <div class="signature text-center position-relative" style="color:black;font-size:12px;">
-                            <span style="font-size:12px;">ইউপি সদস্য/সদস্যা</span><br />
+                            <span style="font-size:12px;">
+                                {{ $is_union ? 'ইউপি সদস্য/সদস্যা' : 'কাউন্সিলর' }}
+                            </span><br />
                             {{ $uniouninfo->full_name }}<br> {{ $uniouninfo->thana }}, {{ $uniouninfo->district }} ।<br>
                         </div>
                     </td>
@@ -107,9 +109,15 @@
                 </tr>
             </table>
 
-            <p style="background: #787878; color: white; text-align: center; padding: 2px 2px; font-size: 12px; margin-top: 0px; margin:0" class="m-0">
-                "সময়মত ইউনিয়ন কর পরিশোধ করুন। ইউনিয়নের উন্নয়নমূলক কাজে সহায়তা করুন"
-            </p>
+            @if($is_union)
+                <p style="background: #787878; color: white; text-align: center; padding: 2px 2px; font-size: 12px; margin-top: 0px; margin:0" class="m-0">
+                    "সময়মত ইউনিয়ন কর পরিশোধ করুন। ইউনিয়নের উন্নয়নমূলক কাজে সহায়তা করুন"
+                </p>
+            @else
+                <p style="background: #787878; color: white; text-align: center; padding: 2px 2px; font-size: 12px; margin-top: 0px; margin:0" class="m-0">
+                    "সময়মত পৌরসভা কর পরিশোধ করুন। পৌরসভার উন্নয়নমূলক কাজে সহায়তা করুন"
+                </p>
+            @endif
             <p class="m-0" style="font-size:12px;text-align:center;margin:0;position: fixed; bottom: 0;">
                 ইস্যুকৃত সনদটি যাচাই করতে QR কোড স্ক্যান করুন অথবা ভিজিট করুন {{ $uniouninfo->domain }}
             </p>

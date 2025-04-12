@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Admin;
 use App\Models\Payment;
 use App\Models\Uniouninfo;
+use App\Models\SiteSetting;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Log;
@@ -124,8 +125,9 @@ class PaymentReportsController extends Controller
         ], 404); // Return a 404 Not Found status
     }
 
+    $is_union = SiteSetting::where('key','union')->first()->value;
     // Generate HTML view for PDF
-    $htmlView = view('Reports.PaymentReports', compact('rows', 'uniouninfo', 'sonod_type', 'from', 'to', 'union'))->render();
+    $htmlView = view('Reports.PaymentReports', compact('rows', 'uniouninfo', 'sonod_type', 'from', 'to', 'union','is_union'))->render();
 
     // Define header and footer if needed
     $header = null; // Add HTML for header if required

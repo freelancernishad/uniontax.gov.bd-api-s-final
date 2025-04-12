@@ -16,7 +16,7 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>ইউনিয়ন নাম</th>
+                        <th>{{ $is_union ? 'ইউনিয়ন নাম' : 'পৌরসভা নাম' }}</th>
                         {{-- <th>সনদের নাম</th> --}}
                         <th class="text-center">পেন্ডিং</th>
                         <th class="text-center">অনুমোদিত</th>
