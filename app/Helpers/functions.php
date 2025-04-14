@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\SiteSetting;
 use Carbon\Carbon;
 use App\Models\TokenBlacklist;
 use Illuminate\Support\Facades\URL;
@@ -8,6 +9,11 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Validator;
 
+
+
+function isUnion(){
+   return $isUnion = SiteSetting::where('key','union')->first()->value;
+}
 
 
 function TokenBlacklist($token){
@@ -71,7 +77,7 @@ function getBanglaPositionText($position)
         'DLG' => 'পরিচালক, (যুগ্মসচিব) স্থানীয় সরকার',
         'super_admin' => 'সুপার এডমিনের ড্যাশবোর্ড',
         'Sub_District_admin' => 'উপ-পরিচালকের ড্যাশবোর্ড',
-        'Chairman' => 'চেয়ারম্যানের ড্যাশবোর্ড',
+        'Chairman' => isUnion() ? 'চেয়ারম্যানের ড্যাশবোর্ড' : 'প্রশাসকের ড্যাশবোর্ড',
         'Secretary' => 'প্রশাসনিক কর্মকর্তার ড্যাশবোর্ড',
     ];
 
@@ -87,7 +93,7 @@ function getBanglaPositionText($position)
         'DLG' => 'পরিচালক, (যুগ্মসচিব) স্থানীয় সরকার',
         'super_admin' => 'সুপার এডমিন',
         'Sub_District_admin' => 'উপ-পরিচালক',
-        'Chairman' => 'চেয়ারম্যান',
+        'Chairman' => isUnion() ? 'চেয়ারম্যান' : 'প্রশাসক',
         'Secretary' => 'প্রশাসনিক কর্মকর্তা',
     ];
 

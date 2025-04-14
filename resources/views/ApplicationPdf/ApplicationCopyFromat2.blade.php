@@ -225,9 +225,11 @@
 <p style="background: #787878;
     color: white;
     text-align: center;
-    padding: 2px 2px;font-size: 16px;     margin-top: 20px;margin-bottom:0px" class="m-0">"সময়মত ইউনিয়ন কর পরিশোধ করুন। ইউনিয়নের উন্নয়নমূলক কাজে সহায়তা করুন"</p>
+    padding: 2px 2px;font-size: 16px; margin-top: 20px;margin-bottom:0px" class="m-0">
+    {{ isUnion ? "সময়মত ইউনিয়ন কর পরিশোধ করুন। ইউনিয়নের উন্নয়নমূলক কাজে সহায়তা করুন।" : "সময়মত পৌর কর পরিশোধ করুন। পৌরসভার উন্নয়নমূলক কাজে সহায়তা করুন।" }}
+</p>
 
-<p class="m-0" style="font-size:14px;text-align:center;margin: 0;">'ডিজিটাল ইউনিয়ন ট্যাক্স ও সেবা সিস্টেম' {{ $uniouninfo->domain }} এর সাথে থাকার জন্য ধন্যবাদ</p>
+<p class="m-0" style="font-size:14px;text-align:center;margin: 0;">'ক্যাশ লেস , পেপার লেস সেবা সিস্টেম' {{ $uniouninfo->domain }} এর সাথে থাকার জন্য ধন্যবাদ</p>
 
     {{-- <p style="text-align: center"> {{ $uniouninfo->domain }}</p> --}}
 

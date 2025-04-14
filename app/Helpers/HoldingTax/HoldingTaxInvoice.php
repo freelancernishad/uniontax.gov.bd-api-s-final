@@ -81,7 +81,7 @@ function HoldingTaxInvoiceBody($unions, $HoldingBokeya, $customers, $previousamo
                         <table width='100%'>
                             <tr>
                                 <td>
-                                    ইউপি সচিব/আদায়কারীর স্বাক্ষর
+                                    প্রশাসনিক কর্মকর্তা/আদায়কারীর স্বাক্ষর
                                     <br />
                                     তারিখ: " . int_en_to_bn(date('d/m/Y', strtotime($payment->date ?? now()))) . "
                                 </td>
@@ -89,7 +89,7 @@ function HoldingTaxInvoiceBody($unions, $HoldingBokeya, $customers, $previousamo
                                     <img src='https://api.qrserver.com/v1/create-qr-code/?data=" . url("/holding/tax/invoice/{$HoldingBokeya->id}") . "&size=80x80' />
                                 </td>
                                 <td style='text-align: right' width='130px'>
-                                    ইউপি চেয়ারম্যানের স্বাক্ষর
+                                    " . (isUnion() ? 'ইউপি চেয়ারম্যানের স্বাক্ষর' : 'প্রশাসকের স্বাক্ষর') . "
                                 </td>
                             </tr>
                         </table>
