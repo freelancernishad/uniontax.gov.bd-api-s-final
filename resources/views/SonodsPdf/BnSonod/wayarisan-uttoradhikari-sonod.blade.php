@@ -99,7 +99,8 @@
 
             <p style="margin-top:-10px;margin-bottom:5px">
                 সংশ্লিষ্ট ওয়ার্ডের
-                @if($is_union)
+                @if(isUnion())
+                {{ $uniouninfo->full_name }} {{ $uniouninfo->thana }}, {{ $uniouninfo->district }}।  {{ $uniouninfo->ut_word }} নং
                 ইউপি সদস্য
                 @else
                 পৌরসভা কাউন্সিলর

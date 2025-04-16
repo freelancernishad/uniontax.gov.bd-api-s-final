@@ -18,10 +18,10 @@ class DocumentPdfController extends Controller
         ini_set("pcre.backtrack_limit", "50000000000000000");
         ini_set('memory_limit', '12008M');
 
-        $is_union = SiteSetting::where('key','union')->first()->value;
+        $is_union = isUnion();
         // Fetch necessary data
         $row = Sonod::find($id);
-        $isUnion = SiteSetting::where('key','union')->first()->value;
+
         // Check if the Sonod record exists
         if (!$row) {
             return response()->json([
@@ -80,6 +80,9 @@ class DocumentPdfController extends Controller
         $row = Sonod::find($id);
         $uniouninfo = Uniouninfo::where('short_name_e', $row->unioun_name)->first();
 
+
+        $is_union = isUnion();
+
         $output = "
 
 
@@ -119,7 +122,7 @@ class DocumentPdfController extends Controller
             </div>
             <br>
             <p style='font-size: 16px; color: blue; margin-bottom: 0px !important;'>
-                ডিজিটাল ইউনিয়ন ট্যাক্স ও সেবা সিস্টেমে আপনার আবেদনটি যথাযথভাবে দাখিল হয়েছে।
+                ক্যাশ লেস , পেপার লেস সেবা সিস্টেমে আপনার আবেদনটি যথাযথভাবে দাখিল হয়েছে।
             </p>
         </div>
         ";
@@ -143,6 +146,17 @@ class DocumentPdfController extends Controller
         $is_union = isUnion();
         $row = Sonod::find($id);
         $uniouninfo = Uniouninfo::where('short_name_e', $row->unioun_name)->first();
+
+
+        if($is_union){
+            
+            $membar_text  = 'সংশ্লিষ্ট ইউপি সদস্যের স্বাক্ষর ও সীল';
+        }else{
+            $membar_text  = 'ওয়ার্ড সহকারি';
+        }
+
+
+
         $output = "
 
 
@@ -152,7 +166,7 @@ class DocumentPdfController extends Controller
         <tr>
             <td  style='text-align: center;' width='40%'>
                 <div class='signature text-center position-relative'>
-                    <b><span style='color:#7230A0;font-size:18px;'>সংশ্লিষ্ট ইউপি সদস্যের স্বাক্ষর ও সীল</span> <br />
+                    <b><span style='color:#7230A0;font-size:18px;'>$membar_text</span> <br />
 
 
 
@@ -183,11 +197,13 @@ class DocumentPdfController extends Controller
 <p style='background: #787878;
     color: white;
     text-align: center;
-    padding: 2px 2px;font-size: 16px; margin-top: 20px;margin-bottom:0px' class='m-0'>
-    <?php echo $is_union ? 'সময়মত ইউনিয়ন কর পরিশোধ করুন। ইউনিয়নের উন্নয়নমূলক কাজে সহায়তা করুন' : 'সময়মত পৌরসভা কর পরিশোধ করুন। পৌরসভার উন্নয়নমূলক কাজে সহায়তা করুন'; ?>
-</p>
+    padding: 2px 2px;font-size: 16px; margin-top: 20px;margin-bottom:0px' class='m-0'>";
 
-<p class='m-0' style='font-size:14px;text-align:center;margin: 0;'>'ডিজিটাল ইউনিয়ন ট্যাক্স ও সেবা সিস্টেম'  $uniouninfo->domain  এর সাথে থাকার জন্য ধন্যবাদ</p>
+     $output .= ($is_union ? 'সময়মত ইউনিয়ন কর পরিশোধ করুন। ইউনিয়নের উন্নয়নমূলক কাজে সহায়তা করুন' : 'সময়মত পৌরসভা কর পরিশোধ করুন। পৌরসভার উন্নয়নমূলক কাজে সহায়তা করুন');
+
+$output .= "</p>
+
+<p class='m-0' style='font-size:14px;text-align:center;margin: 0;'>'ক্যাশ লেস , পেপার লেস সেবা সিস্টেম'  $uniouninfo->domain  এর সাথে থাকার জন্য ধন্যবাদ</p>
 
 
 

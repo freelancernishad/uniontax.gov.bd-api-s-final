@@ -89,7 +89,7 @@
                     <td style="text-align: center; vertical-align: bottom;" width="40%">
                         <div class="signature text-center position-relative" style="color:black;font-size:12px;">
                             <span style="font-size:12px;">
-                                {{ $is_union ? 'ইউপি সদস্য/সদস্যা' : 'কাউন্সিলর' }}
+                                {{ isUnion() ? 'ইউপি সদস্য/সদস্যা' : 'কাউন্সিলর' }}
                             </span><br />
                             {{ $uniouninfo->full_name }}<br> {{ $uniouninfo->thana }}, {{ $uniouninfo->district }} ।<br>
                         </div>
@@ -109,7 +109,7 @@
                 </tr>
             </table>
 
-            @if($is_union)
+            @if(isUnion())
                 <p style="background: #787878; color: white; text-align: center; padding: 2px 2px; font-size: 12px; margin-top: 0px; margin:0" class="m-0">
                     "সময়মত ইউনিয়ন কর পরিশোধ করুন। ইউনিয়নের উন্নয়নমূলক কাজে সহায়তা করুন"
                 </p>

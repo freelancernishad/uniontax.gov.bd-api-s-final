@@ -121,7 +121,7 @@ class HoldingTaxPdfController extends Controller
         $uniouninfo->c_signture = handleFileUrl($uniouninfo->c_signture);
         // Generate the file name
         $fileName = 'Certificate_of_Honor-' . date('Y-m-d_H:m:s');
-        $is_union = SiteSetting::where('key','union')->first()->value;
+        $is_union = isUnion();
         // Prepare the view data
         $htmlView = view('HoldingTaxCertificate.certificate_of_honor', compact('uniouninfo', 'holdingTax', 'holdingBokeya','is_union'))->render();
 

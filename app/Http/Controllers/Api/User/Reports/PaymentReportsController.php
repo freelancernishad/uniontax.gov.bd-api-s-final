@@ -125,7 +125,7 @@ class PaymentReportsController extends Controller
         ], 404); // Return a 404 Not Found status
     }
 
-    $is_union = SiteSetting::where('key','union')->first()->value;
+    $is_union = isUnion();
     // Generate HTML view for PDF
     $htmlView = view('Reports.PaymentReports', compact('rows', 'uniouninfo', 'sonod_type', 'from', 'to', 'union','is_union'))->render();
 

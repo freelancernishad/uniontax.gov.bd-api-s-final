@@ -1,8 +1,9 @@
 <?php
 
-use App\Models\SiteSetting;
 use Carbon\Carbon;
+use App\Models\SiteSetting;
 use App\Models\TokenBlacklist;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -12,7 +13,10 @@ use Illuminate\Support\Facades\Validator;
 
 
 function isUnion(){
-   return $isUnion = SiteSetting::where('key','union')->first()->value;
+    $isUnion = SiteSetting::where('key', 'union')->first()->value;
+    Log::info('isUnion: ' . $isUnion);
+
+    return filter_var($isUnion, FILTER_VALIDATE_BOOLEAN);
 }
 
 

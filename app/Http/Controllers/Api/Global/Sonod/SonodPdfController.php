@@ -138,7 +138,7 @@ class SonodPdfController extends Controller
     {
 
 
-        $is_union = SiteSetting::where('key','union')->first()->value;
+        $is_union = isUnion();
 
         $namelength = strlen($row->sonod_name);
         $width = '300px';  // Default width
@@ -288,7 +288,7 @@ class SonodPdfController extends Controller
         // Fetch data for the row and union info
         $row = Sonod::find($id);
 
-
+        $is_union = isUnion();
 
         $signatureFields = ['socib_signture', 'chaireman_sign','image'];
         // Handle signature fields
@@ -329,7 +329,9 @@ class SonodPdfController extends Controller
             </table>
 
             <p style="background: #787878; color: white; text-align: center; padding: 2px; font-size: 16px; margin-top: 0;" class="m-0">
-                "সময়মত ইউনিয়ন কর পরিশোধ করুন। ইউনিয়নের উন্নয়নমূক কাজে সহায়তা করুন"
+                $is_union
+                ? "সময়মত ইউনিয়ন কর পরিশোধ করুন। ইউনিয়নের উন্নয়নমূক কাজে সহায়তা করুন"
+                : "সময়মত পৌর কর পরিশোধ করুন। পৌরসভার উন্নয়নমূক কাজে সহায়তা করুন"
             </p>
             <p class="m-0" style="font-size:14px; text-align:center">
                 ইস্যুকৃত সনদটি যাচাই করতে QR কোড স্ক্যান করুন অথবা ভিজিট করুন ' . $uniouninfo->domain . '

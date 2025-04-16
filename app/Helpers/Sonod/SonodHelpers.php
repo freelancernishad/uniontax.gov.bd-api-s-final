@@ -112,7 +112,8 @@ function age($dateOf = '2001-08-25', $en = false) {
     $sec_prottoyon = '';
 
 
-    $union = SiteSetting::where('key','union')->first()->value;
+    $union = SiteSetting::where('key', 'union')->first()->value;
+    $union = $union === "false" ? false : (bool)$union;
     if($union==true){
 
 

@@ -196,7 +196,7 @@ $style = '';
                 </table>
 
 
-                @if($is_union)
+                @if(isUnion())
                     <p style="background: #787878; color: white; text-align: center; padding: 2px 2px;font-size: 13px; margin-top: 0px; margin-bottom: 0px;" class="m-0">
                         "সময়মত ইউনিয়ন কর পরিশোধ করুন। ইউনিয়নের উন্নয়নমূলক কাজে সহায়তা করুন"
                     </p>

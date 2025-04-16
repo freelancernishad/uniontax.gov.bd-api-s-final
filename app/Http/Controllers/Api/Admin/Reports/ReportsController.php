@@ -74,7 +74,7 @@ class ReportsController extends Controller
 
     private function genratePdf($data,$reportTitle,$detials=null) {
 
-        $is_union = SiteSetting::where('key','union')->first()->value;
+        $is_union = isUnion();
 
         if($detials){
             $htmlView = view('Reports.DownloadDetailsReports', compact('data','reportTitle','is_union'))->render();

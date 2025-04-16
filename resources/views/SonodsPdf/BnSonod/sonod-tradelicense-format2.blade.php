@@ -180,7 +180,7 @@ margin-left: 83px;
   color: white;
   text-align: center;
   padding: 2px 2px;font-size: 12px; margin-top: 0px;" class="m-0">
-  @if($is_union)
+  @if(isUnion())
     "সময়মত ইউনিয়ন কর পরিশোধ করুন। ইউনিয়নের উন্নয়নমূলক কাজে সহায়তা করুন"
   @else
     "সময়মত পৌরসভা কর পরিশোধ করুন। পৌরসভার উন্নয়নমূলক কাজে সহায়তা করুন"
