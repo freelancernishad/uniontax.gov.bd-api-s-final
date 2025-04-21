@@ -48,4 +48,11 @@ class Holdingtax extends Model
     {
         return $this->hasMany(HoldingBokeya::class, 'holdingTax_id','id');
     }
+
+    public function familyMembers()
+    {
+        return $this->hasMany(FamilyMember::class, 'holding_id');
+    }
+
+
 }

@@ -309,7 +309,7 @@ function age($dateOf = '2001-08-25', $en = false) {
             $readonly = true;
             $sec_prottoyon = $english ?
                 "Mr. {$details['applicant_name']} is personally known to me. To my knowledge, he/she is a married {$details['applicant_gender']}. According to the application description, he/she voluntarily gives permission to his/her {$customtext2} for a second marriage and the relevant ward councilor recommends it." :
-                "জনাব {$details['applicant_name']} কে আমি ব্যক্তিগতভাবে চিনি ও জানি। আমার জানামতে সে একজন বিবাহিত {$details['applicant_gender']} । তাঁর {$customtext1} এর আবেদনের বর্ণনা মোতাবেক সে স্বেচ্ছায় তাঁর {$customtext2}কে দ্বিতীয় বিবাহ করার জন্য অনুমতি প্রদান করেন এবং সংশ্লিষ্ট ওয়ার্ড কাউন্সিলর সুপারিশ করেন।";
+                "জনাব {$details['applicant_name']} কে আমি ব্যক্তিগতভাবে চিনি ও জানি। আমার জানামতে সে একজন বিবাহিত {$details['applicant_gender']} । তাঁর {$customtext1} এর আবেদনের বর্ণনা মোতাবেক সে স্বেচ্ছায় তাঁর {$customtext2}কে দ্বিতীয় বিবাহ করার জন্য অনুমতি প্রদান করেন এবং সংশ্লিষ্ট ওয়ার্ড সহকারি সুপারিশ করেন।";
             break;
 
         case 'ভোটার স্থানান্তরের প্রত্যয়ন পত্র':

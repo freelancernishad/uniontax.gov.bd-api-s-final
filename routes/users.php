@@ -18,7 +18,9 @@ use App\Http\Controllers\Api\User\Holdingtax\HoldingtaxController;
 use App\Http\Controllers\Api\User\Uniouninfo\PostOfficeController;
 use App\Http\Controllers\Api\Auth\User\UserPasswordResetController;
 use App\Http\Controllers\Api\User\SonodName\UserSonodFeeController;
+use App\Http\Controllers\Api\User\Holdingtax\FamilyMemberController;
 use App\Http\Controllers\Api\User\Uniouninfo\UserUniouninfoController;
+use App\Http\Controllers\Api\User\Holdingtax\SohayotaBiboronController;
 use App\Http\Controllers\Api\User\UserManagement\UserProfileController;
 use App\Http\Controllers\Api\User\Package\UserPurchasedHistoryController;
 use App\Http\Controllers\Api\User\Dashboard\UserDashboardMatricsController;
@@ -81,6 +83,32 @@ Route::prefix('user')->group(function () {
 
         // Add a new bokeya by Holdingtax ID
         Route::post('/holdingtax/{holdingTaxId}/bokeya', [HoldingtaxController::class, 'addNewBokeya']);
+
+
+
+
+        Route::prefix('holding')->group(function () {
+
+            // Family Members
+            Route::get('family-members', [FamilyMemberController::class, 'index']);
+            Route::post('family-members', [FamilyMemberController::class, 'store']);
+            Route::get('family-members/{id}', [FamilyMemberController::class, 'show']);
+            Route::put('family-members/{id}', [FamilyMemberController::class, 'update']);
+            Route::delete('family-members/{id}', [FamilyMemberController::class, 'destroy']);
+
+            // Sohayota Biborons
+            Route::get('sohayota-biborons', [SohayotaBiboronController::class, 'index']);
+            Route::post('sohayota-biborons', [SohayotaBiboronController::class, 'store']);
+            Route::get('sohayota-biborons/{id}', [SohayotaBiboronController::class, 'show']);
+            Route::put('sohayota-biborons/{id}', [SohayotaBiboronController::class, 'update']);
+            Route::delete('sohayota-biborons/{id}', [SohayotaBiboronController::class, 'destroy']);
+        });
+
+
+
+
+
+
 
 
 

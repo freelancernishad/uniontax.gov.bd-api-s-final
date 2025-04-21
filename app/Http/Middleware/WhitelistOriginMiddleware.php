@@ -19,6 +19,12 @@ class WhitelistOriginMiddleware
         // Get the 'Origin' header from the request
         $origin = $request->header('Origin');
 
+
+        if ($request->is('api/global/divisions') || $request->is('api/global/districts/*')) {
+            return $next($request);
+        }
+
+
         // If the origin is empty, check if there is a wildcard (empty string) in the allowed origins
         if ($origin === '' || $origin === null) {
             // Check if there's an empty string '' in the allowed origins
