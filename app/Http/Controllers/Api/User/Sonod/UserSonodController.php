@@ -7,6 +7,7 @@ use App\Models\Sonod;
 use App\Models\Uniouninfo;
 use App\Models\EnglishSonod;
 use Illuminate\Http\Request;
+use App\Helpers\SmsNocHelper;
 use App\Models\Sonodnamelist;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -121,6 +122,9 @@ class UserSonodController extends Controller
 
 
 
+
+
+
         $user = Auth::user(); // Get the currently authenticated user
 
         $action = $request->action; // 'approve' or 'cancel'
@@ -159,6 +163,8 @@ class UserSonodController extends Controller
         } elseif ($user->position == 'Chairman' && $sonod->stutus == 'sec_approved') {
             // Chairman can approve, so set the status to 'approved'
             $approveData = 'approved';
+
+
         } else {
             // If neither condition is met, return an error response
             return response()->json(['message' => 'Action not allowed on this Sonod status'], 403);
@@ -278,6 +284,14 @@ class UserSonodController extends Controller
             $enSonod->update($updateData_en);
         }
 
+
+
+        if($sonod->stutus=='approved'){
+            $unioun_name = $sonod->unioun_name;
+            $sonodUrl =  url("/sonod/d/$id");
+            $deccription = "Congratulation! Your application $sonod->sonod_Id has been approved. Document is available at  $sonodUrl";
+            SmsNocHelper::sendSms($deccription, $sonod->applicant_mobile,$unioun_name);
+        }
 
         // If Secretary updated the Sonod, send notification to the Chairman
         if ($user->position == 'Secretary') {

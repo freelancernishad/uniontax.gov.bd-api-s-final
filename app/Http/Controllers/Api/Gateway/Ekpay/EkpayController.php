@@ -83,6 +83,9 @@ class EkpayController extends Controller
             UddoktaSearch::where('uddokta_id', $payment->uddoktaId)->delete();
         }
 
+
+
+
         return response()->json(['message' => 'IPN processed successfully'], 200);
 
     }
