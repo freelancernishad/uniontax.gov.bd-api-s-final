@@ -132,7 +132,8 @@ class EkpayController extends Controller
         $sonod->update(['khat' => 'সনদ ফি', 'stutus' => 'Pending', 'payment_status' => 'Paid']);  // Update Sonod
 
         $description = "Congratulations! Your application $sonod->sonod_Id has been submitted. Wait for approval.";
-        SmsNocHelper::sendSms($description, $sonod->applicant_mobile, $sonod->unioun_name);  // Send SMS notification
+       $result =  SmsNocHelper::sendSms($description, $sonod->applicant_mobile, $sonod->unioun_name);  // Send SMS notification
+       Log::info('SMS sent result: ' . json_encode($result));  // Log the SMS result
     }
 
 
