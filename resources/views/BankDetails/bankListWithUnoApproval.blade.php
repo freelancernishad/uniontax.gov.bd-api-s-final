@@ -9,6 +9,7 @@
             background-color: #fff;
             color: #333;
             line-height: 1.6;
+            font-size: 15px; /* Global font size slightly smaller */
         }
         .header {
             text-align: center;
@@ -17,22 +18,22 @@
             margin: 0;
         }
         .header h2 {
-            font-size: 24px;
+            font-size: 23px; /* 1px smaller */
         }
         .header h4 {
             margin-top: 5px;
-            font-size: 18px;
+            font-size: 17px; /* 1px smaller */
             font-weight: normal;
             color: #666;
         }
         .content {
             margin-top: 20px;
-            font-size: 16px;
+            font-size: 15px; /* 1px smaller */
             text-align: justify;
         }
         .bank-list {
             margin-top: 30px;
-            font-size: 14px;
+            font-size: 13px; /* 1px smaller */
         }
         .bank-list table {
             width: 100%;
@@ -40,18 +41,17 @@
         }
         .bank-list th, .bank-list td {
             border: 1px solid #444;
-            padding: 8px;
+            padding: 4px; /* reduced padding */
             text-align: center;
-
-        }
-        /* ইংরেজি টেক্সট সাইজ ছোট করার জন্য */
-        .bank-list td.english {
-            font-size: 12px;
-            font-family: Arial, sans-serif;
         }
         .bank-list th {
             background-color: #0077cc;
             color: white;
+        }
+        /* English text smaller */
+        .bank-list td.english {
+            font-size: 12px;
+            font-family: Arial, sans-serif;
         }
         .footer {
             margin-top: 60px;
@@ -100,7 +100,9 @@
         <tbody>
             @foreach($formatted as $item)
                 <tr>
-                    <td class="{{ preg_match('/[A-Za-z]/', $item['bank_name']) ? 'english' : '' }}">{{ $item['union_name'] }}</td>
+                    <td class="{{ preg_match('/[A-Za-z]/', $item['union_name']) ? 'english' : '' }}">
+                        {{ $item['union_name'] }}
+                    </td>
                     <td class="{{ preg_match('/[A-Za-z]/', $item['bank_name']) ? 'english' : '' }}">
                         {{ $item['bank_name'] }}
                     </td>
@@ -110,9 +112,9 @@
                     <td class="{{ preg_match('/[A-Za-z]/', $item['account_name']) ? 'english' : '' }}">
                         {{ $item['account_name'] }}
                     </td>
-                    <td class="english">{{ $item['account_no'] }}</td>
-                    <td class="english">{{ $item['routing_no'] }}</td>
-                    <td class="english">{{ $item['ekpay_user_id'] ?? '-' }}</td>
+                    <td class="{{ preg_match('/[A-Za-z]/', $item['account_name']) ? 'english' : '' }}">{{ $item['account_no'] }}</td>
+                    <td class="{{ preg_match('/[A-Za-z]/', $item['account_name']) ? 'english' : '' }}">{{ $item['routing_no'] }}</td>
+                    <td class="{{ preg_match('/[A-Za-z]/', $item['account_name']) ? 'english' : '' }}">{{ $item['ekpay_user_id'] ?? '-' }}</td>
                 </tr>
             @endforeach
         </tbody>
