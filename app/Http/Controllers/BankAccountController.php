@@ -121,7 +121,7 @@ class BankAccountController extends Controller
             $htmlView = view('BankDetails.bankListWithUnoApproval', compact('formatted', 'upazilaName', 'districtName','upazilaName_bn','districtName_bn', 'unoName'))->render();
         } else {
             // সাধারন ব্যাংক লিস্ট PDF তৈরি
-            $htmlView = view('BankDetails.bankListByThana', compact('formatted', 'upazilaName', 'districtName'))->render();
+            $htmlView = view('BankDetails.bankListByThana', compact('formatted', 'upazilaName', 'districtName','upazilaName_bn','districtName_bn',))->render();
         }
 
         // PDF তৈরি করা
