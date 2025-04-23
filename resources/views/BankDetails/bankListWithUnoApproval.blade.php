@@ -74,7 +74,6 @@
         }
         .bank-list td.english {
             font-size: 12px;
-            font-family: Arial, sans-serif;
         }
         .signature {
             margin-top: 80px;
