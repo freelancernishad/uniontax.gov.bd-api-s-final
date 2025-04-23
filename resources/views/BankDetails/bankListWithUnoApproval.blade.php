@@ -31,7 +31,7 @@
             text-align: justify;
         }
         .bank-list {
-            margin-top: 35px;
+            margin-top: 3px;
             font-size: 14px;
         }
         .bank-list table {
@@ -93,7 +93,7 @@
     <h4>উপজেলা: {{ $upazilaName_bn }}, জেলা: {{ $districtName_bn }}</h4>
 </div>
 
-<div class="content">
+<div class="content" style="margin-bottom: 0px;">
     <p>
         জানানো যাচ্ছে যে, {{ $upazilaName_bn }} উপজেলার ইউনিয়নগুলোর মধ্যে আধুনিক ও সুরক্ষিত ক্যাশলেস পেমেন্ট সিস্টেম চালু করা হয়েছে। নাগরিকরা তাদের ফি, কর এবং অন্যান্য পেমেন্ট Ekpay গেটওয়ে ব্যবহার করে জমা দিচ্ছেন।
     </p>
