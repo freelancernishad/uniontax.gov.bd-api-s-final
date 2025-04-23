@@ -9,7 +9,6 @@
             background-color: #fff;
             color: #333;
             line-height: 1.6;
-            font-family: 'Noto Sans Bengali', Arial, sans-serif;
         }
         .header {
             text-align: center;
