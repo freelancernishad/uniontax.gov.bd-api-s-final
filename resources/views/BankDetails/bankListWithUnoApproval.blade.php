@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <title>ইকপে কালেকশন স্যাটেলমেন্টের জন্য UNO অনুমোদন</title>
@@ -9,6 +9,7 @@
             background-color: #fff;
             color: #333;
             line-height: 1.6;
+            font-family: 'Noto Sans Bengali', Arial, sans-serif;
         }
         .header {
             text-align: center;
@@ -17,64 +18,73 @@
             margin: 0;
         }
         .header h2 {
-            font-size: 24px;
+            font-size: 26px;
         }
         .header h4 {
             margin-top: 5px;
             font-size: 18px;
             font-weight: normal;
-            color: #666;
+            color: #555;
         }
         .content {
-            margin-top: 20px;
+            margin-top: 25px;
             font-size: 16px;
             text-align: justify;
         }
         .bank-list {
-            margin-top: 30px;
+            margin-top: 35px;
             font-size: 14px;
         }
         .bank-list table {
             width: 100%;
             border-collapse: collapse;
-            table-layout: fixed; /* Column size fixed */
+            table-layout: fixed;
         }
         .bank-list th, .bank-list td {
-            border: 1px solid #444;
-            padding: 4px; /* কমানো হয়েছে */
+            border: 1px solid #555;
+            padding: 6px;
             text-align: center;
-            font-size: 12px; /* আগে 13px ছিল, এখন 12px */
-            overflow-wrap: break-word;
+            font-size: 13px;
+            word-break: break-word;
         }
-        /* Column width specific */
+        /* Adjusted column widths */
         .bank-list th.union-name, .bank-list td.union-name {
-            width: 12%;
+            width: 15%;
         }
         .bank-list th.bank-name, .bank-list td.bank-name {
             width: 18%;
         }
+        .bank-list th.branch-name, .bank-list td.branch-name {
+            width: 17%;
+        }
         .bank-list th.account-name, .bank-list td.account-name {
             width: 22%;
+        }
+        .bank-list th.account-no, .bank-list td.account-no {
+            width: 14%;
+        }
+        .bank-list th.routing-no, .bank-list td.routing-no {
+            width: 10%;
+        }
+        .bank-list th.ekpay-user, .bank-list td.ekpay-user {
+            width: 12%;
         }
         .bank-list th {
             background-color: #0077cc;
             color: white;
         }
         .bank-list td.english {
-            font-size: 11px; /* ইংরেজির জন্য 11px */
+            font-size: 12px;
             font-family: Arial, sans-serif;
         }
-        .footer {
-            margin-top: 60px;
-            text-align: right;
-        }
         .signature {
-            margin-top: 100px;
+            margin-top: 80px;
             text-align: right;
         }
         .signature p {
             margin: 0;
             font-weight: bold;
+            font-size: 16px;
         }
     </style>
 </head>
@@ -101,11 +111,11 @@
             <tr>
                 <th class="union-name">ইউনিয়ন নাম</th>
                 <th class="bank-name">ব্যাংক নাম</th>
-                <th>শাখার নাম</th>
+                <th class="branch-name">শাখার নাম</th>
                 <th class="account-name">অ্যাকাউন্ট শিরোনাম</th>
-                <th>অ্যাকাউন্ট নং</th>
-                <th>রাউটিং নং</th>
-                <th>একপে ইউজার</th>
+                <th class="account-no">অ্যাকাউন্ট নং</th>
+                <th class="routing-no">রাউটিং নং</th>
+                <th class="ekpay-user">একপে ইউজার</th>
             </tr>
         </thead>
         <tbody>
@@ -117,15 +127,21 @@
                     <td class="bank-name {{ preg_match('/[A-Za-z]/', $item['bank_name']) ? 'english' : '' }}">
                         {{ $item['bank_name'] }}
                     </td>
-                    <td class="{{ preg_match('/[A-Za-z]/', $item['branch_name']) ? 'english' : '' }}">
+                    <td class="branch-name {{ preg_match('/[A-Za-z]/', $item['branch_name']) ? 'english' : '' }}">
                         {{ $item['branch_name'] }}
                     </td>
                     <td class="account-name {{ preg_match('/[A-Za-z]/', $item['account_name']) ? 'english' : '' }}">
                         {{ $item['account_name'] }}
                     </td>
-                    <td class="account-name {{ preg_match('/[A-Za-z]/', $item['account_no']) ? 'english' : '' }}">{{ $item['account_no'] }}</td>
-                    <td class="account-name {{ preg_match('/[A-Za-z]/', $item['routing_no']) ? 'english' : '' }}">{{ $item['routing_no'] }}</td>
-                    <td class="account-name {{ preg_match('/[A-Za-z]/', $item['ekpay_user_id']) ? 'english' : '' }}">{{ $item['ekpay_user_id'] ?? '-' }}</td>
+                    <td class="account-no {{ preg_match('/[A-Za-z]/', $item['account_no']) ? 'english' : '' }}">
+                        {{ $item['account_no'] }}
+                    </td>
+                    <td class="routing-no {{ preg_match('/[A-Za-z]/', $item['routing_no']) ? 'english' : '' }}">
+                        {{ $item['routing_no'] }}
+                    </td>
+                    <td class="ekpay-user {{ preg_match('/[A-Za-z]/', $item['ekpay_user_id']) ? 'english' : '' }}">
+                        {{ $item['ekpay_user_id'] ?? '-' }}
+                    </td>
                 </tr>
             @endforeach
         </tbody>
