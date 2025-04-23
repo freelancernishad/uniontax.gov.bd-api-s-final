@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\Admin\Package\AdminPurchasedHistoryController;
 use App\Http\Controllers\Api\Admin\PackageAddon\AdminPackageAddonController;
 use App\Http\Controllers\Api\Admin\SocialMedia\AdminSocialMediaLinkController;
 use App\Http\Controllers\Api\Admin\SupportTicket\AdminSupportTicketApiController;
+use App\Http\Controllers\BankAccountController;
 
 Route::prefix('auth/admin')->group(function () {
     Route::post('login', [AdminAuthController::class, 'login'])->name('admin.login');
@@ -160,6 +161,8 @@ Route::prefix('admin')->group(function () {
         Route::post('/upazilas/{upazilaId}/create-unions', [AdminUniouninfoController::class, 'createUnion']);
         Route::post('/upazilas/{upazilaId}/uniouninfo', [AdminUniouninfoController::class, 'getUniouninfoByUpazila']);
 
+        Route::get('/bank-accounts/by-upazila/{id}', [BankAccountController::class, 'getBankAccountsByUpazila']);
+
 
         Route::prefix('/sonodfees')->group(function () {
             Route::post('/', [UserSonodFeeController::class, 'store']); // Create multiple SonodFees
@@ -182,3 +185,4 @@ Route::get('/upazilas/{upazilaId}/uniouninfo/pdf', [AdminUniouninfoController::c
 Route::get('/upazilas/{upazilaId}/uniouninfo/excel', [AdminUniouninfoController::class, 'getUniouninfoByUpazilaAndGenarateExcel']);
 
 Route::get('sonodnamelist/with-fees', [UserSonodFeeController::class, 'getSonodnamelistsWithFees']);
+Route::get('/bank-accounts/by-upazila/{id}', [BankAccountController::class, 'getBankAccountsByUpazila']);

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Uniouninfo;
 use App\Models\BankAccount;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Devfaysal\BangladeshGeocode\Models\Upazila;
 
 class BankAccountController extends Controller
 {
@@ -60,4 +62,79 @@ class BankAccountController extends Controller
             'data' => $bankAccount
         ], 200);
     }
+
+
+    public function getBankAccountsByUpazila(Request $request, $upazilaId)
+    {
+        // Upazila তথ্য নিয়ে আসা
+        $upazila = Upazila::with(['unions', 'district'])->find($upazilaId);
+
+        if (!$upazila) {
+            return response()->json([
+                'message' => 'Upazila not found',
+            ], 404);
+        }
+
+        // ইউনিয়নের নামের ট্রান্সফরমেশন
+        $unionNames = $upazila->unions->pluck('name')->map(function ($name) {
+            return str_replace(' ', '', strtolower($name));
+        })->toArray();
+
+        // ইউনিয়ন ইনফো নিয়ে আসা
+        $uniouninfos = Uniouninfo::whereIn('short_name_e', $unionNames)->get()->keyBy('short_name_e');
+
+        // ব্যাংক অ্যাকাউন্ট তথ্য নিয়ে আসা
+        $bankAccounts = BankAccount::whereIn('union', $unionNames)->get();
+
+        // ফরম্যাট করা ব্যাংক তথ্য
+        $formatted = $bankAccounts->map(function ($bankAccount) use ($uniouninfos) {
+            $unionShortName = $bankAccount->union;
+            $ekpayUserId = optional($uniouninfos[$unionShortName] ?? null)->AKPAY_MER_REG_ID ?? null;
+
+            return [
+                'union_name' => ucwords(str_replace('-', ' ', $unionShortName)),
+                'bank_name' => $bankAccount->bank_name,
+                'branch_name' => $bankAccount->branch_name,
+                'account_name' => $bankAccount->account_name,
+                'account_no' => $bankAccount->account_no,
+                'routing_no' => $bankAccount->routing_no,
+                'ekpay_user_id' => $ekpayUserId,
+            ];
+        });
+
+        // Upazila এবং District এর নাম
+        $upazilaName = $upazila->name;
+        $upazilaName_bn = $upazila->bn_name;
+        $districtName = $upazila->district->name ?? 'Unknown';
+        $districtName_bn = $upazila->district->bn_name ?? 'Unknown';
+        $unoName = ""; // UNO নাম যদি দরকার হয়
+
+        // PDF ফাইলের নাম
+        $filename = "banklist-$upazila->name.pdf";
+
+        // UNO সাইন চেক করা হবে
+        $generateWithUnoApproval = $request->boolean('unoSign');
+
+        // UNO সাইন থাকলে এক্সপোর্ট হবে, না থাকলে সাধারন ব্যাংক লিস্ট
+        if ($generateWithUnoApproval) {
+            // UNO অনুমতি সহ PDF তৈরি
+            $htmlView = view('BankDetails.bankListWithUnoApproval', compact('formatted', 'upazilaName', 'districtName','upazilaName_bn','districtName_bn', 'unoName'))->render();
+        } else {
+            // সাধারন ব্যাংক লিস্ট PDF তৈরি
+            $htmlView = view('BankDetails.bankListByThana', compact('formatted', 'upazilaName', 'districtName'))->render();
+        }
+
+        // PDF তৈরি করা
+        generatePdf($htmlView, null, null, $filename);
+
+        // রেসপন্স দেওয়া
+        return response()->json($formatted, 200);
+    }
+
+
+
+
+
+
+
 }
