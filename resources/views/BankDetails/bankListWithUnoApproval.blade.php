@@ -13,8 +13,10 @@
         .header {
             text-align: center;
         }
-        .header h2 {
+        .header h2, .header h4 {
             margin: 0;
+        }
+        .header h2 {
             font-size: 24px;
         }
         .header h4 {
@@ -40,6 +42,12 @@
             border: 1px solid #444;
             padding: 8px;
             text-align: center;
+
+        }
+        /* ইংরেজি টেক্সট সাইজ ছোট করার জন্য */
+        .bank-list td.english {
+            font-size: 12px;
+            font-family: Arial, sans-serif;
         }
         .bank-list th {
             background-color: #0077cc;
@@ -50,15 +58,11 @@
             text-align: right;
         }
         .signature {
-            margin-top: 50px;
+            margin-top: 100px;
             text-align: right;
         }
-        .signature img {
-            width: 180px;
-            height: auto;
-        }
         .signature p {
-            margin-top: 5px;
+            margin: 0;
             font-weight: bold;
         }
     </style>
@@ -66,9 +70,8 @@
 <body>
 
 <div class="header">
-
-    <h2 style="margin: 0;">উপজেলা নির্বাহী অফিসারের অফিস</h2>
-    <h4 style="margin: 0;">উপজেলা: {{ $upazilaName_bn }}, জেলা: {{ $districtName_bn }}</h4>
+    <h2>উপজেলা নির্বাহী অফিসারের অফিস</h2>
+    <h4>উপজেলা: {{ $upazilaName_bn }}, জেলা: {{ $districtName_bn }}</h4>
 </div>
 
 <div class="content">
@@ -97,24 +100,29 @@
         <tbody>
             @foreach($formatted as $item)
                 <tr>
-                    <td>{{ $item['union_name'] }}</td>
-                    <td>{{ $item['bank_name'] }}</td>
-                    <td>{{ $item['branch_name'] }}</td>
-                    <td>{{ $item['account_name'] }}</td>
-                    <td>{{ $item['account_no'] }}</td>
-                    <td>{{ $item['routing_no'] }}</td>
-                    <td>{{ $item['ekpay_user_id'] ?? '-' }}</td>
+                    <td class="{{ preg_match('/[A-Za-z]/', $item['bank_name']) ? 'english' : '' }}">{{ $item['union_name'] }}</td>
+                    <td class="{{ preg_match('/[A-Za-z]/', $item['bank_name']) ? 'english' : '' }}">
+                        {{ $item['bank_name'] }}
+                    </td>
+                    <td class="{{ preg_match('/[A-Za-z]/', $item['branch_name']) ? 'english' : '' }}">
+                        {{ $item['branch_name'] }}
+                    </td>
+                    <td class="{{ preg_match('/[A-Za-z]/', $item['account_name']) ? 'english' : '' }}">
+                        {{ $item['account_name'] }}
+                    </td>
+                    <td class="english">{{ $item['account_no'] }}</td>
+                    <td class="english">{{ $item['routing_no'] }}</td>
+                    <td class="english">{{ $item['ekpay_user_id'] ?? '-' }}</td>
                 </tr>
             @endforeach
         </tbody>
     </table>
 </div>
 
-<div class="signature" style="margin-top: 100px;">
-    <p style="margin: 0;">উপজেলা নির্বাহী অফিসার</p>
-    <p style="margin: 0;">{{ $upazilaName_bn }}, {{ $districtName_bn }}</p>
+<div class="signature">
+    <p>উপজেলা নির্বাহী অফিসার</p>
+    <p>{{ $upazilaName_bn }}, {{ $districtName_bn }}</p>
 </div>
-
 
 </body>
 </html>
