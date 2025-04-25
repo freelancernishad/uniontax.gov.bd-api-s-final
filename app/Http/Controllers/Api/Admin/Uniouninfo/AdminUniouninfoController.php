@@ -558,56 +558,66 @@ class AdminUniouninfoController extends Controller
 
 
     public function getUniouninfoByUpazila(Request $request, $upazilaId)
-{
-    $startDate = $request->input('start_date');
-    $endDate = $request->input('end_date');
-
-    // Fetch the Upazila with its related unions
-    $upazila = Upazila::with('unions')->find($upazilaId);
-
-    if (!$upazila) {
-        return response()->json(['message' => 'Upazila not found'], 404);
-    }
-
-    // Get union short names (transformed)
-    $unionNames = $upazila->unions->pluck('name')->map(function ($name) {
-        return str_replace(' ', '', strtolower($name)); // Remove spaces and lowercase
-    })->toArray();
-
-    // Fetch unioninfo records where short_name_e matches
-    $uniouninfoList = Uniouninfo::whereIn('short_name_e', $unionNames)->get();
-
-    // Format response
-    $formattedUniouninfoList = $uniouninfoList->map(function ($uniouninfo) use ($startDate, $endDate) {
-        $report = null;
-
-        if ($startDate && $endDate) {
-            $report = EkpayPaymentReport::where('union', $uniouninfo->short_name_e)
-                ->where('start_date', $startDate)
-                ->where('end_date', $endDate)
-                ->first();
+    {
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+    
+        // Fetch the Upazila with its related unions
+        $upazila = Upazila::with('unions')->find($upazilaId);
+    
+        if (!$upazila) {
+            return response()->json(['message' => 'Upazila not found'], 404);
         }
-
-        return [
-            'id' => $uniouninfo->id,
-            'full_name' => $uniouninfo->full_name,
-            'short_name_e' => $uniouninfo->short_name_e,
-            'thana' => $uniouninfo->thana,
-            'district' => $uniouninfo->district,
-            'u_code' => $uniouninfo->u_code,
-            'AKPAY_MER_REG_ID' => $uniouninfo->AKPAY_MER_REG_ID,
-            'AKPAY_MER_PASS_KEY' => $uniouninfo->AKPAY_MER_PASS_KEY,
-            'chairman_phone' => $uniouninfo->chairman_phone,
-            'secretary_phone' => $uniouninfo->chairman_phone,
-            'udc_phone' => $uniouninfo->chairman_phone,
-            'user_phone' => $uniouninfo->chairman_phone,
-            'ekpay_amount' => $report?->ekpay_amount,
-            'server_amount' => $report?->server_amount,
-        ];
-    });
-
-    return response()->json($formattedUniouninfoList, 200);
-}
+    
+        // Get union short names (transformed)
+        $unionNames = $upazila->unions->pluck('name')->map(function ($name) {
+            return str_replace(' ', '', strtolower($name)); // Remove spaces and lowercase
+        })->toArray();
+    
+        // Fetch unioninfo records where short_name_e matches
+        $uniouninfoList = Uniouninfo::whereIn('short_name_e', $unionNames)->get();
+    
+        // Format response
+        $formattedUniouninfoList = $uniouninfoList->map(function ($uniouninfo) use ($startDate, $endDate) {
+            $report = null;
+            $serverAmount = null;
+    
+            // If dates are provided, try to fetch EkpayPaymentReport and calculate server_amount
+            if ($startDate && $endDate) {
+                $report = EkpayPaymentReport::where('union', $uniouninfo->short_name_e)
+                    ->where('start_date', $startDate)
+                    ->where('end_date', $endDate)
+                    ->first();
+    
+                $serverAmount = Payment::where('union', $uniouninfo->short_name_e)
+                    ->whereBetween('date', [$startDate, $endDate])
+                    ->sum('amount');
+            }
+    
+            return [
+                'id' => $uniouninfo->id,
+                'full_name' => $uniouninfo->full_name,
+                'short_name_e' => $uniouninfo->short_name_e,
+                'thana' => $uniouninfo->thana,
+                'district' => $uniouninfo->district,
+                'u_code' => $uniouninfo->u_code,
+                'AKPAY_MER_REG_ID' => $uniouninfo->AKPAY_MER_REG_ID,
+                'AKPAY_MER_PASS_KEY' => $uniouninfo->AKPAY_MER_PASS_KEY,
+                'chairman_phone' => $uniouninfo->chairman_phone,
+                'secretary_phone' => $uniouninfo->chairman_phone,
+                'udc_phone' => $uniouninfo->chairman_phone,
+                'user_phone' => $uniouninfo->chairman_phone,
+                'ekpay_amount' => $report?->ekpay_amount,
+                'server_amount' => $serverAmount,
+                'difference_amount' => $report && $serverAmount !== null
+                    ? $report->ekpay_amount - $serverAmount
+                    : null,
+            ];
+        });
+    
+        return response()->json($formattedUniouninfoList, 200);
+    }
+    
 
 
 
