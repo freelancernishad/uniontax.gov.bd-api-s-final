@@ -18,16 +18,16 @@ class EkpayPaymentReportController extends Controller
     {
         $data = $request->all();
         $createdReports = [];
-    
+
         foreach ($data as $group) {
             $date = $group['date'];
-    
+
             // Validate date structure
             validator($date, [
                 'start_date' => 'required|date',
                 'end_date' => 'required|date',
             ])->validate();
-    
+
             foreach ($group['details'] as $detail) {
                 // Validate each detail
                 validator($detail, [
@@ -35,7 +35,7 @@ class EkpayPaymentReportController extends Controller
                     'ekpay_amount' => 'required|numeric',
                     'server_amount' => 'required|numeric',
                 ])->validate();
-    
+
                 $reportData = [
                     'start_date' => $date['start_date'],
                     'end_date' => $date['end_date'],
@@ -44,17 +44,17 @@ class EkpayPaymentReportController extends Controller
                     'server_amount' => $detail['server_amount'],
                     'difference_amount' => $detail['ekpay_amount'] - $detail['server_amount'],
                 ];
-    
+
                 $createdReports[] = EkpayPaymentReport::create($reportData);
             }
         }
-    
+
         return response()->json([
             'message' => 'Reports created successfully.',
             'data' => $createdReports
         ], 201);
     }
-    
+
 
 
 
@@ -64,14 +64,14 @@ class EkpayPaymentReportController extends Controller
     public function update(Request $request)
     {
         $data = $request->all();
-    
+
         $validatedDate = validator($data['date'], [
             'start_date' => 'required|date',
             'end_date' => 'required|date',
         ])->validate();
-    
+
         $updatedReports = [];
-    
+
         foreach ($data['details'] as $detail) {
             $validatedDetail = validator($detail, [
                 'id' => 'required|exists:ekpay_payment_reports,id',
@@ -79,9 +79,9 @@ class EkpayPaymentReportController extends Controller
                 'ekpay_amount' => 'required|numeric',
                 'server_amount' => 'required|numeric',
             ])->validate();
-    
+
             $report = EkpayPaymentReport::find($validatedDetail['id']);
-    
+
             $updateData = [
                 'union' => $validatedDetail['union'],
                 'ekpay_amount' => $validatedDetail['ekpay_amount'],
@@ -90,22 +90,28 @@ class EkpayPaymentReportController extends Controller
                 'start_date' => $validatedDate['start_date'],
                 'end_date' => $validatedDate['end_date'],
             ];
-    
+
             $report->update($updateData);
             $updatedReports[] = $report;
         }
-    
+
         return response()->json([
             'message' => 'Reports updated successfully.',
             'data' => $updatedReports
         ]);
     }
-    
+
 
     // Get by Union
-    public function getByUnion($union)
+    public function getByUnion(Request $request, $union)
     {
-        $reports = EkpayPaymentReport::where('union', $union)->get();
+        $perPage = $request->input('per_page', 10); // default 10 per page
+
+        $reports = EkpayPaymentReport::where('union', $union)
+            ->orderBy('start_date', 'desc')
+            ->paginate($perPage);
+
         return response()->json($reports);
     }
+
 }
