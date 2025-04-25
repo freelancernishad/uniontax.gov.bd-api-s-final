@@ -104,7 +104,7 @@ class EkpayPaymentReportController extends Controller
 
     public function getByUnion(Request $request, $union = null)
     {
-        $user = auth('api')->user();
+        $user = auth()->guard('user')->user();
 
         if ($user) {
             $union = $user->union;
