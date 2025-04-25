@@ -562,39 +562,39 @@ class AdminUniouninfoController extends Controller
     {
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
-    
+
         // Fetch the Upazila with its related unions
         $upazila = Upazila::with('unions')->find($upazilaId);
-    
+
         if (!$upazila) {
             return response()->json(['message' => 'Upazila not found'], 404);
         }
-    
+
         // Get union short names (transformed)
         $unionNames = $upazila->unions->pluck('name')->map(function ($name) {
             return str_replace(' ', '', strtolower($name)); // Remove spaces and lowercase
         })->toArray();
-    
+
         // Fetch unioninfo records where short_name_e matches
         $uniouninfoList = Uniouninfo::whereIn('short_name_e', $unionNames)->get();
-    
+
         // Format response
         $formattedUniouninfoList = $uniouninfoList->map(function ($uniouninfo) use ($startDate, $endDate) {
             $report = null;
             $serverAmount = null;
-    
+
             // If dates are provided, try to fetch EkpayPaymentReport and calculate server_amount
             if ($startDate && $endDate) {
                 $report = EkpayPaymentReport::where('union', $uniouninfo->short_name_e)
                     ->where('start_date', $startDate)
                     ->where('end_date', $endDate)
                     ->first();
-    
-                $serverAmount = Payment::where('union', $uniouninfo->short_name_e)
+
+               return $serverAmount = Payment::where('union', $uniouninfo->short_name_e)
                     ->whereBetween('date', [$startDate, $endDate])
                     ->sum('amount');
             }
-    
+
             return [
                 'id' => $uniouninfo->id,
                 'full_name' => $uniouninfo->full_name,
@@ -615,10 +615,10 @@ class AdminUniouninfoController extends Controller
                     : null,
             ];
         });
-    
+
         return response()->json($formattedUniouninfoList, 200);
     }
-    
+
 
 
 
