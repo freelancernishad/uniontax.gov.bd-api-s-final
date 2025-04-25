@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\Payments\FailedPaymentController;
 use App\Http\Controllers\Api\User\Tender\TenderListController;
 use App\Http\Controllers\Api\User\Uniouninfo\VillageController;
 use App\Http\Controllers\Api\User\Package\UserPackageController;
+use App\Http\Controllers\Api\Reports\EkpayPaymentReportController;
 use App\Http\Controllers\Api\User\Holdingtax\HoldingtaxController;
 use App\Http\Controllers\Api\User\Uniouninfo\PostOfficeController;
 use App\Http\Controllers\Api\Auth\User\UserPasswordResetController;
@@ -171,6 +172,13 @@ Route::prefix('user')->group(function () {
             Route::post('unioun-info/village', [VillageController::class, 'store']);
             Route::put('unioun-info/village/{id}', [VillageController::class, 'update']);
             Route::delete('unioun-info/village/{id}', [VillageController::class, 'destroy']);
+
+
+
+        Route::prefix('ekpay-reports')->group(function () {
+            Route::get('/get/by/union', [EkpayPaymentReportController::class, 'getByUnion']);
+        });
+
 
 
 
