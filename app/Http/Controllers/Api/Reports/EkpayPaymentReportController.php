@@ -111,7 +111,7 @@ class EkpayPaymentReportController extends Controller
         }
 
         if (!$union) {
-            $union = $user->union;
+            $union = $user->unioun;
         }
 
         if (!$union) {
