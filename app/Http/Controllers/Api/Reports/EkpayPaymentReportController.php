@@ -103,21 +103,10 @@ class EkpayPaymentReportController extends Controller
 
 
     // Get by Union
-    public function getByUnion(Request $request, $union = null)
+    public function getByUnion($union)
     {
-        $user = auth('api')->user();
-
-        if ($user) {
-            $union = $user->union;
-        }
-
-        if (!$union) {
-            return response()->json(['error' => 'Union not specified or user not authenticated.'], 400);
-        }
-
-        $perPage = $request->get('per_page', 10); // Default to 10 if per_page is not provided
-        $reports = EkpayPaymentReport::where('union', $union)->paginate($perPage);
-
+        $reports = EkpayPaymentReport::where('union', $union)->get();
         return response()->json($reports);
     }
+
 }
