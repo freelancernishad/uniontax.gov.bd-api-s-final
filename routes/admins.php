@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\AuthenticateAdmin;
+use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\PurchaseSmsController;
 use App\Http\Controllers\Api\AllowedOriginController;
 use App\Http\Controllers\Api\Coupon\CouponController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Api\Admin\Reports\ReportsController;
 use App\Http\Controllers\Api\Payments\FailedPaymentController;
 use App\Http\Controllers\Api\SiteSettings\SiteSettingController;
 use App\Http\Controllers\Api\Admin\Package\AdminPackageController;
+use App\Http\Controllers\Api\Reports\EkpayPaymentReportController;
 use App\Http\Controllers\Api\User\SonodName\UserSonodFeeController;
 use App\Http\Controllers\Api\SystemSettings\SystemSettingController;
 use App\Http\Controllers\Api\Admin\Transitions\AdminPaymentController;
@@ -21,7 +23,6 @@ use App\Http\Controllers\Api\Admin\Package\AdminPurchasedHistoryController;
 use App\Http\Controllers\Api\Admin\PackageAddon\AdminPackageAddonController;
 use App\Http\Controllers\Api\Admin\SocialMedia\AdminSocialMediaLinkController;
 use App\Http\Controllers\Api\Admin\SupportTicket\AdminSupportTicketApiController;
-use App\Http\Controllers\BankAccountController;
 
 Route::prefix('auth/admin')->group(function () {
     Route::post('login', [AdminAuthController::class, 'login'])->name('admin.login');
@@ -164,6 +165,10 @@ Route::prefix('admin')->group(function () {
         Route::get('/bank-accounts/by-upazila/{id}', [BankAccountController::class, 'getBankAccountsByUpazila']);
 
 
+        Route::post('upazilas/{upazilaId}/union-contacts', [AdminUniouninfoController::class, 'CreateUniouninfoContactByUpazila']);
+
+
+
         Route::prefix('/sonodfees')->group(function () {
             Route::post('/', [UserSonodFeeController::class, 'store']); // Create multiple SonodFees
             Route::put('/', [UserSonodFeeController::class, 'update']); // Update multiple SonodFees
@@ -175,7 +180,15 @@ Route::prefix('admin')->group(function () {
         Route::put('/sms-purchase/{trx_id}/reject', [PurchaseSmsController::class, 'rejectSmsPurchase']);
 
 
+        Route::prefix('ekpay-reports')->group(function () {
+            Route::get('/', [EkpayPaymentReportController::class, 'index']);
+            Route::post('/', [EkpayPaymentReportController::class, 'store']);
+            Route::put('/{id}', [EkpayPaymentReportController::class, 'update']);
+            Route::get('/union/{union}', [EkpayPaymentReportController::class, 'getByUnion']);
+        });
 
+
+        
 
     });
 });

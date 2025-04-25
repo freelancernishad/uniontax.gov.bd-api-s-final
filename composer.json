@@ -9,6 +9,7 @@
         "aws/aws-sdk-php": "^3.327",
         "carlos-meneses/laravel-mpdf": "^2.1",
         "devfaysal/laravel-bangladesh-geocode": "^2.3",
+        "google/apiclient": "^2.18",
         "intervention/image": "^3.9",
         "laravel/framework": "^11.9",
         "laravel/octane": "^2.8",

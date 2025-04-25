@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\VercelController;
 use App\Http\Controllers\PurchaseSmsController;
 use App\Http\Controllers\Api\Global\UniouninfoController;
@@ -126,3 +127,27 @@ Route::get('/create-domains-by-upazila/{id}', [VercelController::class, 'createD
 
 
 Route::post('/ekpay/create-url', [EkpayController::class, 'createUrl']);
+
+
+
+
+
+// Route to redirect user to Google for authentication
+Route::get('google/redirect', [GoogleController::class, 'redirectToGoogle'])->name('google.redirect');
+
+// Google callback route, called after the user authenticates
+Route::get('google/callback', [GoogleController::class, 'handleGoogleCallback'])->name('google.callback');
+
+
+Route::get('google/check-phone/{phoneNumber}', [GoogleController::class, 'checkPhoneNumberInGoogleContacts']);
+
+// Route to get Google contacts
+Route::get('google/contacts', [GoogleController::class, 'getGoogleContacts'])->name('google.contacts');
+
+
+Route::post('google/add-or-update-contact', [GoogleController::class, 'addOrUpdateContacts']);
+
+
+
+
+Route::post('/google/revoke', [GoogleController::class, 'revokeGoogleAuthentication']);

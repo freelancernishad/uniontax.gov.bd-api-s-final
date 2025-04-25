@@ -714,4 +714,71 @@ class AdminUniouninfoController extends Controller
 
 
 
+    public function CreateUniouninfoContactByUpazila($upazilaId)
+    {
+        // Fetch the Upazila with its related unions and district
+        $upazila = Upazila::with(['unions', 'district'])->find($upazilaId);
+    
+        if (!$upazila) {
+            return response()->json([
+                'message' => 'Upazila not found',
+            ], 404);
+        }
+    
+        // Get the union names from the Upazila and transform them
+        $unionNames = $upazila->unions->pluck('name')->map(function ($name) {
+            return str_replace(' ', '', strtolower($name));
+        })->toArray();
+    
+        // Fetch Uniouninfo records
+        $uniouninfoList = Uniouninfo::whereIn('short_name_e', $unionNames)->get();
+    
+        $contacts = [];
+        
+        foreach ($uniouninfoList as $uniouninfo) {
+            // Base name structure without role
+            $baseName = sprintf(
+                "%s - %s - %s (%s)",
+                $upazila->district->name ?? 'Unknown District',
+                $upazila->name,
+                $uniouninfo->short_name_e ?? 'Unknown Union',
+                $uniouninfo->full_name
+            );
+    
+            // Add contacts with their specific roles
+            if (!empty($uniouninfo->chairman_phone)) {
+                $contacts[] = [
+                    'name' => 'Chairman - ' . $baseName,
+                    'phone_number' => $uniouninfo->chairman_phone
+                ];
+            }
+            
+            if (!empty($uniouninfo->secretary_phone)) {
+                $contacts[] = [
+                    'name' => 'Secretary - ' . $baseName,
+                    'phone_number' => $uniouninfo->secretary_phone
+                ];
+            }
+            
+            if (!empty($uniouninfo->udc_phone)) {
+                $contacts[] = [
+                    'name' => 'UDC - ' . $baseName,
+                    'phone_number' => $uniouninfo->udc_phone
+                ];
+            }
+            
+            if (!empty($uniouninfo->user_phone)) {
+                $contacts[] = [
+                    'name' => 'User - ' . $baseName,
+                    'phone_number' => $uniouninfo->user_phone
+                ];
+            }
+        }
+        $savedcontacts = addOrUpdateContacts($contacts);
+    
+        return response()->json(['contacts'=>$contacts,'savedcontacts'=>$savedcontacts], 200);
+    }
+
+
+
 }
