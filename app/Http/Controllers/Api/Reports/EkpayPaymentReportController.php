@@ -120,5 +120,4 @@ class EkpayPaymentReportController extends Controller
 
         return response()->json($reports);
     }
-
 }
