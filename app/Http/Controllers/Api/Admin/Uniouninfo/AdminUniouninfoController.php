@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\AllowedOrigin;
 use PhpParser\Node\Stmt\Return_;
 use App\Exports\UniouninfoExport;
+use App\Models\EkpayPaymentReport;
 use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\View;
@@ -556,34 +557,43 @@ class AdminUniouninfoController extends Controller
 
 
 
-    public function getUniouninfoByUpazila($upazilaId)
+    public function getUniouninfoByUpazila(Request $request, $upazilaId)
     {
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+        ]);
+
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
         // Fetch the Upazila with its related unions
         $upazila = Upazila::with('unions')->find($upazilaId);
 
         if (!$upazila) {
-            return response()->json([
-                'message' => 'Upazila not found',
-            ], 404);
+            return response()->json(['message' => 'Upazila not found'], 404);
         }
 
-
-
-        // Get the union names from the Upazila and transform them
+        // Get union short names (transformed)
         $unionNames = $upazila->unions->pluck('name')->map(function ($name) {
-            return str_replace(' ', '', strtolower($name)); // Remove spaces and convert to lowercase
+            return str_replace(' ', '', strtolower($name)); // Remove spaces and lowercase
         })->toArray();
 
-        // Fetch Uniouninfo records where short_name_e matches the transformed union names
+        // Fetch unioninfo records where short_name_e matches
         $uniouninfoList = Uniouninfo::whereIn('short_name_e', $unionNames)->get();
 
-        // Format the Uniouninfo data
-        $formattedUniouninfoList = $uniouninfoList->map(function ($uniouninfo) use ($upazila) {
-                 // Get the union code from the JSON data
+        // Format response
+        $formattedUniouninfoList = $uniouninfoList->map(function ($uniouninfo) use ($startDate, $endDate) {
+            // Try to find EkpayPaymentReport for this union and date
+            $report = EkpayPaymentReport::where('union', $uniouninfo->short_name_e)
+                ->where('start_date', $startDate)
+                ->where('end_date', $endDate)
+                ->first();
 
             return [
                 'id' => $uniouninfo->id,
                 'full_name' => $uniouninfo->full_name,
+                'short_name_e' => $uniouninfo->short_name_e,
                 'thana' => $uniouninfo->thana,
                 'district' => $uniouninfo->district,
                 'u_code' => $uniouninfo->u_code,
@@ -593,12 +603,14 @@ class AdminUniouninfoController extends Controller
                 'secretary_phone' => $uniouninfo->chairman_phone,
                 'udc_phone' => $uniouninfo->chairman_phone,
                 'user_phone' => $uniouninfo->chairman_phone,
+                'ekpay_amount' => $report ? $report->ekpay_amount : null,
+                'server_amount' => $report ? $report->server_amount : null,
             ];
         });
 
-        // Return the formatted Uniouninfo list
         return response()->json($formattedUniouninfoList, 200);
     }
+
 
 
     public function getUniouninfoByUpazilaAndGenaratePdf($upazilaId)
@@ -718,23 +730,23 @@ class AdminUniouninfoController extends Controller
     {
         // Fetch the Upazila with its related unions and district
         $upazila = Upazila::with(['unions', 'district'])->find($upazilaId);
-    
+
         if (!$upazila) {
             return response()->json([
                 'message' => 'Upazila not found',
             ], 404);
         }
-    
+
         // Get the union names from the Upazila and transform them
         $unionNames = $upazila->unions->pluck('name')->map(function ($name) {
             return str_replace(' ', '', strtolower($name));
         })->toArray();
-    
+
         // Fetch Uniouninfo records
         $uniouninfoList = Uniouninfo::whereIn('short_name_e', $unionNames)->get();
-    
+
         $contacts = [];
-        
+
         foreach ($uniouninfoList as $uniouninfo) {
             // Base name structure without role
             $baseName = sprintf(
@@ -744,7 +756,7 @@ class AdminUniouninfoController extends Controller
                 $uniouninfo->short_name_e ?? 'Unknown Union',
                 $uniouninfo->full_name
             );
-    
+
             // Add contacts with their specific roles
             if (!empty($uniouninfo->chairman_phone)) {
                 $contacts[] = [
@@ -752,21 +764,21 @@ class AdminUniouninfoController extends Controller
                     'phone_number' => $uniouninfo->chairman_phone
                 ];
             }
-            
+
             if (!empty($uniouninfo->secretary_phone)) {
                 $contacts[] = [
                     'name' => 'Secretary - ' . $baseName,
                     'phone_number' => $uniouninfo->secretary_phone
                 ];
             }
-            
+
             if (!empty($uniouninfo->udc_phone)) {
                 $contacts[] = [
                     'name' => 'UDC - ' . $baseName,
                     'phone_number' => $uniouninfo->udc_phone
                 ];
             }
-            
+
             if (!empty($uniouninfo->user_phone)) {
                 $contacts[] = [
                     'name' => 'User - ' . $baseName,
@@ -775,7 +787,7 @@ class AdminUniouninfoController extends Controller
             }
         }
         $savedcontacts = addOrUpdateContacts($contacts);
-    
+
         return response()->json(['contacts'=>$contacts,'savedcontacts'=>$savedcontacts], 200);
     }
 
