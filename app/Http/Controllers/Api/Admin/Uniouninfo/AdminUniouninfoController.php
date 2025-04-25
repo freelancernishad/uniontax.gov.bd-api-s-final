@@ -590,7 +590,7 @@ class AdminUniouninfoController extends Controller
                     ->where('end_date', $endDate)
                     ->first();
 
-               return $serverAmount = Payment::where('union', $uniouninfo->short_name_e)
+                $serverAmount = Payment::where('union', $uniouninfo->short_name_e)
                     ->whereBetween('date', [$startDate, $endDate])
                     ->sum('amount');
             }
