@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Api\Admin\Uniouninfo;
 
 use App\Models\User;
+use App\Models\Payment;
 use App\Models\Uniouninfo;
 use Illuminate\Http\Request;
 use App\Models\AllowedOrigin;
