@@ -558,58 +558,57 @@ class AdminUniouninfoController extends Controller
 
 
     public function getUniouninfoByUpazila(Request $request, $upazilaId)
-    {
-        $request->validate([
-            'start_date' => 'required|date',
-            'end_date' => 'required|date',
-        ]);
+{
+    $startDate = $request->input('start_date');
+    $endDate = $request->input('end_date');
 
-        $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
+    // Fetch the Upazila with its related unions
+    $upazila = Upazila::with('unions')->find($upazilaId);
 
-        // Fetch the Upazila with its related unions
-        $upazila = Upazila::with('unions')->find($upazilaId);
+    if (!$upazila) {
+        return response()->json(['message' => 'Upazila not found'], 404);
+    }
 
-        if (!$upazila) {
-            return response()->json(['message' => 'Upazila not found'], 404);
-        }
+    // Get union short names (transformed)
+    $unionNames = $upazila->unions->pluck('name')->map(function ($name) {
+        return str_replace(' ', '', strtolower($name)); // Remove spaces and lowercase
+    })->toArray();
 
-        // Get union short names (transformed)
-        $unionNames = $upazila->unions->pluck('name')->map(function ($name) {
-            return str_replace(' ', '', strtolower($name)); // Remove spaces and lowercase
-        })->toArray();
+    // Fetch unioninfo records where short_name_e matches
+    $uniouninfoList = Uniouninfo::whereIn('short_name_e', $unionNames)->get();
 
-        // Fetch unioninfo records where short_name_e matches
-        $uniouninfoList = Uniouninfo::whereIn('short_name_e', $unionNames)->get();
+    // Format response
+    $formattedUniouninfoList = $uniouninfoList->map(function ($uniouninfo) use ($startDate, $endDate) {
+        $report = null;
 
-        // Format response
-        $formattedUniouninfoList = $uniouninfoList->map(function ($uniouninfo) use ($startDate, $endDate) {
-            // Try to find EkpayPaymentReport for this union and date
+        if ($startDate && $endDate) {
             $report = EkpayPaymentReport::where('union', $uniouninfo->short_name_e)
                 ->where('start_date', $startDate)
                 ->where('end_date', $endDate)
                 ->first();
+        }
 
-            return [
-                'id' => $uniouninfo->id,
-                'full_name' => $uniouninfo->full_name,
-                'short_name_e' => $uniouninfo->short_name_e,
-                'thana' => $uniouninfo->thana,
-                'district' => $uniouninfo->district,
-                'u_code' => $uniouninfo->u_code,
-                'AKPAY_MER_REG_ID' => $uniouninfo->AKPAY_MER_REG_ID,
-                'AKPAY_MER_PASS_KEY' => $uniouninfo->AKPAY_MER_PASS_KEY,
-                'chairman_phone' => $uniouninfo->chairman_phone,
-                'secretary_phone' => $uniouninfo->chairman_phone,
-                'udc_phone' => $uniouninfo->chairman_phone,
-                'user_phone' => $uniouninfo->chairman_phone,
-                'ekpay_amount' => $report ? $report->ekpay_amount : null,
-                'server_amount' => $report ? $report->server_amount : null,
-            ];
-        });
+        return [
+            'id' => $uniouninfo->id,
+            'full_name' => $uniouninfo->full_name,
+            'short_name_e' => $uniouninfo->short_name_e,
+            'thana' => $uniouninfo->thana,
+            'district' => $uniouninfo->district,
+            'u_code' => $uniouninfo->u_code,
+            'AKPAY_MER_REG_ID' => $uniouninfo->AKPAY_MER_REG_ID,
+            'AKPAY_MER_PASS_KEY' => $uniouninfo->AKPAY_MER_PASS_KEY,
+            'chairman_phone' => $uniouninfo->chairman_phone,
+            'secretary_phone' => $uniouninfo->chairman_phone,
+            'udc_phone' => $uniouninfo->chairman_phone,
+            'user_phone' => $uniouninfo->chairman_phone,
+            'ekpay_amount' => $report?->ekpay_amount,
+            'server_amount' => $report?->server_amount,
+        ];
+    });
 
-        return response()->json($formattedUniouninfoList, 200);
-    }
+    return response()->json($formattedUniouninfoList, 200);
+}
+
 
 
 
