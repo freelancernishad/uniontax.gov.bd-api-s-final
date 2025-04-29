@@ -271,6 +271,7 @@ class AuthUserController extends Controller
                 'category' => $user->category,
                 'email_verified' => $user->hasVerifiedEmail(), // Checks verification status
                 'is_popup' => $uniouninfo ? $uniouninfo->is_popup : false, // Check if Uniouninfo exists
+                'has_bank_account' => $uniouninfo ? $uniouninfo->has_bank_account : false, // Check if Uniouninfo exists
             ];
 
             return response()->json(['message' => 'Token is valid.','user'=>$payload], 200);
