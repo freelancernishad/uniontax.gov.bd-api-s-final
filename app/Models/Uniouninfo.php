@@ -55,7 +55,7 @@ class Uniouninfo extends Model
         'user_phone',      // New column
     ];
 
-    protected $appends = ['is_popup'];
+    protected $appends = ['is_popup','has_bank_account'];
 
     /**
      * Get the value of is_popup.
@@ -68,6 +68,12 @@ class Uniouninfo extends Model
                empty($this->secretary_phone) ||
                empty($this->udc_phone) ||
                empty($this->user_phone);
+    }
+
+    public function getHasBankAccountAttribute()
+    {
+        // Assuming you have a BankAccount model and a `union` column in it
+        return BankAccount::where('union', $this->short_name_e)->exists();
     }
         /**
      * Save a file to S3 and update the model attribute with the file path.
