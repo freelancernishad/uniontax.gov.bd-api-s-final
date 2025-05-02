@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Api\Admin\Uniouninfo;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Payment;
 use App\Models\Uniouninfo;
@@ -583,17 +584,28 @@ class AdminUniouninfoController extends Controller
             $report = null;
             $serverAmount = null;
 
-            // If dates are provided, try to fetch EkpayPaymentReport and calculate server_amount
+            // Apply Ekpay report only if both start & end dates are provided
             if ($startDate && $endDate) {
                 $report = EkpayPaymentReport::where('union', $uniouninfo->short_name_e)
                     ->where('start_date', $startDate)
                     ->where('end_date', $endDate)
                     ->first();
-
-                $serverAmount = Payment::where('union', $uniouninfo->short_name_e)
-                    ->whereBetween('date', [$startDate, $endDate])
-                    ->sum('amount');
             }
+
+            // Always calculate server amount using Payment model with default 7-day window
+            $from = $startDate ?: Carbon::now()->subDays(7)->toDateString();
+            $to = $endDate ?: Carbon::now()->toDateString();
+
+            $query = Payment::where('union', $uniouninfo->short_name_e);
+
+            if ($from === $to) {
+                $query->whereDate('date', $from);
+            } else {
+                $query->whereDate('date', '>=', $from)
+                      ->whereDate('date', '<=', $to);
+            }
+
+            $serverAmount = $query->sum('amount');
 
             return [
                 'id' => $uniouninfo->id,
@@ -605,13 +617,13 @@ class AdminUniouninfoController extends Controller
                 'AKPAY_MER_REG_ID' => $uniouninfo->AKPAY_MER_REG_ID,
                 'AKPAY_MER_PASS_KEY' => $uniouninfo->AKPAY_MER_PASS_KEY,
                 'chairman_phone' => $uniouninfo->chairman_phone,
-                'secretary_phone' => $uniouninfo->chairman_phone,
-                'udc_phone' => $uniouninfo->chairman_phone,
-                'user_phone' => $uniouninfo->chairman_phone,
+                'secretary_phone' => $uniouninfo->secretary_phone,
+                'udc_phone' => $uniouninfo->udc_phone,
+                'user_phone' => $uniouninfo->user_phone,
                 'ekpay_amount' => $report?->ekpay_amount,
                 'server_amount' => $serverAmount,
                 'difference_amount' => $report && $serverAmount !== null
-                    ? $report->ekpay_amount - $serverAmount
+                    ? floatval($report->ekpay_amount) - floatval($serverAmount)
                     : null,
             ];
         });
