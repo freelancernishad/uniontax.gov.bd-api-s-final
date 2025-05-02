@@ -595,9 +595,9 @@ class AdminUniouninfoController extends Controller
             // Always calculate server amount using Payment model with default 7-day window
             $from = $startDate ?: Carbon::now()->subDays(7)->toDateString();
             $to = $endDate ?: Carbon::now()->toDateString();
-            
 
-            $query = Payment::where('union', $uniouninfo->short_name_e);
+
+            $query = Payment::where('status', 'Paid')->where('union', $uniouninfo->short_name_e);
 
             if ($from === $to) {
                 $query->whereDate('date', $from);
