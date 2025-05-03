@@ -104,18 +104,27 @@ class EkpayPaymentReportController extends Controller
 
     public function getByUnion(Request $request, $union = null)
     {
-        $user = auth()->guard('api')->user();
 
-        if (!$user) {
-            return response()->json(['error' => 'User not authenticated.'], 401);
-        }
 
-        if (!$union) {
+        if (auth()->guard('admin')->check()) {
+            // If the guard is 'admin', use the union parameter directly
+            if (!$union) {
+                return response()->json(['error' => 'Union not specified.'], 400);
+            }
+        } else if (auth()->guard('api')->check()) {
+            // If the guard is 'api', get the union from the authenticated user
+            $user = auth()->guard('api')->user();
+
+            if (!$user) {
+                return response()->json(['error' => 'User not authenticated.'], 401);
+            }
             $union = $user->unioun;
-        }
 
-        if (!$union) {
-            return response()->json(['error' => 'Union not specified or user not authenticated.'], 400);
+            if (!$union) {
+                return response()->json(['error' => 'Union not specified or user not authenticated.'], 400);
+            }
+        } else {
+            return response()->json(['error' => 'Invalid guard or user not authenticated.'], 403);
         }
 
         $perPage = $request->get('per_page', 10); // Default to 10 if per_page is not provided
