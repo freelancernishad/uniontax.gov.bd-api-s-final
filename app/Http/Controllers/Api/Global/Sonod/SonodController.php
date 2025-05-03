@@ -150,7 +150,7 @@ class SonodController extends Controller
 
             // Handle base64 image upload
     if (isset($bnData['image']) && $bnData['image']) {
-        $insertData['image'] = $this->uploadBase64Image(
+        $insertData['image'] = uploadBase64Image(
             $bnData['image'],
             $filePath,
             $dateFolder,
@@ -334,40 +334,6 @@ class SonodController extends Controller
     }
 }
 
-private function uploadBase64Image($fileData, $filePath, $dateFolder, $sonodId)
-{
-    if ($fileData && preg_match('/^data:image\/(\w+);base64,/', $fileData, $matches)) {
-        // Define the directory for the file
-        $directory = "sonod/$filePath/$dateFolder/$sonodId";
-
-        // Extract the base64 data
-        $base64Data = substr($fileData, strpos($fileData, ',') + 1);
-
-        // Decode the base64 data
-        $decodedData = base64_decode($base64Data);
-        if ($decodedData === false) {
-            throw new \Exception("Invalid base64 data provided.");
-        }
-
-        // Determine the file extension from the MIME type
-        $extension = $matches[1]; // e.g., 'png', 'jpeg'
-
-        // Generate a unique file name
-        $fileName = time() . '_' . Str::random(10) . '.' . $extension;
-
-        // Ensure directory exists if using local storage
-        if (!Storage::disk('protected')->exists($directory)) {
-            Storage::disk('protected')->makeDirectory($directory);
-        }
-
-        // Store the file in the protected disk
-        Storage::disk('protected')->put("$directory/$fileName", $decodedData);
-
-        // Return the file path
-        return "$directory/$fileName";
-    }
-    return null;
-}
 
 
 

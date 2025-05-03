@@ -388,7 +388,30 @@ class UserSonodController extends Controller
             $filePath = str_replace(' ', '_', $sonodEnName->enname);
             $dateFolder = date("Y/m/d");
 
+
+
+        // Setup file path
+        $sonodEnName = Sonodnamelist::where('bnname', $sonod->sonod_name)->first();
+        $filePath = str_replace(' ', '_', $sonodEnName->enname);
+        $dateFolder = date("Y/m/d");
+
+        // Handle base64 image upload
+        if ($request->has('image') && $request->image) {
+            $dataToUpdate['image'] = uploadBase64Image(
+                $request->image,
+                $filePath,
+                $dateFolder,
+                $sonod->sonod_Id
+            );
+        }
+
+
+
             handleFileUploads($request, $dataToUpdate, $filePath, $dateFolder, $sonod->sonod_Id);
+
+
+
+
 
             // Update the Sonod record
             $sonod->update($dataToUpdate);
