@@ -22,10 +22,10 @@ Route::prefix('auth/uddokta')->group(function () {
 
 
 
-        Route::get('holdingtax', [HoldingtaxController::class, 'holdingSearch']);
-        Route::post('holdingtax', [HoldingtaxController::class, 'store']);
-        Route::get('holdingtax/{id}', [HoldingtaxController::class, 'getSingleHoldingTaxWithBokeyas']);
-        Route::put('/holding-bokeya/{id}/update-price', [HoldingtaxController::class, 'updateUnpaidHoldingBokeyaPrice']);
+        Route::get('uddokta/holdingtax', [HoldingtaxController::class, 'holdingSearch']);
+        Route::post('uddokta/holdingtax', [HoldingtaxController::class, 'store']);
+        Route::get('uddokta/holdingtax/{id}', [HoldingtaxController::class, 'getSingleHoldingTaxWithBokeyas']);
+        Route::put('uddokta/holding-bokeya/{id}/update-price', [HoldingtaxController::class, 'updateUnpaidHoldingBokeyaPrice']);
 
 
 
