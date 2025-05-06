@@ -118,6 +118,7 @@ class AuthUddoktaController extends Controller
             $payload = [
                 'email' => $uddokta->email,
                 'name' => $uddokta->name,
+                'unioun' => $uddokta->union_name,
                 'email_verified' => $uddokta->hasVerifiedEmail(), // Checks verification status
             ];
 
@@ -131,6 +132,7 @@ class AuthUddoktaController extends Controller
             return response()->json([
                 'token' => $token,
                 'uddokta' => $payload,
+                'user' => ['unioun'=> $uddokta->union_name],
             ], 200);
         }
 
