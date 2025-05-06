@@ -53,6 +53,7 @@
                 $width = '200px';
                 $fontsize = '22px';
                 $C_color = 'black';
+                $color = 'black';
             @endphp
 
             <div
