@@ -283,11 +283,19 @@ class HoldingtaxController extends Controller
     public function getSingleHoldingTaxWithBokeyas(Request $r, $id)
     {
         // Get the authenticated user's union
-        $auth = Auth::user();
+       
+    
         $userUnion = $r->unioun;
-        if ($auth) {
+        if (auth()->guard('user')->check()) {
+            $auth = auth()->guard('user')->user();
             $userUnion = $auth->unioun;
+        } elseif (auth()->guard('uddokta')->check()) {
+            $auth = auth()->guard('uddokta')->user();
+            $userUnion = $auth->union_name;
+        }else{
+            $auth = Auth::user();
         }
+    
 
         // Find the holding tax by its id and eager load the holding bokeyas with specific columns
         $holdingTax = Holdingtax::select(['unioun', 'id', 'holding_no', 'category', 'maliker_name', 'father_or_samir_name', 'gramer_name', 'word_no', 'nid_no', 'mobile_no', 'griher_barsikh_mullo', 'jomir_vara', 'barsikh_vara'])
