@@ -22,11 +22,6 @@ Route::prefix('auth/uddokta')->group(function () {
 
 
 
-        Route::get('uddokta/holdingtax', [HoldingtaxController::class, 'holdingSearch']);
-        Route::post('uddokta/holdingtax', [HoldingtaxController::class, 'store']);
-        Route::get('uddokta/holdingtax/{id}', [HoldingtaxController::class, 'getSingleHoldingTaxWithBokeyas']);
-        Route::put('uddokta/holding-bokeya/{id}/update-price', [HoldingtaxController::class, 'updateUnpaidHoldingBokeyaPrice']);
-
 
 
         Route::post('citizen/information/nid', [CitizenInformationController::class,'citizeninformationNID']);
@@ -36,6 +31,19 @@ Route::prefix('auth/uddokta')->group(function () {
     });
 });
 
+
+
+
+Route::middleware(AuthenticateUddokta::class)->group(function () {
+
+
+    Route::get('uddokta/holdingtax', [HoldingtaxController::class, 'holdingSearch']);
+    Route::post('uddokta/holdingtax', [HoldingtaxController::class, 'store']);
+    Route::get('uddokta/holdingtax/{id}', [HoldingtaxController::class, 'getSingleHoldingTaxWithBokeyas']);
+    Route::put('uddokta/holding-bokeya/{id}/update-price', [HoldingtaxController::class, 'updateUnpaidHoldingBokeyaPrice']);
+
+
+});
 
 // Uddokta Password Reset Routes
 Route::post('uddokta/password/email', [UddoktaPasswordResetController::class, 'sendResetLinkEmail']);
