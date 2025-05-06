@@ -52,7 +52,8 @@
             @php
                 $width = '200px';
                 $fontsize = '22px';
-                $C_color = 'black';
+                $C_color = '#7230A0';
+                $C_size = '18px';
                 $color = 'black';
             @endphp
 
