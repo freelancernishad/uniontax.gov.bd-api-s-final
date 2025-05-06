@@ -336,7 +336,18 @@ class HoldingtaxController extends Controller
     {
         // Get the authenticated user's union
 
-        $auth = Auth::user();
+        // $auth = Auth::user();
+
+        $userUnion = $r->unioun;
+        if (auth()->guard('user')->check()) {
+            $user = auth()->guard('user')->user();
+            $userUnion = $user->unioun;
+        } elseif (auth()->guard('uddokta')->check()) {
+            $user = auth()->guard('uddokta')->user();
+            $userUnion = $user->union_name;
+        }
+    
+
         // Get the search parameters from the request
         $search = $r->search;
         $word = $r->word;
@@ -346,10 +357,10 @@ class HoldingtaxController extends Controller
         $query->select(['id','holding_no','maliker_name','nid_no','mobile_no']);
 
 
-        $userUnion = $r->unioun;
-        if($auth){
-            $userUnion = $auth->unioun;
-        }
+      
+        // if($auth){
+        //     $userUnion = $auth->unioun;
+        // }
         // Apply union filter based on the authenticated user's union
         $query->where('unioun', $userUnion);
 
