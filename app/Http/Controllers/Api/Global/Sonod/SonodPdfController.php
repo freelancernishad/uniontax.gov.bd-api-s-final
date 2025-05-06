@@ -36,16 +36,27 @@ class SonodPdfController extends Controller
 
         // Load the Sonod data based on the "en" flag
         if ($en) {
-            $sonod = Sonod::select('id','sonod_Id','stutus','sonod_name','unioun_name')
+
+
+
+
+            $sonod = Sonod::select('id','sonod_Id','stutus','sonod_name','unioun_name','orthoBchor','amount_deails','applicant_name_of_the_organization','applicant_name','applicant_father_name','applicant_mother_name','applicant_owner_type','applicant_type_of_business','organization_address','applicant_present_word_number','applicant_national_id_number','currently_paid_money')
                         ->with('english_sonod')->findOrFail($id);
+
+            $rowbn = $sonod;
+
             $row = $sonod->english_sonod;
             $sonod_Id = $sonod->sonod_Id;
             $stutus = $sonod->stutus;
             $sonod_name = $sonod->sonod_name;
             $unioun_name = $sonod->unioun_name;
             $font_family = '';
+
+
+
         } else {
             $row = Sonod::find($id);
+            $rowbn = Sonod::find($id);
             $sonod_Id = $row->sonod_Id;
             $stutus = $row->stutus;
             $sonod_name = $row->sonod_name;
@@ -86,7 +97,7 @@ class SonodPdfController extends Controller
 
 
         // Generate HTML content for PDF
-        $htmlContent = $this->getHtmlContent($row, $sonod_name, $uniouninfo, $sonodnames, $sonod_Id, $en, $font_family);
+        $htmlContent = $this->getHtmlContent($row, $sonod_name, $uniouninfo, $sonodnames, $sonod_Id, $en, $font_family,$rowbn);
 
         // Generate the PDF
         $header = null;
@@ -103,6 +114,14 @@ class SonodPdfController extends Controller
             generatePdf($htmlContent, $header = null, $footer = null, $filename, "A4", $font_family);
         }
     }
+
+
+
+
+
+
+
+
 
 
 
@@ -134,7 +153,7 @@ class SonodPdfController extends Controller
      * @param $sonodnames
      * @return string
      */
-    private function getHtmlContent($row, $sonod_name, $uniouninfo, $sonodnames,$sonod_Id,$en=false,$font_family='bangla')
+    private function getHtmlContent($row, $sonod_name, $uniouninfo, $sonodnames,$sonod_Id,$en=false,$font_family='bangla',$rowbn)
     {
 
 
@@ -162,10 +181,19 @@ class SonodPdfController extends Controller
         $sonodFolder = 'BnSonod';
         $main_sonod_id = $row->id;
         if($en){
-            $main_sonod_id = $row->sonod->id;
-            $sonodFolder = 'EnSonod';
+
+            if($en== 'both'){
+                $main_sonod_id = $row->sonod->id;
+                $sonodFolder = 'BothSonod';
+
+            }else{
+
+                $main_sonod_id = $row->sonod->id;
+                $sonodFolder = 'EnSonod';
+            }
 
         }
+
 
 
 
@@ -183,7 +211,13 @@ class SonodPdfController extends Controller
 
         if ($sonod_name == 'ট্রেড লাইসেন্স' && $row->format == 2) {
 
-            return view("SonodsPdf.$sonodFolder.sonod-tradelicense-format2", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id','main_sonod_id','font_family','is_union'))->render();
+
+
+
+            return view("SonodsPdf.$sonodFolder.sonod-tradelicense-format2", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id','main_sonod_id','font_family','is_union','en','rowbn'))->render();
+
+
+
         }
 
         return view("SonodsPdf.$sonodFolder.sonod", compact('row', 'uniouninfo', 'sonodnames','sonod_name_size','sonod_Id','main_sonod_id','font_family','is_union'))->render();

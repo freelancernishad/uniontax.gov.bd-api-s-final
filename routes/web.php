@@ -49,6 +49,11 @@ Route::get('/check-octane', function () {
 Route::get('/sonod/d/{id}', [SonodPdfController::class,'sonodDownload']);
 Route::get('/sonod/download/{id}', [SonodPdfController::class,'sonodDownload']);
 
+
+
+
+
+
 Route::get('/verification/sonod/{id}', [SonodPdfController::class,'sonodVerify']);
 
 

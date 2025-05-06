@@ -1,0 +1,207 @@
+@php
+$orthoBchor = explode('-',$rowbn->orthoBchor);
+Log::info('orthoBchor', ['orthoBchor' => $orthoBchor]);
+@endphp
+{{-- @php
+$orthoBchor = explode('-',$row->orthoBchor);
+@endphp
+
+<p style="margin-bottom: 10px;">৩০ জুন, {{ int_en_to_bn('20'.$orthoBchor[1]) }} তারিখ পর্যন্ত বৈধ ফি প্রদানের পরিমাণ  {{ int_en_to_bn($row->total_amount) }}  টাকা  কথায়: {{ $row->the_amount_of_money_in_words }}   প্রাপ্ত হয়ে তার ব্যবসা/বৃত্তি/পেশা চালিয়ে যাওয়ার জন্য এই লাইসেন্স প্রদান করা হলো।<br>
+</p> --}}
+
+<table width="100%" style="margin-bottom: 10px;font-size:12px;text-align:justify">
+    <tr>
+        <td width="50%" style="vertical-align: top;">
+            <p style="font-size: 14px;">স্থানীয় সরকার (ইউনিয়ন পরিষদ) আইন, ২০০৯ (২০০৯ সনের ৬১ নং আইন) এর ধারা ৬৬ তে প্রদত্ত ক্ষমতাবলে সরকার প্রণীত আদর্শ কর তফসিল, ২০১৩ এর ৬ ও ১৭ নং অনুচ্ছেদ অনুযায়ী ব্যবসা, বৃত্তি, পেশা, বা শিল্প প্রতিষ্ঠানের উপর আরোপিত কর আদায়ের লক্ষ্যে নির্ধারিত শর্তে নিম্নবর্ণিত ব্যক্তি/প্রতিষ্ঠানের অনুকূলে এই ট্রেড লাইসেন্সটি ইস্যু করা হলো: <br></p>
+        </td>
+        <td width="50%" style="vertical-align: top;">
+            <p style="font-size: 10px;">Under the authority granted by Section 66 of the Local Government (Union Parishad) Act, 2009 (Act No. 61 of 2009), and in accordance with Sections 6 and 17 of the Standard Tax Schedule, 2013, issued by the government for the purpose of collecting taxes imposed on businesses, professions, trades, or industrial establishments, this Trade License is issued to the following individual/establishment under the specified conditions: <br></p>
+        </td>
+    </tr>
+</table>
+
+
+
+<table width="100%" style="margin-top: 10px; font-size: 13px; border-collapse: collapse;">
+    <thead style="border-bottom: 2px solid black;">
+        <tr style="font-weight: bold;">
+            <th style="width: 40%;">বিষয় / <span style="font-size: 11px;">Subject</span></th>
+            <th>বাংলা</th>
+            <th style="font-size: 11px;">English</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>প্রতিষ্ঠানের নাম / <span style="font-size: 11px;">Name of Organization</span></td>
+            <td>{{ $rowbn->applicant_name_of_the_organization }}</td>
+            <td style="font-size: 11px;">{{ $row->applicant_name_of_the_organization }}</td>
+        </tr>
+        <tr>
+            <td>লাইসেন্সধারীর নাম / <span style="font-size: 11px;">Licensee Name</span></td>
+            <td>{{ $rowbn->applicant_name }}</td>
+            <td style="font-size: 11px;">{{ $row->applicant_name }}</td>
+        </tr>
+        <tr>
+            <td>পিতা/স্বামীর নাম / <span style="font-size: 11px;">Father’s or Husband’s Name</span></td>
+            <td>{{ $rowbn->applicant_father_name }}</td>
+            <td style="font-size: 11px;">{{ $row->applicant_father_name }}</td>
+        </tr>
+        <tr>
+            <td>মাতার নাম / <span style="font-size: 11px;">Mother’s Name</span></td>
+            <td>{{ $rowbn->applicant_mother_name }}</td>
+            <td style="font-size: 11px;">{{ $row->applicant_mother_name }}</td>
+        </tr>
+        <tr>
+            <td>ব্যবসার প্রকৃতি / <span style="font-size: 11px;">Nature of Business</span></td>
+            <td>{{ $rowbn->applicant_owner_type }}</td>
+            <td style="font-size: 11px;">{{ $row->applicant_owner_type }}</td>
+        </tr>
+        <tr>
+            <td>ব্যবসার ধরন / <span style="font-size: 11px;">Type of Business</span></td>
+            <td>{{ $rowbn->applicant_type_of_business }}</td>
+            <td style="font-size: 11px;">{{ $row->applicant_type_of_business }}</td>
+        </tr>
+        <tr>
+            <td>প্রতিষ্ঠানের ঠিকানা / <span style="font-size: 11px;">Organization Address</span></td>
+            <td>{{ $rowbn->organization_address }}</td>
+            <td style="font-size: 11px;">{{ $row->organization_address }}</td>
+        </tr>
+        <tr>
+            <td>ওয়ার্ড নং / <span style="font-size: 11px;">Word No.</span></td>
+            <td>{{ int_en_to_bn($rowbn->applicant_present_word_number) }}</td>
+            <td style="font-size: 11px;">{{ $row->applicant_present_word_number }}</td>
+        </tr>
+        <tr>
+            <td>জাতীয় পরিচয়পত্র নং / <span style="font-size: 11px;">NID No.</span></td>
+            <td>{{ int_en_to_bn($rowbn->applicant_national_id_number) }}</td>
+            <td style="font-size: 11px;">{{ $row->applicant_national_id_number }}</td>
+        </tr>
+        <tr>
+            <td>অর্থবছর / <span style="font-size: 11px;">Fiscal Year</span></td>
+            <td>{{ int_en_to_bn($rowbn->orthoBchor) }}</td>
+            <td style="font-size: 11px;">{{ $row->orthoBchor }}</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+    <table width='100%' style="font-size: 12px">
+        <tr>
+
+            <td width='50%'>
+                <p style='border-bottom:2px solid black;'>মালিক/স্বত্বাধিকারীর বর্তমান ঠিকানা</p>
+                <ul style='list-style:none'>
+                    <li>হোল্ডিং নং : {{ $row->applicant_holding_tax_number }}</li>
+                    <li>রোড নং  : </li>
+                    <li>গ্রাম/মহল্লা : {{ $row->applicant_present_village }}</li>
+                    <li>ডাকঘর : {{ $row->applicant_present_post_office }}</li>
+                    {{-- <li>পোস্ট কোড : {{ $row->applicant_present_village }}</li> --}}
+                    <li>উপজেলা/থানা : {{ $row->applicant_present_Upazila }}</li>
+                    <li>জেলা : {{ $row->applicant_present_district }}</li>
+                </ul>
+            </td>
+
+        <td width='50%' align ="right">
+                <p style='border-bottom:2px solid black;'>মালিক/স্বত্বাধিকারীর স্থায়ী ঠিকানা</p>
+                <ul style='list-style:none'>
+                    <li>হোল্ডিং নং : {{ $row->applicant_holding_tax_number }}</li>
+                    <li>রোড নং  : </li>
+                    <li>গ্রাম/মহল্লা : {{ $row->applicant_permanent_village }}</li>
+                    <li>ডাকঘর : {{ $row->applicant_permanent_post_office }}</li>
+                    {{-- <li>পোস্ট কোড : {{ $row->applicant_permanent_village }}</li> --}}
+                    <li>উপজেলা/থানা : {{ $row->applicant_permanent_Upazila }}</li>
+                    <li>জেলা : {{ $row->applicant_permanent_district }}</li>
+                </ul>
+            </td>
+
+
+        </tr>
+    </table>
+
+    @php
+    // Assuming the field name is correctly spelled as 'amount_details'
+    $amount_deails = $rowbn->amount_deails;
+
+    // Decode the JSON data and ensure it returns an object
+    $amount_deails = json_decode($amount_deails);
+
+    // Check if the data was successfully decoded
+    $tredeLisenceFee = $amount_deails->tredeLisenceFee ?? 0;
+    $vatAykor = isset($amount_deails->vatAykor) ? ($tredeLisenceFee * $amount_deails->vatAykor) / 100 : 0;
+@endphp
+
+
+    <table width='100%' style="font-size: 12px;margin-top:10px">
+        <tr>
+            <td width='50%'>
+
+                <ul style='list-style:none'>
+                    <li>ট্রেড লাইসেন্স ফি (নবায়ন) :-</li>
+                    <li>পারমিট ফি  : {{ int_en_to_bn($tredeLisenceFee) }} টাকা</li>
+                    <li>সার্ভিস চার্জ : ০.০০ টাকা</li>
+                    <li>বকেয়া : {{ int_en_to_bn($amount_deails->last_years_money ?? 0) }} টাকা</li>
+                    <li>সাবচার্জ  : ০.০০ টাকা</li>
+                </ul>
+            </td>
+
+        <td width='50%' align ="right">
+
+                <ul style='list-style:none'>
+                    <li>পেশা ব্যবসা ও বৃত্তির উপর কর  :- {{ int_en_to_bn($amount_deails->pesaKor ?? 0) }} টাকা</li>
+                    <li>সাইনবোর্ড (পরিচিতিমূলক)  : ০.০০ টাকা</li>
+                    <li>আয়কর/উৎস কর : ০.০০ টাকা</li>
+                    <li>ভ্যাট : {{ int_en_to_bn($vatAykor) }} টাকা</li>
+                    <li>সংশোধন ফি : ০.০০ টাকা</li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+
+    <hr>
+
+    <table width='100%' style="font-size: 12px">
+        <tr>
+            <td width='50%'>
+
+                <b style="color:#159513">অত্র ট্রেড লাইসেন্স এর মেয়াদ : {{ int_en_to_bn("30-06-20".$orthoBchor[1]) }} পর্যন্ত </b>
+            </td>
+
+        <td width='50%' align ="right">
+
+            @if($row->hasEnData==1)
+            <b style="color:black">সর্বমোট : {{ int_en_to_bn(($rowbn->currently_paid_money)+$amount_deails->last_years_money ?? 0) }} টাকা মাত্র </b>
+            @else
+            <b style="color:black">সর্বমোট : {{ int_en_to_bn($rowbn->currently_paid_money+$amount_deails->last_years_money ?? 0) }} টাকা মাত্র </b>
+            @endif
+
+
+
+            </td>
+        </tr>
+    </table>
+
+
+
+
+    {{-- <tr>
+        <td width="30%">ঠিকানা</td><td>: {{ $row->applicant_present_village }}, {{ $row->applicant_present_post_office }}, {{ $row->applicant_present_Upazila }}, {{ $row->applicant_present_district }}</td>
+    </tr> --}}
+
+{{--
+    <p style="margin-bottom: 10px;"> {!! int_en_to_bn($row->sec_prottoyon) !!}<br>
+    </p> --}}
+
+    {{-- <p style="margin-bottom: 10px;"
+    > {!! $sonod->template  !!}<br>
+    </p> --}}
+
+    {{-- <p style="margin-bottom: 10px;"
+    >৩০ জুন, ২০২৩ তারিখ পর্যন্ত বৈধ ফি প্রদানের পরিমাণ  {{ int_en_to_bn($row->total_amount) }} টাকা  কথায়: {{ $row->the_amount_of_money_in_words }}  প্রাপ্ত হয়ে তার ব্যবসা/বৃত্তি/পেশা চালিয়ে যাওয়ার জন্য এই লাইসেন্স প্রদান করা হলো।<br>
+    </p> --}}

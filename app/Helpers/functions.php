@@ -128,27 +128,27 @@ function addOrUpdateContacts(array $contactsArray)
             'contacts.*.name' => ['required', 'string', 'max:255'],
             'contacts.*.phone_number' => ['required', 'string', 'max:20', 'regex:/^\+?[0-9\s\-]+$/'],
         ]);
-    
+
         Log::info('Validation Errors: ' . json_encode($validator->errors()));
         if ($validator->fails()) {
             return ['errors' => $validator->errors()];
         }
-      
+
         $validated = $validator->validated();
-    
+
         $contacts = $validated['contacts']; // Array of contacts
-    
+
         // Retrieve the refresh token from the database
         $refreshToken = SystemSetting::where('key', 'google_refresh_token')->value('value');
-    
+
         // Decrypt the refresh token from the database
         $refreshToken = decrypt($refreshToken);
-    
+
         if (!$refreshToken) {
             Log::error('No refresh token found.');
             return response()->json(['error' => 'No refresh token found. Please authenticate first.'], 401);
         }
-    
+
         // Initialize the Google Client
         $client = new Google_Client();
         $client->setClientId(config('GOOGLE_CLIENT_ID'));
@@ -156,27 +156,27 @@ function addOrUpdateContacts(array $contactsArray)
         $client->refreshToken($refreshToken);
         $accessToken = $client->getAccessToken();
         $service = new Google_Service_PeopleService($client);
-    
+
         $responses = []; // Array to collect responses for all contacts
-    
+
         try {
             // Loop through each contact and add or update it
             foreach ($contacts as $contactData) {
                 $name = $contactData['name'];
                 $phoneNumber = $contactData['phone_number'];
-    
+
                 // Check if the phone number exists in the contacts
                 $optParams = [
                     'pageSize' => 2000,
                     'personFields' => 'phoneNumbers,names',
                 ];
-    
+
                 // Fetch connections (contacts) from Google
                 $connections = $service->people_connections->listPeopleConnections('people/me', $optParams);
-    
+
                 $existingContact = null;
                 $contactResourceName = null;
-    
+
                 // Loop through connections and check if the phone number exists
                 foreach ($connections->getConnections() as $person) {
                     if ($person->getPhoneNumbers()) {
@@ -189,19 +189,19 @@ function addOrUpdateContacts(array $contactsArray)
                         }
                     }
                 }
-    
+
                 if ($existingContact) {
                     // Update the name of the existing contact
                     $updatedNameObj = new Google_Service_PeopleService_Name();
                     $updatedNameObj->setGivenName($name);
-    
+
                     // Set the updated name for the existing contact
                     $existingContact->setNames([$updatedNameObj]);
-    
+
                     // Update the contact using the correct resource name
                     $updateMask = 'names'; // Specify that we are updating the name field
                     $updatedContact = $service->people->updateContact($contactResourceName, $existingContact, ['updatePersonFields' => $updateMask]);
-    
+
                     $responses[] = [
                         'message' => 'Contact name updated successfully',
                         'contact' => [
@@ -212,18 +212,18 @@ function addOrUpdateContacts(array $contactsArray)
                 } else {
                     // If no existing contact found, create a new one
                     $newContact = new Google_Service_PeopleService_Person();
-    
+
                     $nameObj = new Google_Service_PeopleService_Name();
                     $nameObj->setGivenName($name);
                     $newContact->setNames([$nameObj]);
-    
+
                     $phoneObj = new Google_Service_PeopleService_PhoneNumber();
                     $phoneObj->setValue($phoneNumber);
                     $newContact->setPhoneNumbers([$phoneObj]);
-    
+
                     // Add the new contact to Google Contacts
                     $createdContact = $service->people->createContact($newContact);
-    
+
                     // Return name and phone number for the newly created contact
                     $responses[] = [
                         'message' => 'Contact added successfully',
@@ -234,9 +234,9 @@ function addOrUpdateContacts(array $contactsArray)
                     ];
                 }
             }
-    
+
             return response()->json($responses);
-    
+
         } catch (\Exception $e) {
             Log::error('Google Contacts API Error: ' . $e->getMessage());
             return response()->json(['error' => 'Error while adding/updating contacts: ' . $e->getMessage()], 500);
@@ -246,3 +246,11 @@ function addOrUpdateContacts(array $contactsArray)
         return response()->json(['error' => 'Error in addOrUpdateContacts: ' . $e->getMessage()], 500);
     }
 }
+
+
+function convertToMySQLDate($date) {
+    // Convert date format "08/25/2001" to "Y-m-d"
+    $timestamp = strtotime($date);
+    return $timestamp ? date('Y-m-d', $timestamp) : null;
+}
+

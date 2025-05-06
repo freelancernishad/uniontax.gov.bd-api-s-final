@@ -159,7 +159,7 @@ class SonodController extends Controller
     }
 
 
-
+    $insertData['applicant_date_of_birth'] = convertToMySQLDate(int_bn_to_en($bnData['applicant_date_of_birth']));
         // Save the Sonod entry
         $sonod = Sonod::create($insertData);
 
@@ -168,6 +168,7 @@ class SonodController extends Controller
 
 
             $sonod = Sonod::find($sonod->id);
+
 
 
 
@@ -189,7 +190,7 @@ class SonodController extends Controller
                 'applicant_birth_certificate_number' => int_bn_to_en($sonod->applicant_birth_certificate_number),
                 'applicant_holding_tax_number' => int_bn_to_en($sonod->applicant_holding_tax_number),
                 'applicant_mobile' => int_bn_to_en($sonod->applicant_mobile),
-                'applicant_date_of_birth' => int_bn_to_en($sonod->applicant_date_of_birth),
+                'applicant_date_of_birth' => convertToMySQLDate(int_bn_to_en($sonod->applicant_date_of_birth)),
                 'image' => $sonod->image,
                 'applicant_owner_type' => $sonod->applicant_owner_type == 'ব্যক্তি মালিকানাধীন' ? 'Individual Ownership' :
                 ($sonod->applicant_owner_type == 'যৌথ মালিকানা' ? 'Joint Ownership' :
