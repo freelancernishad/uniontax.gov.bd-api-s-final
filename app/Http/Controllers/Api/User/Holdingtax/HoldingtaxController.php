@@ -15,9 +15,16 @@ class HoldingtaxController extends Controller
 {
     public function store(Request $r)
     {
-       // Retrieve 'unioun' from the authenticated user
-       $user = auth()->user();
-       $unioun = $user->unioun;  // Assuming the 'unioun' field exists on the 'User' model
+
+    if (auth()->guard('user')->check()) {
+        $user = auth()->guard('user')->user();
+        $unioun = $user->unioun;
+    } elseif (auth()->guard('uddokta')->check()) {
+        $user = auth()->guard('uddokta')->user();
+        $unioun = $user->union_name;
+    }
+
+
 
        // Validation using Validator facade
        $validator = Validator::make($r->all(), [
