@@ -1,8 +1,12 @@
 <?php
 use Mpdf\Mpdf;
+use Illuminate\Support\Facades\Log;
 use Mccarlosen\LaravelMpdf\LaravelMpdf;
- function generatePdf($html, $header = null, $footer = null, $filename = 'document.pdf',$page_format='A4',$font_familly='bangla')
+ function generatePdf($html, $header = null, $footer = null, $filename = 'document.pdf',$page_format='A4',$font_familly='bangla',$sonod_logo = null)
 {
+
+
+
     $margin_header = 0;
     $margin_footer = 0;
     if($header){
@@ -39,6 +43,17 @@ use Mccarlosen\LaravelMpdf\LaravelMpdf;
     $mpdf->WriteHTML($html);
     $mpdf->useSubstitutions = false;
     $mpdf->simpleTables = true;
+    Log::info(convertToBase64($sonod_logo));
+    $mpdf->SetWatermarkImage(
+        convertToBase64($sonod_logo), // Image as base64
+        0.12,       // Opacity
+        33,        // Width (mm)
+        [33, 70],  // Position (X, Y in mm)
+        false,      // Don't adjust page size
+        true        // Show behind content
+    );
+
+    $mpdf->showWatermarkImage = true;
 
 // Enable remote file access (to load images from external URLs)
 // $mpdf->useActiveForms = true;

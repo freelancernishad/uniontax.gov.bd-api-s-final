@@ -210,16 +210,16 @@ class UserSonodController extends Controller
         if ($user->position == 'Secretary' && $unioninfo) {
 
             $updateData = array_merge($updateData, [
-                'socib_name' => $unioninfo->socib_name ?? 'N/A',
-                'socib_signture' => $unioninfo->socib_signture ?? 'N/A',
-                'socib_email' => $unioninfo->socib_email ?? 'N/A',
+                'socib_name' => $unioninfo->socib_name ?? '',
+                'socib_signture' => $unioninfo->socib_signture ?? '',
+                'socib_email' => $unioninfo->socib_email ?? '',
                 'format' => $format ?? 1,
             ]);
 
             $updateData_en = array_merge($updateData_en, [
-                'socib_name' => $unioninfo->socib_name_en ?? 'N/A',
-                'socib_signture' => $unioninfo->socib_signture ?? 'N/A',
-                'socib_email' => $unioninfo->socib_email ?? 'N/A',
+                'socib_name' => $unioninfo->socib_name_en ?? '',
+                'socib_signture' => $unioninfo->socib_signture ?? '',
+                'socib_email' => $unioninfo->socib_email ?? '',
                 'format' => $format ?? 1,
             ]);
 

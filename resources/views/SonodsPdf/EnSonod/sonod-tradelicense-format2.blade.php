@@ -113,7 +113,11 @@
             </table>
 
             <p style="background: #787878; color: white; text-align: center; padding: 2px 2px;font-size: 12px; margin-top: 0px;" class="m-0">
+                @if(isUnion())
                 "Pay union taxes on time. Support the development work of the union."
+            @else
+                "Pay pourosova taxes on time. Support the development work of the pourosova."
+            @endif
             </p>
             <p style="font-size:12px;text-align:center;margin:0px">
                 To verify this document, scan the QR code or visit {{ $uniouninfo->domain }}

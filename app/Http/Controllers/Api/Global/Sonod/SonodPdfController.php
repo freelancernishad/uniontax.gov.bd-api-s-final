@@ -40,7 +40,7 @@ class SonodPdfController extends Controller
 
 
 
-            $sonod = Sonod::select('id','sonod_Id','stutus','sonod_name','unioun_name','orthoBchor','amount_deails','applicant_name_of_the_organization','applicant_name','applicant_father_name','applicant_mother_name','applicant_owner_type','applicant_type_of_business','organization_address','applicant_present_word_number','applicant_national_id_number','currently_paid_money')
+            $sonod = Sonod::select('id','sonod_Id','stutus','sonod_name','unioun_name','orthoBchor','amount_deails','applicant_name_of_the_organization','applicant_name','applicant_father_name','applicant_mother_name','applicant_owner_type','applicant_type_of_business','organization_address','applicant_present_word_number','applicant_national_id_number','currently_paid_money','applicant_holding_tax_number','applicant_present_village','applicant_present_post_office','applicant_present_Upazila','applicant_present_district','applicant_permanent_village','applicant_permanent_post_office','applicant_permanent_Upazila','applicant_permanent_district','c_email')
                         ->with('english_sonod')->findOrFail($id);
 
             $rowbn = $sonod;
@@ -86,6 +86,7 @@ class SonodPdfController extends Controller
         $filename = str_replace(" ", "_", $sonodnames->enname) . "-$row->sonod_Id.pdf";
 
         // Handle sonod_logo for Uniouninfo
+        $sonod_logo = $uniouninfo->sonod_logo;
         $uniouninfo->sonod_logo = convertToBase64($uniouninfo->sonod_logo);
 
         // Log the data (for debugging)
@@ -109,9 +110,9 @@ class SonodPdfController extends Controller
                 $header = $this->pdfHeader($id, $filename);
                 $footer = $this->pdfFooter($id, $filename);
             }
-            generatePdf($htmlContent, $header, $footer, $filename, "A4", $font_family);
+            generatePdf($htmlContent, $header, $footer, $filename, "A4", $font_family,$sonod_logo);
         } else {
-            generatePdf($htmlContent, $header = null, $footer = null, $filename, "A4", $font_family);
+            generatePdf($htmlContent, $header = null, $footer = null, $filename, "A4", $font_family,$sonod_logo);
         }
     }
 
