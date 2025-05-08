@@ -89,6 +89,7 @@ Route::prefix('admin')->group(function () {
             Route::get('/transaction-history', [AdminPaymentController::class, 'getAllTransactionHistory'])
                 ->name('admin.transitions.transaction-history');
         });
+        
 
 
         Route::prefix('social-media')->group(function () {
