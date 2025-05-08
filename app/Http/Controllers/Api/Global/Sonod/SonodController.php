@@ -159,7 +159,9 @@ class SonodController extends Controller
     }
 
 
-    $insertData['applicant_date_of_birth'] = convertToMySQLDate(int_bn_to_en($bnData['applicant_date_of_birth']));
+    if (isset($bnData['applicant_date_of_birth']) && !empty($bnData['applicant_date_of_birth'])) {
+        $insertData['applicant_date_of_birth'] = convertToMySQLDate(int_bn_to_en($bnData['applicant_date_of_birth']));
+    }
         // Save the Sonod entry
         $sonod = Sonod::create($insertData);
 
