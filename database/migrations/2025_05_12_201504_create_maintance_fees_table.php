@@ -16,7 +16,7 @@ class CreateMaintanceFeesTable extends Migration
             $table->decimal('amount', 10, 2);
             $table->string('status')->nullable(); // e.g. paid, unpaid
             $table->date('payment_date')->nullable();
-            $table->enum('type', ['monthly', 'yearly']);
+            $table->enum('type', ['monthly', 'yearly','Free Trial']);
             $table->timestamps();
         });
     }

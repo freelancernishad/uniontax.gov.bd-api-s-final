@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::table('uniouninfos', function (Blueprint $table) {
             $table->decimal('maintance_fee', 10, 2)->default(10000)->nullable()->after('user_phone');
-            $table->enum('maintance_fee_type', ['monthly', 'yearly'])->default('yearly')->nullable()->after('maintance_fee');
+            $table->enum('maintance_fee_type', ['monthly', 'yearly','Free Trial'])->default('yearly')->nullable()->after('maintance_fee');
         });
     }
 

@@ -331,6 +331,9 @@ function generatePaymentUrl($amount, $payerReference = "01700000000", $callbackU
     function getHasPaidMaintanceFee($union,$type="monthly")
     {
 
+           if ($type === 'Free Trial') {
+                return true;
+            }
         // return $type;
         if ($type === 'yearly') {
             $period = CurrentOrthoBochor(); // implement below
@@ -344,3 +347,4 @@ function generatePaymentUrl($amount, $payerReference = "01700000000", $callbackU
             ->where('status', 'paid')
             ->exists();
     }
+
