@@ -156,6 +156,10 @@ class PurchaseSmsController extends Controller
         return response()->json(['error' => 'Failed to create payment URL'], 500);
     }
 
+   $paymentID =  $paymentUrl['paymentID'];
+   $smsPurchase->update(['trx_id'=>$paymentID]); // Update the trx_id with the payment ID
+
+
     // Return the payment URL along with the SMS purchase data
     return response()->json([
         'message' => 'SMS purchase created successfully via Bkash!',

@@ -312,6 +312,7 @@ function generatePaymentUrl($amount, $payerReference = "01700000000", $callbackU
 
     $paymentData = $paymentResponse->json();
 
+
     // ✅ Save to database
     BkashPayment::create([
         'id_token' => $token,
