@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Uniouninfo;
 use App\Models\PurchaseSms;
+use App\Models\BkashPayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
@@ -163,6 +164,61 @@ class PurchaseSmsController extends Controller
     ], 201);
 }
 
+    public function smsPurchaseSuccess(Request $request)
+    {
+        $paymentID = $request->paymentID;
+
+        // 🔍 Find the BkashPayment entry
+        $payment = BkashPayment::where('payment_id', $paymentID)->first();
+
+        if (!$payment) {
+            return response()->json(['error' => 'Payment not found.'], 404);
+        }
+
+        // Check if the payment has already been executed
+        if ($payment->status === 'executed') {
+            return response()->json(['error' => 'This payment has already been executed.'], 400);
+        }
+
+        // Find the corresponding PurchaseSms entry
+        $smsPurchase = PurchaseSms::where('trx_id', $payment->payment_id)->first();
+
+        if (!$smsPurchase) {
+            return response()->json(['error' => 'SMS purchase not found.'], 404);
+        }
+
+        // ✅ Update PurchaseSms status and payment_status to 'approved' and 'paid'
+        $smsPurchase->update([
+            'status' => 'approved',
+            'payment_status' => 'paid',
+        ]);
+
+        // ✅ Update BkashPayment status to 'executed'
+        $payment->update([
+            'status' => 'executed',
+        ]);
+
+        // Fetch the union details based on the union name
+        $unionDetails = Uniouninfo::where('short_name_e', $smsPurchase->union_name)->first();
+
+        if (!$unionDetails) {
+            return response()->json(['error' => 'Union not found'], 404);
+        }
+
+        // Add the SMS amount to the union's balance
+        $unionDetails->smsBalance += $smsPurchase->sms_amount;
+
+        // Save the updated balance
+        $unionDetails->save();
+
+        // Return success message
+        return response()->json([
+            'message' => 'SMS purchase successfully approved and payment executed!',
+            'sms_purchase' => $smsPurchase,
+            'bkash_payment' => $payment,
+            'union_sms_balance' => $unionDetails->smsBalance, // Return the updated SMS balance
+        ], 200);
+    }
 
 
 

@@ -153,6 +153,7 @@ Route::prefix('user')->group(function () {
 
         // Route::post('/sms-purchase', [PurchaseSmsController::class, 'createSmsPurchase']);
         Route::post('/sms-purchase', [PurchaseSmsController::class, 'createSmsPurchaseByBkash']);
+
         Route::post('/menual/sms-purchase', [PurchaseSmsController::class, 'createMenualSmsPurchase']);
 
 
@@ -218,6 +219,6 @@ Route::get('/email/verify/{hash}', [VerificationController::class, 'verifyEmail'
 Route::post('/resend/verification-link', [VerificationController::class, 'resendVerificationLink']);
 
 
-
+ Route::post('global/sms-purchase-success', [PurchaseSmsController::class, 'smsPurchaseSuccess']);
 
 
