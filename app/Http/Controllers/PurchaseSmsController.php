@@ -148,7 +148,7 @@ class PurchaseSmsController extends Controller
     ]);
 
     // Call the generatePaymentUrl function to generate the payment URL
-    $paymentUrl = $this->generatePaymentUrl($amount, $validated['mobile'], $validated['c_uri']);
+    $paymentUrl = generatePaymentUrl($amount, $validated['mobile'], $validated['s_uri']);
 
     // Check if the URL generation was successful
     if (!$paymentUrl) {
