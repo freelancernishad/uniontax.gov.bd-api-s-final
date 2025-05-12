@@ -159,7 +159,7 @@ class PurchaseSmsController extends Controller
     return response()->json([
         'message' => 'SMS purchase created successfully via Bkash!',
         'data' => $smsPurchase,
-        'payment_url' => $paymentUrl,  // Return payment URL
+        'payment_url' => $paymentUrl->bkashURL,  // Return payment URL
     ], 201);
 }
 
