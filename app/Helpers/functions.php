@@ -3,16 +3,17 @@
 use Carbon\Carbon;
 use App\Models\SiteSetting;
 use App\Models\BkashPayment;
+use App\Models\MaintanceFee;
 use App\Models\SystemSetting;
 use App\Models\TokenBlacklist;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Request;
 
 
 // Removed redundant use statement for Google_Client
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Validator;
 use Google\Service\Oauth2 as Google_Service_Oauth2;
 use Google\Service\PeopleService as Google_Service_PeopleService;
@@ -325,3 +326,21 @@ function generatePaymentUrl($amount, $payerReference = "01700000000", $callbackU
 
     return $paymentData;
 }
+
+
+    function getHasPaidMaintanceFee($union,$type="monthly")
+    {
+
+        // return $type;
+        if ($type === 'yearly') {
+            $period = CurrentOrthoBochor(); // implement below
+        } else {
+            $period = now()->format('Y-m');
+        }
+
+        return MaintanceFee::where('union', $union)
+            ->where('type', $type)
+            ->where('period', $period)
+            ->where('status', 'paid')
+            ->exists();
+    }

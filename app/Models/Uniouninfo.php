@@ -77,6 +77,11 @@ class Uniouninfo extends Model
         // Assuming you have a BankAccount model and a `union` column in it
         return BankAccount::where('union', $this->short_name_e)->exists();
     }
+
+
+
+
+
         /**
      * Save a file to S3 and update the model attribute with the file path.
      *

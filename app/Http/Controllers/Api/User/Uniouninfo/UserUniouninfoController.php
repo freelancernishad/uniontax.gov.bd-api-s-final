@@ -59,6 +59,7 @@ class UserUniouninfoController extends Controller
                                    'secretary_phone',
                                    'udc_phone',
                                    'user_phone',
+                                   'maintance_fee_type',
                                ) // Only select the specified columns
                                ->first();
 
@@ -85,6 +86,10 @@ class UserUniouninfoController extends Controller
                 $unionInfo->$field = null;
             }
         }
+
+
+        $unionInfo->has_paid_maintance_fee = getHasPaidMaintanceFee($user->unioun, $unionInfo->maintance_fee_type);
+
 
         // Return the response with the Union information and updated file URLs
         return response()->json($unionInfo, 200);
