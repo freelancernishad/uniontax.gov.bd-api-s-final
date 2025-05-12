@@ -49,6 +49,10 @@ if (file_exists($bkashRoutes = __DIR__.'/Gateways/bkash.php')) {
     require $bkashRoutes;
 }
 
+if (file_exists($MaintanceFee = __DIR__.'/MaintanceFee.php')) {
+    require $MaintanceFee;
+}
+
 
 
 

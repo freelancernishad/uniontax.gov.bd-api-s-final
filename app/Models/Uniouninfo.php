@@ -53,6 +53,8 @@ class Uniouninfo extends Model
         'secretary_phone', // New column
         'udc_phone',       // New column
         'user_phone',      // New column
+        'maintance_fee',
+        'maintance_fee_type',
     ];
 
     protected $appends = ['is_popup','has_bank_account'];
