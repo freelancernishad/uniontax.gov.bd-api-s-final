@@ -168,11 +168,12 @@ class PurchaseSmsController extends Controller
     ], 201);
 }
 
+
+
 public function smsPurchaseSuccess(Request $request)
 {
-
-        $baseUrl = env('BKASH_BASE_URL');
-        $appKey = env('BKASH_APP_KEY');
+    $baseUrl = env('BKASH_BASE_URL');
+    $appKey = env('BKASH_APP_KEY');
     $paymentID = $request->paymentID;
 
     // 🔍 Find the BkashPayment entry
@@ -187,7 +188,7 @@ public function smsPurchaseSuccess(Request $request)
         return response()->json(['error' => 'This payment has already been executed.'], 400);
     }
 
-    // Find the corresponding PurchaseSms entry
+    // 🔍 Find the corresponding PurchaseSms entry
     $smsPurchase = PurchaseSms::where('trx_id', $payment->payment_id)->first();
 
     if (!$smsPurchase) {
@@ -197,7 +198,7 @@ public function smsPurchaseSuccess(Request $request)
     // 🔒 Get the payment token
     $token = $payment->id_token;
 
-    // 🧾 Execute the payment using Ekpay's API (or equivalent for Bkash)
+    // 🧾 Execute the payment
     $response = Http::withToken($token)
         ->withHeaders([
             'Content-Type' => 'application/json',
@@ -207,44 +208,68 @@ public function smsPurchaseSuccess(Request $request)
             'paymentID' => $paymentID
         ]);
 
-    // ✅ Check if the payment was successful
-    if ($response->successful()) {
-        // If successful, update the payment status to 'executed'
-        $payment->update(['status' => 'executed']);
+    $responseData = $response->json();
+    $transactionStatus = $responseData['transactionStatus'] ?? null;
 
-        // ✅ Update PurchaseSms status and payment_status to 'approved' and 'paid'
+    if ($response->successful() && $transactionStatus === 'Completed') {
+        // ✅ Payment success
+        $payment->update(['status' => 'executed']);
         $smsPurchase->update([
             'status' => 'approved',
             'payment_status' => 'paid',
         ]);
 
-        // Fetch the union details based on the union name
+        // Update union SMS balance
         $unionDetails = Uniouninfo::where('short_name_e', $smsPurchase->union_name)->first();
-
         if (!$unionDetails) {
-            return response()->json(['error' => 'Union not found'], 404);
+            return response()->json(['error' => 'Union not found.'], 404);
         }
 
-        // Add the SMS amount to the union's balance
         $unionDetails->smsBalance += $smsPurchase->sms_amount;
-
-        // Save the updated balance
         $unionDetails->save();
 
-        // Return success message
         return response()->json([
             'message' => 'SMS purchase successfully approved and payment executed!',
             'sms_purchase' => $smsPurchase,
             'bkash_payment' => $payment,
-            'union_sms_balance' => $unionDetails->smsBalance, // Return the updated SMS balance
+            'union_sms_balance' => $unionDetails->smsBalance,
         ], 200);
-    } else {
-        // If the payment execution failed, update the payment status
-        $payment->update(['status' => 'failed']);
 
-        return response()->json(['error' => 'Payment execution failed.'], 500);
+    } elseif ($transactionStatus === 'Cancelled') {
+        // ❌ User cancelled payment
+        $payment->update(['status' => 'cancelled']);
+        $smsPurchase->update([
+            'status' => 'cancelled',
+            'payment_status' => 'unpaid',
+        ]);
+
+        return response()->json(['error' => 'Payment was cancelled by the user.'], 400);
+
+    } elseif ($transactionStatus === 'Failed') {
+        // ❌ Payment failed
+        $payment->update(['status' => 'failed']);
+        $smsPurchase->update([
+            'status' => 'failed',
+            'payment_status' => 'unpaid',
+        ]);
+
+        return response()->json(['error' => 'Payment failed.'], 400);
+
+    } else {
+        // ❌ Unknown/Unexpected error
+        $payment->update(['status' => 'failed']);
+        $smsPurchase->update([
+            'status' => 'failed',
+            'payment_status' => 'unpaid',
+        ]);
+
+        return response()->json([
+            'error' => 'Payment execution failed.',
+            'details' => $responseData,
+        ], 500);
     }
 }
+
 
 
 
