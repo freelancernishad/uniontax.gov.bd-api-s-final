@@ -151,7 +151,8 @@ Route::prefix('user')->group(function () {
 
         Route::get('purchasesms/list', [PurchaseSmsController::class, 'getSmsPurchaseListByUnion']);
 
-        Route::post('/sms-purchase', [PurchaseSmsController::class, 'createSmsPurchase']);
+        // Route::post('/sms-purchase', [PurchaseSmsController::class, 'createSmsPurchase']);
+        Route::post('/sms-purchase', [PurchaseSmsController::class, 'createSmsPurchaseByBkash']);
         Route::post('/menual/sms-purchase', [PurchaseSmsController::class, 'createMenualSmsPurchase']);
 
 

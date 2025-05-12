@@ -116,6 +116,57 @@ class PurchaseSmsController extends Controller
 
 
 
+    public function createSmsPurchaseByBkash(Request $request)
+{
+    // Validate incoming request data
+    $validated = $request->validate([
+        'sms_amount' => 'required|integer|min:1',  // Validate that sms_amount is an integer and at least 1
+        'mobile' => 'required|string',  // Validate that mobile is a string
+        'c_uri' => 'required|string',   // Validate that c_uri is a string
+        'f_uri' => 'required|string',   // Validate that f_uri is a string
+        's_uri' => 'required|string',   // Validate that s_uri is a string
+    ]);
+
+    // Get the authenticated user's union_name
+    $unionName = auth()->user()->unioun;
+
+    // Generate a unique transaction ID
+    $trxId = 'TRX_' . strtoupper(\Illuminate\Support\Str::random(10));  // You can use your custom method to generate a TRX ID
+
+    // Calculate the total amount based on sms_amount (1 TK per SMS)
+    $amount = $validated['sms_amount'] * 1;  // 1 TK per SMS
+
+    // Create the SMS purchase record
+    $smsPurchase = PurchaseSms::create([
+        'union_name' => $unionName,
+        'trx_id' => $trxId,
+        'amount' => $amount,
+        'mobile' => $validated['mobile'],
+        'sms_amount' => $validated['sms_amount'],
+        'payment_status' => 'pending',  // Initially set to 'pending'
+        'status' => 'pending',  // Initially set to 'pending'
+    ]);
+
+    // Call the generatePaymentUrl function to generate the payment URL
+    $paymentUrl = $this->generatePaymentUrl($amount, $validated['mobile'], $validated['c_uri']);
+
+    // Check if the URL generation was successful
+    if (!$paymentUrl) {
+        return response()->json(['error' => 'Failed to create payment URL'], 500);
+    }
+
+    // Return the payment URL along with the SMS purchase data
+    return response()->json([
+        'message' => 'SMS purchase created successfully via Bkash!',
+        'data' => $smsPurchase,
+        'payment_url' => $paymentUrl,  // Return payment URL
+    ], 201);
+}
+
+
+
+
+
     public function createMenualSmsPurchase(Request $request)
     {
         // Validate incoming request

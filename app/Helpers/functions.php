@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use App\Models\SiteSetting;
+use App\Models\BkashPayment;
 use App\Models\SystemSetting;
 use App\Models\TokenBlacklist;
 use Illuminate\Support\Facades\Log;
@@ -9,15 +10,15 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Validator;
 
 
 // Removed redundant use statement for Google_Client
+use Illuminate\Support\Facades\Validator;
+use Google\Service\Oauth2 as Google_Service_Oauth2;
 use Google\Service\PeopleService as Google_Service_PeopleService;
 use Google\Service\PeopleService\Name as Google_Service_PeopleService_Name;
-use Google\Service\PeopleService\PhoneNumber as Google_Service_PeopleService_PhoneNumber;
-use Google\Service\Oauth2 as Google_Service_Oauth2;
 use Google\Service\PeopleService\Person as Google_Service_PeopleService_Person;
+use Google\Service\PeopleService\PhoneNumber as Google_Service_PeopleService_PhoneNumber;
 
 
 
@@ -254,3 +255,71 @@ function convertToMySQLDate($date) {
     return $timestamp ? date('Y-m-d', $timestamp) : null;
 }
 
+
+
+
+
+
+
+
+function generatePaymentUrl($amount, $payerReference = "01700000000", $callbackURL = "https://yourdomain.com/callback")
+{
+
+
+        $baseUrl = env('BKASH_BASE_URL');
+        $appKey = env('BKASH_APP_KEY');
+        $appSecret = env('BKASH_APP_SECRET');
+        $username = env('BKASH_USERNAME');
+        $password = env('BKASH_PASSWORD');
+
+
+    // Step 1: Get token
+    $tokenResponse = Http::withHeaders([
+        'Content-Type' => 'application/json',
+        'username' => $username,
+        'password' => $password
+    ])->post("$baseUrl/token/grant", [
+        'app_key' => $appKey,
+        'app_secret' => $appSecret
+    ]);
+
+    if (!$tokenResponse->successful()) {
+        return response()->json(['error' => 'Failed to get token', 'details' => $tokenResponse->body()], 500);
+    }
+
+    $token = $tokenResponse->json()['id_token'];
+
+    // Step 2: Create payment
+    $invoice = uniqid('INV-');
+    $paymentResponse = Http::withToken($token)
+        ->withHeaders([
+            'Content-Type' => 'application/json',
+            'X-APP-Key' => $appKey
+        ])
+        ->post("$baseUrl/create", [
+            "mode" => "0011",
+            "payerReference" => $payerReference,
+            "callbackURL" => $callbackURL,
+            "amount" => $amount,
+            "currency" => "BDT",
+            "intent" => "sale",
+            "merchantInvoiceNumber" => $invoice
+        ]);
+
+    if (!$paymentResponse->successful()) {
+        return response()->json(['error' => 'Failed to create payment', 'details' => $paymentResponse->body()], 500);
+    }
+
+    $paymentData = $paymentResponse->json();
+
+    // ✅ Save to database
+    BkashPayment::create([
+        'id_token' => $token,
+        'payment_id' => $paymentData['paymentID'],
+        'amount' => $amount,
+        'invoice' => $invoice,
+        'status' => 'initiated'
+    ]);
+
+    return $paymentData;
+}
