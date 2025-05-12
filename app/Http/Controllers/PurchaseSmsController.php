@@ -135,7 +135,7 @@ class PurchaseSmsController extends Controller
     $trxId = 'TRX_' . strtoupper(\Illuminate\Support\Str::random(10));  // You can use your custom method to generate a TRX ID
 
     // Calculate the total amount based on sms_amount (1 TK per SMS)
-    $amount = $validated['sms_amount'] * 1;  // 1 TK per SMS
+    $amount = $validated['sms_amount'] * 0.5;  // 50 paisa per SMS
 
     // Create the SMS purchase record
     $smsPurchase = PurchaseSms::create([
