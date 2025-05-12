@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Illuminate\Support\Facades\Log;
 
 class ApiResponse
 {
@@ -34,7 +35,7 @@ class ApiResponse
     if ($response->isRedirection() || $response instanceof BinaryFileResponse) {
         return $response;
     }
-
+Log::info($response);
 
         // Check if the response is a valid Response object
         if ($response instanceof Response) {

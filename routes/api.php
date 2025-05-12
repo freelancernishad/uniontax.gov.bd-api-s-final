@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\VercelController;
 use App\Http\Controllers\PurchaseSmsController;
+use App\Http\Controllers\BkashPaymentController;
 use App\Http\Controllers\Api\Global\UniouninfoController;
 use App\Http\Controllers\Api\Global\Sonod\SonodController;
 use App\Http\Controllers\Api\Gateway\Ekpay\EkpayController;
@@ -42,6 +43,12 @@ if (file_exists($adminRoutes = __DIR__.'/VillageCourt.php')) {
 if (file_exists($stripeRoutes = __DIR__.'/Gateways/stripe.php')) {
     require $stripeRoutes;
 }
+
+
+if (file_exists($bkashRoutes = __DIR__.'/Gateways/bkash.php')) {
+    require $bkashRoutes;
+}
+
 
 
 
@@ -151,3 +158,4 @@ Route::post('google/add-or-update-contact', [GoogleController::class, 'addOrUpda
 
 
 Route::post('/google/revoke', [GoogleController::class, 'revokeGoogleAuthentication']);
+

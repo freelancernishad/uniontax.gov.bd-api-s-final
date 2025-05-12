@@ -26,6 +26,7 @@ use App\Http\Controllers\Api\User\Holdingtax\HoldingPdfReportController;
 
 
 
+
 Route::get('create/payment', [SonodController::class,'creatingEkpayUrl']);
 
 
