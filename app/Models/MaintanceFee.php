@@ -14,6 +14,7 @@ class MaintanceFee extends Model
         'status',
         'payment_date',
         'type',
+        'period',
         'trx_id',
     ];
 }

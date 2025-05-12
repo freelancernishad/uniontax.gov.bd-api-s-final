@@ -20,7 +20,7 @@ class MaintanceFeeController extends Controller
         return response()->json($fees);
     }
 
-   public function store(Request $request)
+public function store(Request $request)
 {
     $validated = $request->validate([
         's_uri' => 'required|string',
@@ -29,12 +29,20 @@ class MaintanceFeeController extends Controller
     $userUnion = Auth::user()->unioun;
 
     // Fetch union information
-    $unionInfo = \App\Models\Uniouninfo::where('short_name_e', $userUnion)->firstOrFail();
+    $unionInfo = Uniouninfo::where('short_name_e', $userUnion)->firstOrFail();
     $amount = $unionInfo->maintance_fee ?? 1;
     $type = $unionInfo->maintance_fee_type ?? 'monthly';
-    $mobile = $unionInfo->chairman_phone ?? "01700000000"; // Default to a placeholder if not set
+    $mobile = $unionInfo->chairman_phone ?? "01700000000"; // fallback
 
-    // Generate the payment URL using chairman's phone
+    // Determine the period
+    if ($type === 'monthly') {
+        $period = now()->format('Y-m'); // e.g., 2025-05
+    } else {
+
+        $period = CurrentOrthoBochor(); // e.g., 2025-2026
+    }
+
+    // Generate payment URL
     $paymentUrl = generatePaymentUrl($amount, $mobile, $validated['s_uri']);
 
     if (
@@ -45,12 +53,13 @@ class MaintanceFeeController extends Controller
         return response()->json(['error' => 'Failed to create payment URL'], 500);
     }
 
-    // Store fee entry with trx_id
-    $fee = \App\Models\MaintanceFee::create([
+    // Store fee entry
+    $fee = MaintanceFee::create([
         'union' => $userUnion,
         'amount' => $amount,
         'type' => $type,
-        'status' => "Pending",
+        'period' => $period,
+        'status' => 'Pending',
         'trx_id' => $paymentUrl['paymentID'],
     ]);
 
