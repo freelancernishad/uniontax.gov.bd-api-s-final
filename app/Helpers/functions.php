@@ -311,6 +311,7 @@ function generatePaymentUrl($amount, $payerReference = "01700000000", $callbackU
     }
 
     $paymentData = $paymentResponse->json();
+    Log::info('Payment Data: ' . json_encode($paymentData));
 
 
     // ✅ Save to database
