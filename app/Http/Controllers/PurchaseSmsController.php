@@ -168,38 +168,54 @@ class PurchaseSmsController extends Controller
     ], 201);
 }
 
-    public function smsPurchaseSuccess(Request $request)
-    {
-        $paymentID = $request->paymentID;
+public function smsPurchaseSuccess(Request $request)
+{
 
-        // 🔍 Find the BkashPayment entry
-        $payment = BkashPayment::where('payment_id', $paymentID)->first();
+        $baseUrl = env('BKASH_BASE_URL');
+        $appKey = env('BKASH_APP_KEY');
+    $paymentID = $request->paymentID;
 
-        if (!$payment) {
-            return response()->json(['error' => 'Payment not found.'], 404);
-        }
+    // 🔍 Find the BkashPayment entry
+    $payment = BkashPayment::where('payment_id', $paymentID)->first();
 
-        // Check if the payment has already been executed
-        if ($payment->status === 'executed') {
-            return response()->json(['error' => 'This payment has already been executed.'], 400);
-        }
+    if (!$payment) {
+        return response()->json(['error' => 'Payment not found.'], 404);
+    }
 
-        // Find the corresponding PurchaseSms entry
-        $smsPurchase = PurchaseSms::where('trx_id', $payment->payment_id)->first();
+    // Check if the payment has already been executed
+    if ($payment->status === 'executed') {
+        return response()->json(['error' => 'This payment has already been executed.'], 400);
+    }
 
-        if (!$smsPurchase) {
-            return response()->json(['error' => 'SMS purchase not found.'], 404);
-        }
+    // Find the corresponding PurchaseSms entry
+    $smsPurchase = PurchaseSms::where('trx_id', $payment->payment_id)->first();
+
+    if (!$smsPurchase) {
+        return response()->json(['error' => 'SMS purchase not found.'], 404);
+    }
+
+    // 🔒 Get the payment token
+    $token = $payment->id_token;
+
+    // 🧾 Execute the payment using Ekpay's API (or equivalent for Bkash)
+    $response = Http::withToken($token)
+        ->withHeaders([
+            'Content-Type' => 'application/json',
+            'X-APP-Key' => $appKey
+        ])
+        ->post("$baseUrl/execute", [
+            'paymentID' => $paymentID
+        ]);
+
+    // ✅ Check if the payment was successful
+    if ($response->successful()) {
+        // If successful, update the payment status to 'executed'
+        $payment->update(['status' => 'executed']);
 
         // ✅ Update PurchaseSms status and payment_status to 'approved' and 'paid'
         $smsPurchase->update([
             'status' => 'approved',
             'payment_status' => 'paid',
-        ]);
-
-        // ✅ Update BkashPayment status to 'executed'
-        $payment->update([
-            'status' => 'executed',
         ]);
 
         // Fetch the union details based on the union name
@@ -222,7 +238,14 @@ class PurchaseSmsController extends Controller
             'bkash_payment' => $payment,
             'union_sms_balance' => $unionDetails->smsBalance, // Return the updated SMS balance
         ], 200);
+    } else {
+        // If the payment execution failed, update the payment status
+        $payment->update(['status' => 'failed']);
+
+        return response()->json(['error' => 'Payment execution failed.'], 500);
     }
+}
+
 
 
 
