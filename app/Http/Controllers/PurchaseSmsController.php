@@ -239,8 +239,8 @@ public function smsPurchaseSuccess(Request $request)
         // ❌ User cancelled payment
         $payment->update(['status' => 'cancelled']);
         $smsPurchase->update([
-            'status' => 'cancelled',
-            'payment_status' => 'unpaid',
+            'status' => 'rejected',
+            'payment_status' => 'pending',
         ]);
 
         return response()->json(['error' => 'Payment was cancelled by the user.'], 400);
@@ -249,8 +249,8 @@ public function smsPurchaseSuccess(Request $request)
         // ❌ Payment failed
         $payment->update(['status' => 'failed']);
         $smsPurchase->update([
-            'status' => 'failed',
-            'payment_status' => 'unpaid',
+            'status' => 'rejected',
+            'payment_status' => 'pending',
         ]);
 
         return response()->json(['error' => 'Payment failed.'], 400);
@@ -259,8 +259,8 @@ public function smsPurchaseSuccess(Request $request)
         // ❌ Unknown/Unexpected error
         $payment->update(['status' => 'failed']);
         $smsPurchase->update([
-            'status' => 'failed',
-            'payment_status' => 'unpaid',
+            'status' => 'rejected',
+            'payment_status' => 'pending',
         ]);
 
         return response()->json([
