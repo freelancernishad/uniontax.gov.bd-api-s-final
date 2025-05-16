@@ -272,7 +272,7 @@ class AuthUserController extends Controller
                 'email_verified' => $user->hasVerifiedEmail(), // Checks verification status
                 'is_popup' => $uniouninfo ? $uniouninfo->is_popup : false, // Check if Uniouninfo exists
                 'has_bank_account' => $uniouninfo ? $uniouninfo->has_bank_account : false, // Check if Uniouninfo exists
-                'has_paid_maintance_fee' => getHasPaidMaintanceFee($user->unioun, $unionInfo->maintance_fee_type),
+                'has_paid_maintance_fee' => getHasPaidMaintanceFee($user->unioun, $uniouninfo->maintance_fee_type),
             ];
 
             return response()->json(['message' => 'Token is valid.','user'=>$payload], 200);
