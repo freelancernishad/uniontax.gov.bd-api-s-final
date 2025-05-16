@@ -27,6 +27,7 @@ class MaintanceFeeController extends Controller
         ]);
 
         $fee = MaintanceFee::create($validated);
+
         return response()->json($fee, 201);
     }
 

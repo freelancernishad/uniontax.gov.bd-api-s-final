@@ -85,13 +85,15 @@ public function store(Request $request)
         if (!$payment) {
             return response()->json(['error' => 'Payment not found.'], 404);
         }
-
-        if ($payment->status === 'executed') {
-            return response()->json(['error' => 'This payment has already been executed.'], 400);
-        }
-
         // 🔍 Find the MaintanceFee entry by trx_id
         $fee = MaintanceFee::where('trx_id', $payment->payment_id)->first();
+
+
+        if ($payment->status === 'executed') {
+            return response()->json(['error' => 'This payment has already been executed.', 'maintance_fee' => $fee,], 400);
+        }
+
+
 
         if (!$fee) {
             return response()->json(['error' => 'Maintenance fee record not found.'], 404);
