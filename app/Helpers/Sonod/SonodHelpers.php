@@ -410,6 +410,41 @@ function age($dateOf = '2001-08-25', $en = false) {
                 "জনাব {$details['applicant_name']} কে আমি ব্যক্তিগতভাবে চিনি ও জানি। সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং অত্র {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। আমার জানামতে তার বিরুদ্ধে কোন রাষ্ট্রদ্রোহিতার অভিযোগ নেই।<br/><br/>&nbsp; &nbsp; &nbsp; আমার জানামতে বর্তমানে সে বেকার ও কর্মহীন ।";
             break;
 
+
+
+
+
+        case 'জাতীয়তা সনদ':
+                $readonly = true;
+                $sec_prottoyon = $english ?
+                "Mr. {$details['applicant_name']} is personally known to me. He/She is a Bangladeshi national by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her. Therefore, he/she is granted the Nationality Certificate." :
+                "জনাব {$details['applicant_name']} কে আমি ব্যক্তিগতভাবে চিনি ও জানি। তিনি জন্মসূত্রে বাংলাদেশের নাগরিক এবং অত্র {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। আমার জানামতে তার বিরুদ্ধে কোন রাষ্ট্রদ্রোহিতার অভিযোগ নেই। তাই তাকে জাতীয়তা সনদ প্রদান করা হলো।";
+                break;
+
+            case 'স্থায়ী বাসিন্দা সনদ':
+                $readonly = true;
+                $sec_prottoyon = $english ?
+                "Mr. {$details['applicant_name']} is personally known to me. He/She is a permanent resident of this {$union_oarisader_en} and a citizen of Bangladesh by birth. To the best of my knowledge, there are no charges of sedition against him/her. Therefore, he/she is granted the Permanent Resident Certificate." :
+                "জনাব {$details['applicant_name']} কে আমি ব্যক্তিগতভাবে চিনি ও জানি। তিনি অত্র {$union_oarisader} স্থায়ী বাসিন্দা এবং জন্মসূত্রে বাংলাদেশের নাগরিক। আমার জানামতে তার বিরুদ্ধে কোন রাষ্ট্রদ্রোহিতার অভিযোগ নেই। তাই তাকে স্থায়ী বাসিন্দা সনদ প্রদান করা হলো।";
+                break;
+
+            case 'এতিম সনদ':
+                $readonly = true;
+                $sec_prottoyon = $english ?
+                "Mr. {$details['applicant_name']} is personally known to me. To my knowledge, his/her parents are not alive, and he/she is an orphan. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her." :
+                "জনাব {$details['applicant_name']} কে আমি ব্যক্তিগতভাবে চিনি ও জানি। আমার জানা মতে তার বাবা-মা জীবিত নেই, তিনি একজন এতিম। তিনি জন্মসূত্রে বাংলাদেশের নাগরিক এবং অত্র {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। আমার জানামতে তার বিরুদ্ধে রাষ্ট্রদ্রোহিতার অভিযোগ নেই।";
+                break;
+
+            case 'মাসিক আয়ের সনদ':
+                $readonly = true;
+                $sec_prottoyon = $english ?
+                "Mr. {$details['applicant_name']} is personally known to me. His/Her monthly income is {$details['Annual_income']}/{$details['Annual_income_text']}. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her." :
+                "জনাব {$details['applicant_name']} কে আমি ব্যক্তিগতভাবে চিনি ও জানি। তার মাসিক আয় {$details['Annual_income']}/{$details['Annual_income_text']}। তিনি জন্মসূত্রে বাংলাদেশের নাগরিক এবং অত্র {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। আমার জানামতে তার বিরুদ্ধে রাষ্ট্রদ্রোহিতার অভিযোগ নেই।";
+                break;
+
+
+
+
         default:
             $readonly = false;
             $sec_prottoyon = $english ?
