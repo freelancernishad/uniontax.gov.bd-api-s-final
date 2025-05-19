@@ -151,6 +151,57 @@
     > {!! int_en_to_bn($row->sec_prottoyon) !!}<br>
     </p>
 
+
+@php
+    $successors = json_decode($row->successor_list, true);
+@endphp
+
+@if(!empty($successors))
+    <table border="1" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; margin-top: 10px; font-size: 13px;">
+        <thead>
+            <tr>
+                <th>ক্রমিক নং</th>
+                <th>নাম</th>
+                <th>জন্ম তারিখ</th>
+                <th>বয়স</th>
+                <th>সম্পর্ক</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($successors as $index => $successor)
+                @php
+                    $dob = isset($successor['w_age']) ? $successor['w_age'] : null;
+                    $age = '';
+
+                    if ($dob && \Carbon\Carbon::hasFormat($dob, 'Y-m-d')) {
+                        $birthDate = \Carbon\Carbon::parse($dob);
+                        $now = \Carbon\Carbon::now();
+                        $diff = $birthDate->diff($now);
+                        $age = "{$diff->y}";
+                    }
+                @endphp
+                <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ $successor['w_name'] ?? '' }}</td>
+                    <td>{{ int_en_to_bn($dob) ?? 'উল্লেখ নেই' }}</td>
+                    <td>{{ int_en_to_bn($age) }}</td>
+                    <td>{{ $successor['w_relation'] ?? '' }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    <p style="font-size: 13px;">
+        এই সনদপত্র আবেদনকারীর প্রদত্ত তথ্যের ভিত্তিতে প্রদান করা হয়েছে। অতএব, পরিবারের কোনো সদস্য সম্পর্কে ভুল বা ভ্রান্ত তথ্য প্রদান করা হলে তার সম্পূর্ণ দায়ভার আবেদনকারীর উপর বর্তাবে। অনুমোদনকারী এ বিষয়ে কোনো দায়িত্ব নেবেন না এবং ভুল তথ্য প্রদান করা হলে উক্ত সনদপত্র বাতিল বলে গণ্য হবে।
+    </p>
+@endif
+
+
+
+
+
+
+
     <p style="margin-bottom: 6px;"
     > {!! $Sonodnamelist->template  !!}<br>
     </p>
