@@ -443,6 +443,15 @@ function age($dateOf = '2001-08-25', $en = false) {
                 break;
 
 
+            case 'পারিবারিক সনদ':
+                $readonly = true;
+                $sec_prottoyon = $english ?
+                "Mr. {$details['applicant_name']} is personally known to me. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her. The names and information of the family members are as follows:" :
+                "জনাব {$details['applicant_name']} কে আমি ব্যক্তিগতভাবে চিনি ও জানি। তিনি জন্মসূত্রে বাংলাদেশের নাগরিক এবং অত্র {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। আমার জানামতে তার বিরুদ্ধে রাষ্ট্রদ্রোহিতার কোনো অভিযোগ নেই। পরিবারের সদস্যদের নাম ও তথ্য নিম্নরূপঃ";
+                break;
+
+
+
 
 
         default:

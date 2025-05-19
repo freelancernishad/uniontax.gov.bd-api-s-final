@@ -183,6 +183,11 @@
             @endforeach
         </tbody>
     </table>
+
+ <p>The certificate is provided based on the information provided by claimant. Thus, the claimant shall be solely responsible any misinformation or misrepresentation of any family members and the approver shall not be liable for any misinformation and the certificate shall be considered as abandoned.</p>
+
+
+
 @endif
 
 
