@@ -137,6 +137,56 @@
 <p class="detailsfontSize">{{ $row->sec_prottoyon }}</p>
 
 
+@php
+    $successors = json_decode($row->successor_list, true);
+@endphp
+
+@if(!empty($successors))
+    <table border="1" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; margin-top: 10px; font-size: 13px;">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Date of Birth</th>
+                <th>Age</th>
+                <th>Relation</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($successors as $successor)
+                @php
+                    $dob = isset($successor['w_age']) ? $successor['w_age'] : null;
+                    $age = '';
+
+                    if ($dob && \Carbon\Carbon::hasFormat($dob, 'Y-m-d')) {
+                        $birthDate = \Carbon\Carbon::parse($dob);
+                        $now = \Carbon\Carbon::now();
+                        $diff = $birthDate->diff($now);
+
+                        // if ($diff->y > 0) {
+                        //     $age = "{$diff->y} years {$diff->m} months {$diff->d} days";
+                        // } elseif ($diff->m > 0) {
+                        //     $age = "{$diff->m} months {$diff->d} days";
+                        // } else {
+                        //     $age = "{$diff->d} days";
+                        // }
+
+                            $age = "{$diff->y}";
+
+                    }
+                @endphp
+                                <tr>
+                    <td>{{ $successor['w_name'] ?? '' }}</td>
+                    <td>{{ $dob ?? 'N/A' }}</td>
+                    <td>{{ $age }}</td>
+                    <td>{{ $successor['w_relation'] ?? '' }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+@endif
+
+
+
 
 <p class="detailsfontSize" style="margin-bottom: 6px;">&nbsp; &nbsp; &nbsp; I wish for his/her overall progress and well-being in future life.<br></p>
 {{-- <p style="margin-bottom: 6px;">{!! $Sonodnamelist->template !!}<br></p> --}}
