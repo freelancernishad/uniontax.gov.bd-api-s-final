@@ -15,17 +15,7 @@ use App\Http\Controllers\Api\User\Reports\PaymentReportsController;
 use App\Http\Controllers\Api\SystemSettings\SystemSettingController;
 use App\Http\Controllers\Api\Global\HoldingTax\HoldingTaxPdfController;
 use App\Http\Controllers\Api\User\Holdingtax\HoldingPdfReportController;
-
-
-
-
-
-
-
-
-
-
-
+use App\Models\Sonod;
 
 Route::get('create/payment', [SonodController::class,'creatingEkpayUrl']);
 
@@ -46,6 +36,17 @@ Route::get('/check-octane', function () {
 
 
 
+Route::get('/sonod/s/{id}', function ($id) {
+    $sonod = Sonod::find($id);
+    if ($sonod) {
+
+        $url = 'https://pouroseba.gov.bd/sonod/search?sonodType=' . urlencode($sonod->sonod_name) . '&sonodNo=' . urlencode($sonod->sonod_no);
+        return response()->json(['url' => $url]);
+
+    } else {
+        return response()->json(['error' => 'Sonod not found'], 404);
+    }
+});
 
 Route::get('/sonod/d/{id}', [SonodPdfController::class,'sonodDownload']);
 Route::get('/sonod/download/{id}', [SonodPdfController::class,'sonodDownload']);
