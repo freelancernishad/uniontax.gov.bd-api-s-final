@@ -40,7 +40,7 @@ Route::get('/sonod/s/{id}', function ($id) {
     $sonod = Sonod::find($id);
     if ($sonod) {
 
-        $url = 'https://pouroseba.gov.bd/sonod/search?sonodType=' . urlencode($sonod->sonod_name) . '&sonodNo=' . urlencode($sonod->sonod_no);
+        $url = 'https://pouroseba.gov.bd/sonod/search?sonodType=' . $sonod->sonod_name . '&sonodNo=' . $sonod->sonod_no;
         return redirect($url);
 
     } else {
