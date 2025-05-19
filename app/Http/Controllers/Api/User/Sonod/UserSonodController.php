@@ -288,8 +288,8 @@ class UserSonodController extends Controller
 
         if($sonod->stutus=='approved'){
             $unioun_name = $sonod->unioun_name;
-            $sonodUrl =  url("/sonod/d/$id");
-            
+            $sonodUrl =  url("/sonod/s/$id");
+
             $deccription = "Congratulation! Your application $sonod->sonod_Id has been approved. Document is available at  $sonodUrl";
             SmsNocHelper::sendSms($deccription, $sonod->applicant_mobile,$unioun_name);
         }

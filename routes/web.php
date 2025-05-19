@@ -41,7 +41,7 @@ Route::get('/sonod/s/{id}', function ($id) {
     if ($sonod) {
 
         $url = 'https://pouroseba.gov.bd/sonod/search?sonodType=' . urlencode($sonod->sonod_name) . '&sonodNo=' . urlencode($sonod->sonod_no);
-        return response()->json(['url' => $url]);
+        return redirect($url);
 
     } else {
         return response()->json(['error' => 'Sonod not found'], 404);
