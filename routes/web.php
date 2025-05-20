@@ -39,8 +39,14 @@ Route::get('/check-octane', function () {
 Route::get('/sonod/s/{id}', function ($id) {
     $sonod = Sonod::find($id);
     if ($sonod) {
+         $union = \App\Models\SiteSetting::where('key', 'union')->first()->value;
 
-        $url = 'https://pouroseba.gov.bd/sonod/search?sonodType=' . $sonod->sonod_name . '&sonodNo=' . $sonod->sonod_Id;
+         if($union) {
+            $url = 'https://uniontax.gov.bd/sonod/search?sonodType=' . $sonod->sonod_name . '&sonodNo=' . $sonod->sonod_Id;
+         }else{
+            $url = 'https://pouroseba.gov.bd/sonod/search?sonodType=' . $sonod->sonod_name . '&sonodNo=' . $sonod->sonod_Id;
+
+        }
         return redirect($url);
 
     } else {
