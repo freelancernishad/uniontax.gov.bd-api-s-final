@@ -142,6 +142,7 @@ Route::prefix('admin')->group(function () {
 
         Route::get('get/tradelicense/fees', [AdminUniouninfoController::class, 'getTradeLicenseFees']);
         Route::post('store/tradelicense/fees', [AdminUniouninfoController::class, 'upsertTradeLicenseKhatFees']);
+        Route::post('create/tradelicense/khat', [AdminUniouninfoController::class, 'storeKhats']);
 
 
 

@@ -13,6 +13,7 @@ use App\Exports\UniouninfoExport;
 use App\Models\EkpayPaymentReport;
 use Illuminate\Support\Facades\DB;
 use App\Models\TradeLicenseKhatFee;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\View;
@@ -819,16 +820,79 @@ class AdminUniouninfoController extends Controller
 
 
 
+
+
+
+
+public function storeKhats(Request $request)
+{
+    $data = $request->all();
+
+    foreach ($data as $parent) {
+        // Get latest khat_id to assign a new unique one
+        $lastKhat = TradeLicenseKhat::where('main_khat_id', 0 )->orderByDesc('khat_id')->first();
+        $newParentKhatId = $lastKhat ? ((int)$lastKhat->khat_id + 1) : 1;
+
+        // Create parent khat (type = main)
+        $parentKhat = TradeLicenseKhat::create([
+            'khat_id' => $newParentKhatId,
+            'name' => $parent['name'],
+            'main_khat_id' => 0,
+            'type' => 'main',
+        ]);
+
+        $nextChildId = $newParentKhatId * 100 + 1;
+
+        // Create child khats and corresponding fees
+        if (!empty($parent['child_khats'])) {
+            foreach ($parent['child_khats'] as $child) {
+                $childKhat = TradeLicenseKhat::create([
+                    'khat_id' => $nextChildId,
+                    'name' => $child['name'],
+                    'main_khat_id' => $parentKhat->khat_id,
+                    'type' => 'sub',
+                ]);
+
+                // Create fee for child khat
+                TradeLicenseKhatFee::updateOrCreate(
+                    [
+                        'khat_id_1' => $parentKhat->khat_id,
+                        'khat_id_2' => $childKhat->khat_id,
+                    ],
+                    [
+                        'khat_fee_id' => $parentKhat->khat_id . $childKhat->khat_id,
+                        'fee' => $child['fee'] ?? 0,
+                    ]
+                );
+
+                $nextChildId++;
+            }
+        }
+    }
+
+    return response()->json(['message' => 'Khats and khat fees created successfully']);
+}
+
+
+
+
+
+
 public function getTradeLicenseFees()
 {
-    $tradeLicenseKhats = TradeLicenseKhat::with(['childKhats.khatFees'])->where('main_khat_id', 0)->get();
+   $tradeLicenseKhats = TradeLicenseKhat::with(['childKhats'])->where('main_khat_id', 0)->get();
 
     $data = $tradeLicenseKhats->map(function ($khat) {
         return [
             'khat_id' => $khat->khat_id,
             'name' => $khat->name,
             'child_khats' => $khat->childKhats->map(function ($child) {
-                $fee = $child->khatFees->first(); // Assume one fee per child khat
+
+
+                $fee = TradeLicenseKhatFee::where([
+                    ['khat_id_1', $child->main_khat_id],
+                    ['khat_id_2', $child->khat_id],
+                ])->first();
 
                 return [
                     'khat_fee_id' => $fee?->khat_fee_id ?? ( $child->main_khat_id . $child->khat_id),
@@ -850,8 +914,8 @@ public function upsertTradeLicenseKhatFees(Request $request)
     $data = $request->all();
 
     $validator = Validator::make($data, [
-        '*.khat_id_1' => 'required|string|exists:trade_license_khats,main_khat_id',
-        '*.khat_id_2' => 'required|string|exists:trade_license_khats,khat_id',
+        '*.khat_id_1' => 'required|exists:trade_license_khats,main_khat_id',
+        '*.khat_id_2' => 'required|exists:trade_license_khats,khat_id',
         '*.fee' => 'required|numeric|min:0',
     ]);
 
