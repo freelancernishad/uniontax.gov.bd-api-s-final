@@ -89,7 +89,7 @@ Route::prefix('admin')->group(function () {
             Route::get('/transaction-history', [AdminPaymentController::class, 'getAllTransactionHistory'])
                 ->name('admin.transitions.transaction-history');
         });
-        
+
 
 
         Route::prefix('social-media')->group(function () {
@@ -139,6 +139,12 @@ Route::prefix('admin')->group(function () {
         Route::post('uniouninfo/{id}', [AdminUniouninfoController::class, 'update']);     // Update union info
         Route::delete('uniouninfo/{id}', [AdminUniouninfoController::class, 'destroy']); // Delete union info
         Route::get('uniouninfo/phone/list', [AdminUniouninfoController::class, 'getAllWithPhones']);
+
+        Route::get('get/tradelicense/fees', [AdminUniouninfoController::class, 'getTradeLicenseFees']);
+        Route::post('store/tradelicense/fees', [AdminUniouninfoController::class, 'upsertTradeLicenseKhatFees']);
+
+
+
 
 
 

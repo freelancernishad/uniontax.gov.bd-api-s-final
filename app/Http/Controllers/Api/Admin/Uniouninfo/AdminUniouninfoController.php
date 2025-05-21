@@ -7,9 +7,12 @@ use App\Models\Payment;
 use App\Models\Uniouninfo;
 use Illuminate\Http\Request;
 use App\Models\AllowedOrigin;
+use App\Models\TradeLicenseKhat;
 use PhpParser\Node\Stmt\Return_;
 use App\Exports\UniouninfoExport;
 use App\Models\EkpayPaymentReport;
+use Illuminate\Support\Facades\DB;
+use App\Models\TradeLicenseKhatFee;
 use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\View;
@@ -813,6 +816,74 @@ class AdminUniouninfoController extends Controller
 
         return response()->json(['contacts'=>$contacts,'savedcontacts'=>$savedcontacts], 200);
     }
+
+
+
+public function getTradeLicenseFees()
+{
+    $tradeLicenseKhats = TradeLicenseKhat::with(['childKhats.khatFees'])->where('main_khat_id', 0)->get();
+
+    $data = $tradeLicenseKhats->map(function ($khat) {
+        return [
+            'khat_id' => $khat->khat_id,
+            'name' => $khat->name,
+            'child_khats' => $khat->childKhats->map(function ($child) {
+                $fee = $child->khatFees->first(); // Assume one fee per child khat
+
+                return [
+                    'khat_fee_id' => $fee?->khat_fee_id ?? ( $child->main_khat_id . $child->khat_id),
+                    'khat_id_1' => $fee?->khat_id_1 ?? $child->main_khat_id,
+                    'khat_id_2' => $fee?->khat_id_2 ?? $child->khat_id,
+                    'name' => $child->name,
+                    'fee' => $fee?->fee ?? 0,
+                ];
+            }),
+        ];
+    });
+
+    return response()->json($data);
+}
+
+
+public function upsertTradeLicenseKhatFees(Request $request)
+{
+    $data = $request->all();
+
+    $validator = Validator::make($data, [
+        '*.khat_id_1' => 'required|string|exists:trade_license_khats,main_khat_id',
+        '*.khat_id_2' => 'required|string|exists:trade_license_khats,khat_id',
+        '*.fee' => 'required|numeric|min:0',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'message' => 'Validation failed.',
+            'errors' => $validator->errors()
+        ], 422);
+    }
+
+    DB::transaction(function () use ($data) {
+        foreach ($data as $item) {
+            TradeLicenseKhatFee::updateOrCreate(
+                [
+                    'khat_id_1' => $item['khat_id_1'], // parent khat_id
+                    'khat_id_2' => $item['khat_id_2'], // child khat_id
+                ],
+                [
+                    'fee' => $item['fee'],
+                    'khat_fee_id' => TradeLicenseKhatFee::where([
+                        ['khat_id_1', $item['khat_id_1']],
+                        ['khat_id_2', $item['khat_id_2']],
+                    ])->value('khat_fee_id') ?? ( $item['khat_id_1'] . $item['khat_id_2']),
+                ]
+            );
+        }
+    });
+
+    return response()->json([
+        'message' => 'Trade License Khat Fees upserted successfully.'
+    ], 200);
+}
 
 
 

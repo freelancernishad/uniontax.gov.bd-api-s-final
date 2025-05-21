@@ -22,4 +22,17 @@ class TradeLicenseKhat extends Model
         return $this->hasMany(TradeLicenseKhatFee::class, 'khat_id_1', 'khat_id');
     }
 
+        // Get parent khat
+    public function parentKhat()
+    {
+        return $this->belongsTo(TradeLicenseKhat::class, 'main_khat_id', 'khat_id');
+    }
+
+    // Get child khats
+    public function childKhats()
+    {
+        return $this->hasMany(TradeLicenseKhat::class, 'main_khat_id', 'khat_id');
+    }
+
+
 }

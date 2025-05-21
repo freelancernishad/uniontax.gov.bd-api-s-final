@@ -26,3 +26,5 @@ class TradeLicenseKhatFee extends Model
         return $this->belongsTo(TradeLicenseKhat::class, 'khat_id_2', 'khat_id');
     }
 }
+
+
