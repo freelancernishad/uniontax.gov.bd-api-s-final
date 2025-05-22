@@ -275,6 +275,7 @@ class AuthUserController extends Controller
                 'has_paid_maintance_fee' => getHasPaidMaintanceFee($user->unioun, $uniouninfo->maintance_fee_type),
                 'maintance_fee_type' => $uniouninfo->maintance_fee_type,
                 'maintance_fee' => $uniouninfo->maintance_fee,
+                'maintance_fee_option' => $uniouninfo->maintance_fee_option,
             ];
 
             return response()->json(['message' => 'Token is valid.','user'=>$payload], 200);

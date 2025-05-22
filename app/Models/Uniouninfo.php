@@ -55,6 +55,7 @@ class Uniouninfo extends Model
         'user_phone',      // New column
         'maintance_fee',
         'maintance_fee_type',
+        'maintance_fee_option',
     ];
 
     protected $appends = ['is_popup','has_bank_account'];
