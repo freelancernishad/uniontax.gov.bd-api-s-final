@@ -141,51 +141,57 @@
     $successors = json_decode($row->successor_list, true);
 @endphp
 
-@if(!empty($successors))
-    <table border="1" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; margin-top: 10px; font-size: 13px;">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Date of Birth</th>
-                <th>Age</th>
-                <th>Relation</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($successors as $successor)
-                @php
-                    $dob = isset($successor['w_age']) ? $successor['w_age'] : null;
-                    $age = '';
+@if($row->sonod_name=='পারিবারিক সনদ')
 
-                    if ($dob && \Carbon\Carbon::hasFormat($dob, 'Y-m-d')) {
-                        $birthDate = \Carbon\Carbon::parse($dob);
-                        $now = \Carbon\Carbon::now();
-                        $diff = $birthDate->diff($now);
 
-                        // if ($diff->y > 0) {
-                        //     $age = "{$diff->y} years {$diff->m} months {$diff->d} days";
-                        // } elseif ($diff->m > 0) {
-                        //     $age = "{$diff->m} months {$diff->d} days";
-                        // } else {
-                        //     $age = "{$diff->d} days";
-                        // }
-
-                            $age = "{$diff->y}";
-
-                    }
-                @endphp
-                                <tr>
-                    <td>{{ $successor['w_name'] ?? '' }}</td>
-                    <td>{{ $dob ?? 'N/A' }}</td>
-                    <td>{{ $age }}</td>
-                    <td>{{ $successor['w_relation'] ?? '' }}</td>
+    @if(!empty($successors))
+        <table border="1" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; margin-top: 10px; font-size: 13px;">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Date of Birth</th>
+                    <th>Age</th>
+                    <th>Relation</th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach($successors as $successor)
+                    @php
+                        $dob = isset($successor['w_age']) ? $successor['w_age'] : null;
+                        $age = '';
 
- <p style=" font-size: 13px;">The certificate is provided based on the information provided by claimant. Thus, the claimant shall be solely responsible any misinformation or misrepresentation of any family members and the approver shall not be liable for any misinformation and the certificate shall be considered as abandoned.</p>
+                        if ($dob && \Carbon\Carbon::hasFormat($dob, 'Y-m-d')) {
+                            $birthDate = \Carbon\Carbon::parse($dob);
+                            $now = \Carbon\Carbon::now();
+                            $diff = $birthDate->diff($now);
 
+                            // if ($diff->y > 0) {
+                            //     $age = "{$diff->y} years {$diff->m} months {$diff->d} days";
+                            // } elseif ($diff->m > 0) {
+                            //     $age = "{$diff->m} months {$diff->d} days";
+                            // } else {
+                            //     $age = "{$diff->d} days";
+                            // }
+
+                                $age = "{$diff->y}";
+
+                        }
+                    @endphp
+                                    <tr>
+                        <td>{{ $successor['w_name'] ?? '' }}</td>
+                        <td>{{ $dob ?? 'N/A' }}</td>
+                        <td>{{ $age }}</td>
+                        <td>{{ $successor['w_relation'] ?? '' }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+        <p style=" font-size: 13px;">The certificate is provided based on the information provided by claimant. Thus, the claimant shall be solely responsible any misinformation or misrepresentation of any family members and the approver shall not be liable for any misinformation and the certificate shall be considered as abandoned.</p>
+
+
+
+    @endif
 
 
 @endif
