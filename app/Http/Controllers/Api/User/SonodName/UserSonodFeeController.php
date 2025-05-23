@@ -88,6 +88,16 @@ class UserSonodFeeController extends Controller
             );
         }
 
+        $union = Auth::user()->unioun;
+        $unionInfo = Uniouninfo::where('short_name_e', $union)->first();
+
+        if ($unionInfo && $unionInfo->profile_steps == 2) {
+            $unionInfo->profile_steps = 10;
+            $unionInfo->save();
+        }
+
+
+
         return response()->json([
             'status' => 'success',
             'message' => 'SonodFees updated or created successfully'

@@ -56,6 +56,7 @@ class Uniouninfo extends Model
         'maintance_fee',
         'maintance_fee_type',
         'maintance_fee_option',
+        'profile_steps',
     ];
 
     protected $appends = ['is_popup','has_bank_account'];

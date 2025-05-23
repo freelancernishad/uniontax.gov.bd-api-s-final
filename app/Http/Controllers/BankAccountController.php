@@ -57,6 +57,14 @@ class BankAccountController extends Controller
             array_merge($validatedData, ['union' => $union]) // Ensure the union is set
         );
 
+        $unionInfo = Uniouninfo::where('short_name_e', $union)->first();
+
+        if ($unionInfo && $unionInfo->profile_steps == 1) {
+            $unionInfo->profile_steps = 2;
+            $unionInfo->save();
+        }
+
+
         return response()->json([
             'message' => 'Bank account updated or created successfully',
             'data' => $bankAccount

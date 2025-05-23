@@ -170,6 +170,14 @@ class UserUniouninfoController extends Controller
             // Set `c_type_en` based on the selected `c_type`
             $validatedData['c_type_en'] = $cTypeMap[$validatedData['c_type']] ?? null;
         }
+
+
+        if($unionInfo->profile_steps == 0){
+            $validatedData['profile_steps'] = 1;
+        }
+
+
+
         // Update the union info
         $unionInfo->update($validatedData);
 
