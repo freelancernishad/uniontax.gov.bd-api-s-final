@@ -6,6 +6,7 @@ use Exception;
 use App\Models\Sonod;
 use App\Models\SonodFee;
 use App\Models\Uniouninfo;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use App\Models\EnglishSonod;
 use Illuminate\Http\Request;
@@ -165,14 +166,26 @@ class SonodController extends Controller
     if (isset($bnData['applicant_date_of_birth']) && !empty($bnData['applicant_date_of_birth'])) {
         $insertData['applicant_date_of_birth'] = convertToMySQLDate(int_bn_to_en($bnData['applicant_date_of_birth']));
     }
+
+
+    $sonodData = Arr::except($insertData, ['holding_owner_name', 'holding_owner_mobile', 'holding_owner_relationship']);
+
+
         // Save the Sonod entry
-        $sonod = Sonod::create($insertData);
+        $sonod = Sonod::create($sonodData);
 
-        if ($holdingData) {
+        if (
+            !empty($insertData['holding_owner_name']) &&
+            !empty($insertData['holding_owner_mobile']) &&
+            !empty($insertData['holding_owner_relationship'])
+        ) {
+            $holdingData['sonod_id'] = $sonod->id;
+            $holdingData['holding_no'] = $insertData['applicant_holding_tax_number'] ?? null;
+            $holdingData['name'] = $insertData['holding_owner_name'] ?? null;
+            $holdingData['mobile'] = $insertData['holding_owner_mobile'] ?? null;
+            $holdingData['relationship'] = $insertData['holding_owner_relationship'] ?? null;
 
-                $holdingData['sonod_id'] = $sonod->id;
-                SonodHoldingOwner::create($holdingData);
-
+            SonodHoldingOwner::create($holdingData);
         }
 
 
