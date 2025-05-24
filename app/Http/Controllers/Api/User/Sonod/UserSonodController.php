@@ -535,9 +535,12 @@ class UserSonodController extends Controller
     public function show(Request $request, $id)
     {
         // Fetch the Sonod record with the english_sonod relationship (only the id)
-        $sonod = Sonod::with(['english_sonod' => function ($query) {
+        $sonod = Sonod::with([
+            'english_sonod' => function ($query) {
             $query->select('id', 'sonod_Id'); // Select only the id and sonod_Id (foreign key)
-        }])->find($id);
+            },
+            'holdingOwners' // Add the holdingOwners relationship
+        ])->find($id);
 
         // Check if the Sonod record exists
         if (!$sonod) {

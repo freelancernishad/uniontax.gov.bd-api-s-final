@@ -176,5 +176,15 @@ class Sonod extends Model
         return $sonodFinalId;
     }
 
+
+
+    public function holdingOwners()
+    {
+        return $this->hasMany(SonodHoldingOwner::class, 'sonod_id');
+    }
+
+
+
+
 }
 

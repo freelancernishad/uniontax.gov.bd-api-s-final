@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use App\Models\EnglishSonod;
 use Illuminate\Http\Request;
 use App\Models\Sonodnamelist;
+use App\Models\SonodHoldingOwner;
 use App\Models\TradeLicenseKhatFee;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -34,6 +35,7 @@ class SonodController extends Controller
 
             $bnData = is_array($request->bn) ? $request->bn : json_decode($request->bn, true);
             $enData = is_array($request->en) ? $request->en : json_decode($request->en, true);
+            $holdingData = is_array($request->holding_details) ? $request->holding_details : json_decode($request->holding_details, true);
 
             // Ensure the data is not null before logging
             // Log::info('Decoded bnData:', !empty($bnData) ? $bnData : ['bnData' => 'null']);
@@ -43,7 +45,7 @@ class SonodController extends Controller
             $hasEnData = !empty($enData);
 
             // Create Sonod and EnglishSonod entries (if enData is not empty)
-            $sonod = $this->createSonod($bnData, $enData, $request);
+            $sonod = $this->createSonod($bnData, $enData,$holdingData, $request);
 
 
 
@@ -68,7 +70,7 @@ class SonodController extends Controller
 
             // Return the response
             return response()->json([
-                'sonod' => $sonod,
+                'sonod' => $sonod->load('holdingOwners'),
                 'redirect_url' => $redirectUrl,
             ]);
         } catch (Exception $e) {
@@ -85,8 +87,9 @@ class SonodController extends Controller
     }
 
 
-    protected function createSonod($bnData, $enData, $request)
+    protected function createSonod($bnData, $enData,$holdingData, $request)
     {
+
 
 
         //  $this->handleFileUploads($request, $insertData, 'ddd', '$dateFolder', '$sonodId');
@@ -164,6 +167,14 @@ class SonodController extends Controller
     }
         // Save the Sonod entry
         $sonod = Sonod::create($insertData);
+
+        if ($holdingData) {
+
+                $holdingData['sonod_id'] = $sonod->id;
+                SonodHoldingOwner::create($holdingData);
+
+        }
+
 
         // Create EnglishSonod only if enData is not empty
         if (!empty($enData)) {
