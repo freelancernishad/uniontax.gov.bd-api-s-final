@@ -370,7 +370,7 @@ class HoldingtaxController extends Controller
         //     $userUnion = $auth->unioun;
         // }
         // Apply union filter based on the authenticated user's union
-        $query->where('unioun', $userUnion);
+     
 
         // Apply search conditions for various fields (holding_no, maliker_name, etc.)
         if ($search) {
@@ -388,6 +388,10 @@ class HoldingtaxController extends Controller
         }
         if($r->holding_no){
             $query->where('holding_no', 'like', "%$r->holding_no%");
+        }
+
+        if(!$r->nid_no && !$r->holding_no){
+            $query->where('unioun', $userUnion);
         }
 
 
