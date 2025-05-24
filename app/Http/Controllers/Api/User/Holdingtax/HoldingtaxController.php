@@ -283,8 +283,8 @@ class HoldingtaxController extends Controller
     public function getSingleHoldingTaxWithBokeyas(Request $r, $id)
     {
         // Get the authenticated user's union
-       
-    
+
+
         $userUnion = $r->unioun;
         if (auth()->guard('user')->check()) {
             $auth = auth()->guard('user')->user();
@@ -295,7 +295,7 @@ class HoldingtaxController extends Controller
         }else{
             $auth = Auth::user();
         }
-    
+
 
         // Find the holding tax by its id and eager load the holding bokeyas with specific columns
         $holdingTax = Holdingtax::select(['unioun', 'id', 'holding_no', 'category', 'maliker_name', 'father_or_samir_name', 'gramer_name', 'word_no', 'nid_no', 'mobile_no', 'griher_barsikh_mullo', 'jomir_vara', 'barsikh_vara'])
@@ -354,7 +354,7 @@ class HoldingtaxController extends Controller
             $user = auth()->guard('uddokta')->user();
             $userUnion = $user->union_name;
         }
-    
+
 
         // Get the search parameters from the request
         $search = $r->search;
@@ -365,7 +365,7 @@ class HoldingtaxController extends Controller
         $query->select(['id','holding_no','maliker_name','nid_no','mobile_no']);
 
 
-      
+
         // if($auth){
         //     $userUnion = $auth->unioun;
         // }
@@ -381,6 +381,16 @@ class HoldingtaxController extends Controller
                 ->orWhere('mobile_no', 'like', "%$search%");
             });
         }
+
+
+        if($r->nid_no){
+            $query->where('nid_no', 'like', "%$r->nid_no%");
+        }
+        if($r->holding_no){
+            $query->where('holding_no', 'like', "%$r->holding_no%");
+        }
+
+
 
         // If `word` is provided, apply the word filter
         if ($word) {
