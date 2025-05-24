@@ -180,7 +180,7 @@ class Sonod extends Model
 
     public function holdingOwners()
     {
-        return $this->hasMany(SonodHoldingOwner::class, 'sonod_id');
+        return $this->hasOne(SonodHoldingOwner::class, 'sonod_id');
     }
 
 
