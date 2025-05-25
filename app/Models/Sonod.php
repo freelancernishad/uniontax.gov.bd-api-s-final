@@ -108,6 +108,8 @@ class Sonod extends Model
         'hasEnData',
         'font_family', // Add this line
         'cancel_reason',
+        'signboard_type',
+        'signboard_size_square_fit',
     ];
 
     protected $attributes = [

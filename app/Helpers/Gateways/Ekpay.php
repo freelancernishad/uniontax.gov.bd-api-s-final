@@ -108,7 +108,7 @@ function sonodpayment($id, $urls, $hasEnData = false,$uddoktaId=null)
         return response()->json(['message' => 'Only Prepaid payments are supported.'], 400);
     }
 
-    $sonodFees = SonodFee::where([
+     $sonodFees = SonodFee::where([
         'service_id' => $sonodnamelists->service_id,
         'unioun' => $unioun_name
     ])->firstOrFail();
@@ -119,21 +119,49 @@ function sonodpayment($id, $urls, $hasEnData = false,$uddoktaId=null)
     $tradeVatAmount = 0;
     // Additional logic for 'ট্রেড লাইসেন্স'
     if ($sonod_name == 'ট্রেড লাইসেন্স') {
-        $khat_id_1 = $sonod->applicant_type_of_businessKhat;
-        $khat_id_2 = $sonod->applicant_type_of_businessKhatAmount;
+         $khat_id_1 = (int) $sonod->applicant_type_of_businessKhat;
 
-        $pesaKorFee = TradeLicenseKhatFee::where([
-            'khat_id_1' => $khat_id_1,
-            'khat_id_2' => $khat_id_2
-        ])->first();
+         $khat_id_2 = (int) $sonod->applicant_type_of_businessKhatAmount;
+
+    $pesaKorFee = TradeLicenseKhatFee::where('khat_id_1', 'LIKE', "%$khat_id_1%")
+        ->where('khat_id_2', 'LIKE', "%$khat_id_2%")
+        ->first();
 
         $tradeVat = 15; // Trade VAT percentage
-        $tradeVatAmount = ($sonod_fee * $tradeVat) / 100;
+
+        $pesaKor = $pesaKorFee ? $pesaKorFee->fee : 0;
+
+
+              $isUnion = isUnion();
+            if($isUnion){
+                $tradeVatAmount = ($sonod_fee * $tradeVat) / 100;
+            }else{
+
+                $tradeVatAmount = ($pesaKor * $tradeVat) / 100;
+
+
+                $signboard_type = $sonod->signboard_type ?? 'normal';
+                $signboard_size_square_fit = $sonod->signboard_size_square_fit ?? 0;
+                $signboard_size_square_fit = (float) $signboard_size_square_fit; // Ensure numeric value
+
+                $signboard_fee = 0;
+                if ($signboard_type == 'normal') {
+                    $signboard_fee = $signboard_size_square_fit * 100;
+                } elseif ($signboard_type == 'digital_led') {
+                    $signboard_fee = $signboard_size_square_fit * 150;
+                }
+
+            }
+
+
+
 
 
         $last_years_money = $sonod->last_years_money ?? 0;
 
-        $total_amount = $pesaKorFee ? $pesaKorFee->fee + $sonod_fee + $tradeVatAmount : $sonod_fee;
+        $total_amount = $pesaKor + $sonod_fee + $tradeVatAmount + $signboard_fee;
+
+
 
         $total_amount = $total_amount+$last_years_money;
 

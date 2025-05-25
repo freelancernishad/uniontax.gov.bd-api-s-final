@@ -390,11 +390,9 @@ class SonodController extends Controller
         }
 
         $sonodFee = $sonodFeeRecord->fees;
-
+        $signboard_fee = 0;
         // Check if it's a 'ট্রেড লাইসেন্স' and retrieve the PesaKor fee
         if ($sonodName == 'ট্রেড লাইসেন্স') {
-
-
             $khat_id_1 = $bnData['applicant_type_of_businessKhat'] ?? $enData['applicant_type_of_businessKhat'] ?? null;
             $khat_id_2 = $bnData['applicant_type_of_businessKhatAmount'] ?? $enData['applicant_type_of_businessKhatAmount'] ?? 0;
 
@@ -411,17 +409,29 @@ class SonodController extends Controller
                 $tradeVatAmount = ($sonodFee * $tradeVat) / 100;
             }else{
                 $tradeVatAmount = ($pesaKor * $tradeVat) / 100;
+
+
+                $signboard_type = $bnData['signboard_type'] ?? $enData['signboard_type'] ?? 'normal';
+                $signboard_size_square_fit = $bnData['signboard_size_square_fit'] ?? $enData['signboard_size_square_fit'] ?? 0;
+                $signboard_size_square_fit = (float) $signboard_size_square_fit; // Ensure numeric value
+
+                $signboard_fee = 0;
+                if ($signboard_type == 'normal') {
+                    $signboard_fee = $signboard_size_square_fit * 100;
+                } elseif ($signboard_type == 'digital_led') {
+                    $signboard_fee = $signboard_size_square_fit * 150;
+                }
+
             }
-
-
-
         } else {
             $pesaKor = 0;
             $tradeVatAmount = 0;
+            $signboard_fee = 0;
         }
 
         // Calculate total amount and currently paid money
-        $totalAmount = $sonodFee + $tradeVatAmount + $pesaKor;
+        $totalAmount = $sonodFee + $tradeVatAmount + $pesaKor + $signboard_fee;
+        Log::info("Total Amount: $totalAmount, PesaKor: $pesaKor, Sonod Fee: $sonodFee, Trade VAT: $tradeVatAmount, Signboard Fee: $signboard_fee");
 
 
         $currentlyPaidMoney = $totalAmount;
@@ -433,6 +443,7 @@ class SonodController extends Controller
             'tredeLisenceFee' => (string)$sonodFee,
             'vatAykor' => (string)$tradeVat,
             'khat' => null,
+            'signboard_fee' => (int)$signboard_fee,
             'last_years_money' => (string)$lastYearsMoney,
             'currently_paid_money' => (string)$currentlyPaidMoney
         ]);
