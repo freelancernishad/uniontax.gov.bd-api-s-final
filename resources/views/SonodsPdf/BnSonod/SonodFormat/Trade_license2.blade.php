@@ -112,7 +112,18 @@ $orthoBchor = explode('-',$row->orthoBchor);
 
     // Check if the data was successfully decoded
     $tredeLisenceFee = $amount_deails->tredeLisenceFee ?? 0;
-    $vatAykor = isset($amount_deails->vatAykor) ? ($tredeLisenceFee * $amount_deails->vatAykor) / 100 : 0;
+    $pesaKor = $amount_deails->pesaKor ?? 0;
+    $signboard_fee = property_exists($amount_deails, 'signboard_fee') ? $amount_deails->signboard_fee : 0;
+
+    if(isUnion()){
+
+        $vatAykor = isset($amount_deails->vatAykor) ? ($tredeLisenceFee * $amount_deails->vatAykor) / 100 : 0;
+    }else{
+        $vatAykor = isset($amount_deails->vatAykor) ? ($pesaKor * $amount_deails->vatAykor) / 100 : 0;
+
+    }
+
+
 @endphp
 
 
@@ -132,8 +143,8 @@ $orthoBchor = explode('-',$row->orthoBchor);
         <td width='50%' align ="right">
 
                 <ul style='list-style:none'>
-                    <li>পেশা ব্যবসা ও বৃত্তির উপর কর  :- {{ int_en_to_bn($amount_deails->pesaKor ?? 0) }} টাকা</li>
-                    <li>সাইনবোর্ড (পরিচিতিমূলক)  : ০.০০ টাকা</li>
+                    <li>পেশা ব্যবসা ও বৃত্তির উপর কর  :- {{ int_en_to_bn($pesaKor) }} টাকা</li>
+                    <li>সাইনবোর্ড (পরিচিতিমূলক)  : {{ int_en_to_bn($signboard_fee) }} টাকা</li>
                     <li>আয়কর/উৎস কর : ০.০০ টাকা</li>
                     <li>ভ্যাট : {{ int_en_to_bn($vatAykor) }} টাকা</li>
                     <li>সংশোধন ফি : ০.০০ টাকা</li>
