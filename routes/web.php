@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\SystemSettings\SystemSettingController;
 use App\Http\Controllers\Api\Global\HoldingTax\HoldingTaxPdfController;
 use App\Http\Controllers\Api\User\Holdingtax\HoldingPdfReportController;
 use App\Models\Sonod;
+use Illuminate\Support\Facades\View;
 
 Route::get('create/payment', [SonodController::class,'creatingEkpayUrl']);
 
@@ -36,23 +37,89 @@ Route::get('/check-octane', function () {
 
 
 
+// Route::get('/sonod/s/{id}', function ($id) {
+//     $sonod = Sonod::find($id);
+//     if ($sonod) {
+//          $union = \App\Models\SiteSetting::where('key', 'union')->first()->value;
+
+//          if($union) {
+//             $url = 'https://uniontax.gov.bd/sonod/search?sonodType=' . $sonod->sonod_name . '&sonodNo=' . $sonod->sonod_Id;
+//          }else{
+//             $url = 'https://pouroseba.gov.bd/sonod/search?sonodType=' . $sonod->sonod_name . '&sonodNo=' . $sonod->sonod_Id;
+
+//         }
+//         return redirect($url);
+
+//     } else {
+//         return response()->json(['error' => 'Sonod not found'], 404);
+//     }
+// });
+
+
+
 Route::get('/sonod/s/{id}', function ($id) {
-    $sonod = Sonod::find($id);
-    if ($sonod) {
-         $union = \App\Models\SiteSetting::where('key', 'union')->first()->value;
+    $sonod = \App\Models\Sonod::find($id);
 
-         if($union) {
-            $url = 'https://uniontax.gov.bd/sonod/search?sonodType=' . $sonod->sonod_name . '&sonodNo=' . $sonod->sonod_Id;
-         }else{
-            $url = 'https://pouroseba.gov.bd/sonod/search?sonodType=' . $sonod->sonod_name . '&sonodNo=' . $sonod->sonod_Id;
-
-        }
-        return redirect($url);
-
-    } else {
+    if (!$sonod) {
         return response()->json(['error' => 'Sonod not found'], 404);
     }
+
+    $sonodNo = $sonod->sonod_Id;
+    $banglaUrl = url("/sonod/d/$id");
+    $englishUrl = url("/sonod/d/$id?en=true");
+
+    // Conditional English button HTML
+    $englishButton = '';
+    if ($sonod->hasEnData) {
+        $englishButton = "<a href='{$englishUrl}' class='btn btn-success btn-lg' target='_blank'>English Sonod Download</a>";
+    }
+
+    return response()->make("
+        <!DOCTYPE html>
+        <html lang='bn'>
+        <head>
+            <meta charset='UTF-8'>
+            <title>সনদ ডাউনলোড</title>
+            <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+            <style>
+                body {
+                    background-color: #f0f8ff;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    margin: 0;
+                }
+                .download-container {
+                    text-align: center;
+                    padding: 40px;
+                    background-color: #ffffff;
+                    border-radius: 16px;
+                    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+                }
+                .btn-lg {
+                    font-size: 1.5rem;
+                    padding: 15px 30px;
+                    margin: 15px;
+                    border-radius: 10px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class='download-container'>
+                <h2 class='mb-4'>সনদ নম্বরঃ {$sonodNo}</h2>
+                <a href='{$banglaUrl}' class='btn btn-primary btn-lg' target='_blank'>বাংলা সনদ ডাউনলোড</a>
+                {$englishButton}
+            </div>
+        </body>
+        </html>
+    ");
 });
+
+
+
+
+
 
 Route::get('/sonod/d/{id}', [SonodPdfController::class,'sonodDownload']);
 Route::get('/sonod/download/{id}', [SonodPdfController::class,'sonodDownload']);

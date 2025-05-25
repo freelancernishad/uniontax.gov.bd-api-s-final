@@ -26,6 +26,10 @@ class ApiResponse
             return $next($request);
         }
 
+        if ($request->is('sonod/s/*')) {
+            return $next($request);
+        }
+
 
 
         // Capture the response
