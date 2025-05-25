@@ -393,6 +393,8 @@ class SonodController extends Controller
 
         // Check if it's a 'ট্রেড লাইসেন্স' and retrieve the PesaKor fee
         if ($sonodName == 'ট্রেড লাইসেন্স') {
+
+
             $khat_id_1 = $bnData['applicant_type_of_businessKhat'] ?? $enData['applicant_type_of_businessKhat'] ?? null;
             $khat_id_2 = $bnData['applicant_type_of_businessKhatAmount'] ?? $enData['applicant_type_of_businessKhatAmount'] ?? 0;
 
@@ -402,7 +404,17 @@ class SonodController extends Controller
             ])->first();
 
             $pesaKor = $pesaKorFee ? $pesaKorFee->fee : 0;
-            $tradeVatAmount = ($sonodFee * $tradeVat) / 100;
+
+
+            $isUnion = isUnion();
+            if($isUnion){
+                $tradeVatAmount = ($sonodFee * $tradeVat) / 100;
+            }else{
+                $tradeVatAmount = ($pesaKor * $tradeVat) / 100;
+            }
+
+
+
         } else {
             $pesaKor = 0;
             $tradeVatAmount = 0;

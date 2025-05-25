@@ -30,6 +30,11 @@ function isUnion(){
     return filter_var($isUnion, FILTER_VALIDATE_BOOLEAN);
 }
 
+function siteSetting($key=null){
+    $siteSetting = SiteSetting::where('key', $key)->first()->value;
+    return $siteSetting;
+}
+
 
 function TokenBlacklist($token){
 // Get the authenticated user for each guard
