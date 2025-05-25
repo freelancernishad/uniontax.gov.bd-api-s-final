@@ -276,7 +276,7 @@ class AuthUserController extends Controller
                 'maintance_fee_type' => $uniouninfo->maintance_fee_type,
                 'maintance_fee' => $uniouninfo->maintance_fee,
                 'maintance_fee_option' => $uniouninfo->maintance_fee_option,
-                'profile_steps' => $uniouninfo->profile_steps,
+                'profile_steps' => is_numeric($uniouninfo->profile_steps) ? (int)$uniouninfo->profile_steps : 0,
             ];
 
             return response()->json(['message' => 'Token is valid.','user'=>$payload], 200);
