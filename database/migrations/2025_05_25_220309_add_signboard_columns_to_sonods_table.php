@@ -9,8 +9,8 @@ class AddSignboardColumnsToSonodsTable extends Migration
     public function up()
     {
         Schema::table('sonods', function (Blueprint $table) {
-            $table->string('signboard_type')->nullable()->after('font_family');
-            $table->string('signboard_size_square_fit')->nullable()->after('signboard_type');
+            $table->string('signboard_type', 20)->nullable()->after('font_family');
+            $table->string('signboard_size_square_fit', 20)->nullable()->after('signboard_type');
         });
     }
 
