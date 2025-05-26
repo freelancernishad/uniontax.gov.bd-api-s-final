@@ -110,6 +110,9 @@ class Sonod extends Model
         'cancel_reason',
         'signboard_type',
         'signboard_size_square_fit',
+        'chalan_traking_no',
+        'chalan_date',
+        'chalan_amount',
     ];
 
     protected $attributes = [
