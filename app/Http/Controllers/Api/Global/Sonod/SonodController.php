@@ -408,7 +408,8 @@ class SonodController extends Controller
             if($isUnion){
                 $tradeVatAmount = ($sonodFee * $tradeVat) / 100;
             }else{
-                $tradeVatAmount = ($pesaKor * $tradeVat) / 100;
+                // $tradeVatAmount = ($pesaKor * $tradeVat) / 100;
+                $tradeVatAmount = 0;
 
 
                 $signboard_type = $bnData['signboard_type'] ?? $enData['signboard_type'] ?? 'normal';
@@ -431,7 +432,7 @@ class SonodController extends Controller
 
         // Calculate total amount and currently paid money
         $totalAmount = $sonodFee + $tradeVatAmount + $pesaKor + $signboard_fee;
-        Log::info("Total Amount: $totalAmount, PesaKor: $pesaKor, Sonod Fee: $sonodFee, Trade VAT: $tradeVatAmount, Signboard Fee: $signboard_fee");
+
 
 
         $currentlyPaidMoney = $totalAmount;

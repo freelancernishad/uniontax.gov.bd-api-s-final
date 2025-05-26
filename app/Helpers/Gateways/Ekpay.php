@@ -138,7 +138,8 @@ function sonodpayment($id, $urls, $hasEnData = false,$uddoktaId=null)
                 $signboard_fee = 0;
             }else{
 
-                $tradeVatAmount = ($pesaKor * $tradeVat) / 100;
+                // $tradeVatAmount = ($pesaKor * $tradeVat) / 100;
+                $tradeVatAmount = 0;
 
 
                 $signboard_type = $sonod->signboard_type ?? 'normal';
