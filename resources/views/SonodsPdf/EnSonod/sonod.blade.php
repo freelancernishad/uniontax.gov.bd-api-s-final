@@ -104,7 +104,7 @@
                     margin:20px auto;
                     text-align:center;
                     padding:5px 0;">
-                    {{ SonodEnName($row->sonod_name) }}
+                    {{ ucwords(strtolower(SonodEnName($row->sonod_name))) }}
                 </div>
             </div>
 

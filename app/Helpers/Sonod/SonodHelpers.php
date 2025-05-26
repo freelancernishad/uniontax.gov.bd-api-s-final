@@ -144,7 +144,7 @@ function age($dateOf = '2001-08-25', $en = false) {
         case 'নাগরিকত্ব সনদ':
             $readonly = true;
             $sec_prottoyon = $english ?
-                "Mr. {$details['applicant_name']} is personally known to me. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her. Therefore, he/she is granted the {$sonod_name} certificate." :
+                "Mr. {$details['applicant_name']} is personally known to me. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her. Therefore, he/she is granted the {$sonod_name}." :
                 "জনাব {$details['applicant_name']} কে আমি ব্যক্তিগতভাবে চিনি ও জানি। সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। তাই তাকে {$details['sonod_name']} প্রদান করা হলো ।";
             break;
 
