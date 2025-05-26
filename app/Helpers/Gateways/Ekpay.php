@@ -135,6 +135,7 @@ function sonodpayment($id, $urls, $hasEnData = false,$uddoktaId=null)
               $isUnion = isUnion();
             if($isUnion){
                 $tradeVatAmount = ($sonod_fee * $tradeVat) / 100;
+                $signboard_fee = 0;
             }else{
 
                 $tradeVatAmount = ($pesaKor * $tradeVat) / 100;
