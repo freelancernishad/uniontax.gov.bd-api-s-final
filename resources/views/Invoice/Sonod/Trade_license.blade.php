@@ -3,9 +3,17 @@
 $khatlist = $row->amount_deails;
         $khatlist = json_decode($khatlist);
         $total = (int)$khatlist->tredeLisenceFee;
-        $amount = ($total*$khatlist->vatAykor)/100;
 
-        $totalAmount = (int)$khatlist->pesaKor+(int)$total+(int)$amount+(int)$khatlist->last_years_money;
+        if(isUnion()){
+            $amount = ($total*$khatlist->vatAykor)/100;
+             $signboard_fee = 0;
+        }else{
+            $amount = 0;
+            $signboard_fee = (int)$khatlist->signboard_fee;
+        }
+
+
+        $totalAmount = (int)$khatlist->pesaKor+(int)$total+(int)$amount+(int)$khatlist->last_years_money+$signboard_fee;
 
     $html = "
     <table class='table ' style='width:100%;' cellspacing='0' cellpadding='0' border='1' >
@@ -46,6 +54,15 @@ $khatlist = $row->amount_deails;
 
         <td style='text-align:center'> ".int_en_to_bn($amount)." </td>
         <td style='text-align:center'> ".int_en_to_bn($amount)." </td>
+        <td style='text-align:center'></td>
+        </tr>
+        <tr>
+        <tr>
+
+        <td style='text-align:center'>সাইনবোর্ড ফি</td>
+
+        <td style='text-align:center'> ".int_en_to_bn($signboard_fee)." </td>
+        <td style='text-align:center'> ".int_en_to_bn($signboard_fee)." </td>
         <td style='text-align:center'></td>
         </tr>
         <tr>

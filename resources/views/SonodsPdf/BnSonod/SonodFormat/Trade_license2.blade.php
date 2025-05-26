@@ -118,10 +118,15 @@ $orthoBchor = explode('-',$row->orthoBchor);
     if(isUnion()){
 
         $vatAykor = isset($amount_deails->vatAykor) ? ($tredeLisenceFee * $amount_deails->vatAykor) / 100 : 0;
+        $aykorAndUtssoKor = 0;
     }else{
         $vatAykor = isset($amount_deails->vatAykor) ? ($pesaKor * $amount_deails->vatAykor) / 100 : 0;
+        $aykorAndUtssoKor = isset($amount_deails->aykorAndUtssoKor) ? $amount_deails->aykorAndUtssoKor : 1000;
 
     }
+
+
+    $totalAmount = int_en_to_bn(($row->currently_paid_money)+$amount_deails->last_years_money + $vatAykor + $aykorAndUtssoKor ?? 0)
 
 
 @endphp
@@ -145,7 +150,7 @@ $orthoBchor = explode('-',$row->orthoBchor);
                 <ul style='list-style:none'>
                     <li>পেশা ব্যবসা ও বৃত্তির উপর কর  :- {{ int_en_to_bn($pesaKor) }} টাকা</li>
                     <li>সাইনবোর্ড (পরিচিতিমূলক)  : {{ int_en_to_bn($signboard_fee) }} টাকা</li>
-                    <li>আয়কর/উৎস কর : ০.০০ টাকা</li>
+                    <li>আয়কর/উৎস কর : {{ int_en_to_bn($aykorAndUtssoKor) }} টাকা</li>
                     <li>ভ্যাট : {{ int_en_to_bn($vatAykor) }} টাকা</li>
                     <li>সংশোধন ফি : ০.০০ টাকা</li>
                 </ul>
@@ -165,9 +170,9 @@ $orthoBchor = explode('-',$row->orthoBchor);
         <td width='50%' align ="right">
 
             @if($row->hasEnData==1)
-            <b style="color:black">সর্বমোট : {{ int_en_to_bn(($row->currently_paid_money)+$amount_deails->last_years_money ?? 0) }} টাকা মাত্র </b>
+            <b style="color:black">সর্বমোট : {{ int_en_to_bn($totalAmount ?? 0) }} টাকা মাত্র </b>
             @else
-            <b style="color:black">সর্বমোট : {{ int_en_to_bn($row->currently_paid_money+$amount_deails->last_years_money ?? 0) }} টাকা মাত্র </b>
+            <b style="color:black">সর্বমোট : {{ int_en_to_bn($totalAmount ?? 0) }} টাকা মাত্র </b>
             @endif
 
 
