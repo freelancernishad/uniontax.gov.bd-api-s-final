@@ -12,7 +12,7 @@ $khatlist = $row->amount_deails;
             $tredeLisenceFeeEN = (int)$khatlist->tredeLisenceFee;
         }else{
             $tredeLisenceFeeBN = (int)$khatlist->tredeLisenceFee;
-            $tredeLisenceFeeen = 0;
+            $tredeLisenceFeeEN = 0;
         }
 
         $signboard_fee = 0;
