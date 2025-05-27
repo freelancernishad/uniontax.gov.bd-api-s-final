@@ -42,8 +42,8 @@
 
         </div>
 
-<p style='text-align:right'>রশিদ নং : $TaxInvoice->trxId</p>
-        <p>প্রদানকারীর নাম:  $row->applicant_name  , পিতা/স্বামীর নাম:   $row->applicant_father_name  ,  ওয়ার্ড নং-  $row->applicant_present_word_number ,  গ্রাম:   $row->applicant_present_village ,  উপজেলা:  $row->applicant_present_Upazila  , জেলা:  $row->applicant_present_district </p>";
+<p style='text-align:right'>রশিদ নং : ".int_en_to_bn($TaxInvoice->trxId)."</p>
+        <p>প্রদানকারীর নাম:  $row->applicant_name  , পিতা/স্বামীর নাম:   $row->applicant_father_name  ,  ওয়ার্ড নং-  ".int_en_to_bn($row->applicant_present_word_number)." ,  গ্রাম:   $row->applicant_present_village ,  উপজেলা:  $row->applicant_present_Upazila  , জেলা:  $row->applicant_present_district </p>";
 
 
 

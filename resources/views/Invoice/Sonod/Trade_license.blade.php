@@ -1,19 +1,48 @@
 @php
 
+$hasEnData = $row->hasEnData;
+
 $khatlist = $row->amount_deails;
         $khatlist = json_decode($khatlist);
+
         $total = (int)$khatlist->tredeLisenceFee;
 
+        if($hasEnData){
+            $tredeLisenceFeeBN = (int)$khatlist->tredeLisenceFee;
+            $tredeLisenceFeeEN = (int)$khatlist->tredeLisenceFee;
+        }else{
+            $tredeLisenceFeeBN = (int)$khatlist->tredeLisenceFee;
+            $tredeLisenceFeeen = 0;
+        }
+
+        $signboard_fee = 0;
         if(isUnion()){
             $amount = ($total*$khatlist->vatAykor)/100;
              $signboard_fee = 0;
+
         }else{
             $amount = 0;
-            $signboard_fee = (int)$khatlist->signboard_fee;
+            $signboard_fee = isset($khatlist->signboard_fee) ? (int)$khatlist->signboard_fee : 0;
         }
 
 
-        $totalAmount = (int)$khatlist->pesaKor+(int)$total+(int)$amount+(int)$khatlist->last_years_money+$signboard_fee;
+        $totalAmount = (int)$khatlist->pesaKor+(int)$total+(int)$amount+(int)$khatlist->last_years_money+$signboard_fee+$tredeLisenceFeeEN;
+
+
+        if($tredeLisenceFeeEN != 0){
+            $trade_license_fee_td = "<td style='text-align:center'>বাংলা = "
+                . int_en_to_bn($khatlist->tredeLisenceFee)
+                . " <br/> ইংরেজি = "
+             . int_en_to_bn($tredeLisenceFeeEN)
+                ."</td>";
+        } else {
+            $trade_license_fee_td = "<td style='text-align:center'>"
+                . int_en_to_bn($khatlist->tredeLisenceFee)
+                . "</td>";
+        }
+
+
+
 
     $html = "
     <table class='table ' style='width:100%;' cellspacing='0' cellpadding='0' border='1' >
@@ -38,17 +67,17 @@ $khatlist = $row->amount_deails;
         <td style='text-align:center'></td>
         </tr>
 
+
         <tr>
-
         <td style='text-align:center'>
-        ট্রেড লাইসেন্স ফি</td>
-
-        <td style='text-align:center'> ".int_en_to_bn($khatlist->tredeLisenceFee)." </td>
-        <td style='text-align:center'> ".int_en_to_bn($khatlist->tredeLisenceFee)." </td>
+        ট্রেড লাইসেন্স আবেদন ফি</td>
+        ".$trade_license_fee_td."
+        ".$trade_license_fee_td."
         <td style='text-align:center'></td>
         </tr>
-
         <tr>
+
+
 
         <td style='text-align:center'>ভ্যাট ও আয়কর</td>
 
