@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Global\Sonod;
 use Exception;
 use App\Models\Sonod;
 use App\Models\SonodFee;
+use App\Models\SonodFile;
 use App\Models\Uniouninfo;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -359,6 +360,31 @@ class SonodController extends Controller
             $sonodId
         );
     }
+
+
+        // ✅ SonodFile এর জন্য নতুন ফাইল টাইপস
+    $fileTypes = [
+        'recommendation' => 'সুপারিশ',
+        'certification' => 'প্রত্যয়ন',
+        'nid_or_birth' => 'nid/জন্ম নিবন্ধন',
+        'ssc_certificate' => 'এসএসসি সনদ',
+        'hsc_certificate' => 'hsc সনদ',
+        'vaccine_card' => 'টিকা কার্ড',
+        'parents_id' => 'পিতা/মাতার আইডি',
+        'others' => 'অন্যান্য',
+    ];
+
+    foreach ($fileTypes as $field => $label) {
+        if ($request->hasFile($field)) {
+            $file = $request->file($field);
+            SonodFile::uploadAndSave($file, $label, $filePath, $dateFolder, $sonodId);
+        }
+    }
+
+
+
+
+
 }
 
 
@@ -482,7 +508,7 @@ class SonodController extends Controller
                 $sonod->total_amount = (float)$amountDetails['total_amount'];
                 $sonod->currently_paid_money = (float)$amountDetails['currently_paid_money'];
             }else{
-                
+
 
                 $tredeLisenceFee = (float)$amountDetails['tredeLisenceFee'];
 
