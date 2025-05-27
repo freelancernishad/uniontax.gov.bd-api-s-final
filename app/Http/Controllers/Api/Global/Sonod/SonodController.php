@@ -464,16 +464,42 @@ class SonodController extends Controller
 
         // Check if the sonod_name is 'ট্রেড লাইসেন্স'
         if ($sonod->sonod_name == 'ট্রেড লাইসেন্স') {
-            // Get the trade license fee and calculate 15% VAT
-            $tredeLisenceFee = (float)$amountDetails['tredeLisenceFee'];
-            $vatAykor = $tredeLisenceFee * 0.15; // 15% VAT
 
-            // Add the trade license fee and VAT to the total amount
-            $amountDetails['total_amount'] = (string)((float)$amountDetails['total_amount'] + $tredeLisenceFee + $vatAykor);
 
-            // Update the total amount and currently paid money in the sonod model
-            $sonod->total_amount = (float)$amountDetails['total_amount'];
-            $sonod->currently_paid_money = (float)$amountDetails['currently_paid_money'];
+            $isUnion = isUnion();
+            if($isUnion){
+                            // Get the trade license fee and calculate 15% VAT
+                $tredeLisenceFee = (float)$amountDetails['tredeLisenceFee'];
+                $vatAykor = $tredeLisenceFee * 0.15; // 15% VAT
+
+                // Add the trade license fee and VAT to the total amount
+                $amountDetails['total_amount'] = (string)((float)$amountDetails['total_amount'] + $tredeLisenceFee + $vatAykor);
+
+
+
+
+                // Update the total amount and currently paid money in the sonod model
+                $sonod->total_amount = (float)$amountDetails['total_amount'];
+                $sonod->currently_paid_money = (float)$amountDetails['currently_paid_money'];
+            }else{
+                
+
+                $tredeLisenceFee = (float)$amountDetails['tredeLisenceFee'];
+
+                $amountDetails['total_amount'] = (string)((float)$amountDetails['total_amount'] + $tredeLisenceFee);
+
+                $sonod->total_amount = (float)$amountDetails['total_amount'];
+                $sonod->currently_paid_money = (float)$amountDetails['currently_paid_money'];
+
+            }
+
+
+
+
+
+
+
+
         } else {
             // For other sonod types, double the total amount and currently paid money
             $sonod->total_amount *= 2;
