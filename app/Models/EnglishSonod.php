@@ -49,6 +49,7 @@ class EnglishSonod extends Model
         'applicant_name_of_the_organization',
         'organization_address',
         'applicant_name',
+        'name_title',
         'utname',
         'ut_religion',
         'alive_status',

@@ -189,6 +189,10 @@ class Sonod extends Model
     }
 
 
+    public function files()
+    {
+        return $this->hasMany(SonodFile::class, 'sonod_id');
+    }
 
 
 }

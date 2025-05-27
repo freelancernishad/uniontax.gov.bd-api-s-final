@@ -295,12 +295,18 @@ class ReportsController extends Controller
         $unionNames = [];
         foreach ($divisionModel->districts as $district) {
 
-            foreach ($district->upazilas as $upazila) {
 
-                foreach ($upazila->unions as $union) {
-                    $unionNames[] = str_replace(' ', '', strtolower($union->name));
+            if(isUnion()){
+                foreach ($district->upazilas as $upazila) {
+
+                    foreach ($upazila->unions as $union) {
+                        $unionNames[] = str_replace(' ', '', strtolower($union->name));
+                    }
                 }
+            }else{
+                $unionNames = ['panchagarh', 'debiganj', 'boda'];
             }
+
         }
 
 
