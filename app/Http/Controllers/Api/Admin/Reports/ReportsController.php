@@ -312,6 +312,7 @@ class ReportsController extends Controller
 
         // Remove duplicates
         $unionNames = array_unique($unionNames);
+        Log::info($unionNames);
 
         return $this->getReportsByUnion($unionNames, $sonodName,$detials);
     }
