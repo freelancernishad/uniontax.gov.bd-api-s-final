@@ -435,11 +435,11 @@ class SonodController extends Controller
 
 
 
-        $currentlyPaidMoney = $totalAmount;
+        $currentlyPaidMoney = (int)$totalAmount;
 
         // Prepare amount details for JSON encoding
         $amountDetails = json_encode([
-            'total_amount' => $totalAmount + (int)$lastYearsMoney,
+            'total_amount' => $currentlyPaidMoney + (int)$lastYearsMoney,
             'pesaKor' => (string)$pesaKor,
             'tredeLisenceFee' => (string)$sonodFee,
             'vatAykor' => (string)$tradeVat,
@@ -452,8 +452,8 @@ class SonodController extends Controller
         // Update insertData with calculated values
         $insertData['last_years_money'] = $lastYearsMoney;
         $insertData['currently_paid_money'] = $currentlyPaidMoney;
-        $insertData['total_amount'] = $totalAmount + (int)$lastYearsMoney;
-        $insertData['the_amount_of_money_in_words'] = convertAnnualIncomeToText($totalAmount + (int)$lastYearsMoney);
+        $insertData['total_amount'] = $currentlyPaidMoney + (int)$lastYearsMoney;
+        $insertData['the_amount_of_money_in_words'] = convertAnnualIncomeToText($currentlyPaidMoney + (int)$lastYearsMoney);
         $insertData['amount_deails'] = $amountDetails;
     }
 

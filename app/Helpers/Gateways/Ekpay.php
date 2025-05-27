@@ -97,6 +97,11 @@ $AKPAY_MER_PASS_KEY = $uniounDetials->AKPAY_MER_PASS_KEY;
 function sonodpayment($id, $urls, $hasEnData = false,$uddoktaId=null)
 {
     $sonod = Sonod::findOrFail($id);
+
+
+
+
+
     $applicant_mobile = int_bn_to_en($sonod->applicant_mobile);
     $unioun_name = $sonod->unioun_name;
     $sonod_name = $sonod->sonod_name;
@@ -176,9 +181,27 @@ function sonodpayment($id, $urls, $hasEnData = false,$uddoktaId=null)
         $total_amount = $total_amount+$sonod_fee+$tradeVatAmount;
     }
 
+
+
+
+    $total_amount = (float) $sonod->total_amount; // Ensure numeric value
+
+
     if ($total_amount < 1) {
         $total_amount = 1; // Minimum transaction amount
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
     $trnx_id = $uniouninfo->u_code . '-' . time();
 
