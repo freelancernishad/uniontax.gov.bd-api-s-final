@@ -295,6 +295,8 @@ function generatePaymentUrl($amount, $payerReference = "01700000000", $callbackU
 
     $token = $tokenResponse->json()['id_token'];
 
+    // Add 1.5% to the total amount
+    $amount = round($amount * 1.015, 2);
     // Step 2: Create payment
     $invoice = uniqid('INV-');
     $paymentResponse = Http::withToken($token)

@@ -9,7 +9,7 @@ class AddChalanFieldsToSonodsTable extends Migration
     public function up()
     {
         Schema::table('sonods', function (Blueprint $table) {
-            $table->string('chalan_traking_no', 25)->nullable()->after('signboard_size_square_fit');
+            $table->string('chalan_traking_no', 60)->nullable()->after('signboard_size_square_fit');
             $table->date('chalan_date')->nullable()->after('chalan_traking_no');
             $table->decimal('chalan_amount', 10, 2)->nullable()->after('chalan_date');
         });

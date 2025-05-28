@@ -120,14 +120,27 @@ $orthoBchor = explode('-',$row->orthoBchor);
         $vatAykor = isset($amount_deails->vatAykor) ? ($tredeLisenceFee * $amount_deails->vatAykor) / 100 : 0;
         $aykorAndUtssoKor = 0;
     }else{
+
         $vatAykor = isset($amount_deails->vatAykor) ? ($pesaKor * $amount_deails->vatAykor) / 100 : 0;
+        \Log::info("vatAykor: $vatAykor");
         $aykorAndUtssoKor = isset($amount_deails->aykorAndUtssoKor) ? $amount_deails->aykorAndUtssoKor : 1000;
+        \Log::info("aykorAndUtssoKor: $aykorAndUtssoKor");
 
     }
 
 
-    $totalAmount = int_en_to_bn(($row->currently_paid_money)+$amount_deails->last_years_money + $vatAykor + $aykorAndUtssoKor ?? 0)
+    $totalAmount = ($row->currently_paid_money ?? 0) + ($amount_deails->last_years_money ?? 0) + ($vatAykor ?? 0) + ($aykorAndUtssoKor ?? 0);
 
+
+
+    if($row->hasEnData){
+
+        if(isUnion()){
+            $totalAmount =  (int)$totalAmount - (int)$vatAykor;
+        }
+    }
+
+    $totalAmount = int_en_to_bn($totalAmount ?? 0);
 
 @endphp
 

@@ -16,6 +16,7 @@ Route::middleware(AuthenticateUser::class)->prefix('user/maintance-fees')->group
 
 Route::post('/maintance-fee/execute', [MaintanceFeeController::class, 'maintanceFeeExecute']);
 
+Route::get('/maintance-fee/{id}/invoice', [MaintanceFeeController::class, 'downloadInvoice']);
 
 
 Route::middleware(AuthenticateAdmin::class)->prefix('admin/maintance-fees')->group(function () {

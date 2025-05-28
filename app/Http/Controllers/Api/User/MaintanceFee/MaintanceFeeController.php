@@ -9,12 +9,16 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\View;
+
+
+        use NumberToWords\NumberToWords;
 
 class MaintanceFeeController extends Controller
 {
     public function index()
     {
-        $userUnion = Auth::user()->union;
+        $userUnion = Auth::user()->unioun;
         $fees = MaintanceFee::where('union', $userUnion)->get();
 
         return response()->json($fees);
@@ -30,7 +34,7 @@ public function store(Request $request)
 
     // Fetch union information
     $unionInfo = Uniouninfo::where('short_name_e', $userUnion)->firstOrFail();
-    $amount = ($unionInfo->maintance_fee ?? 0) + 150;
+    $amount = ($unionInfo->maintance_fee ?? 0);
     $type = $unionInfo->maintance_fee_type ?? 'monthly';
     $mobile = $unionInfo->chairman_phone ?? "01700000000"; // fallback
 
@@ -170,4 +174,103 @@ public function store(Request $request)
 
         return response()->json($fee);
     }
+
+
+      public function downloadInvoice($id)
+    {
+        $fee = MaintanceFee::findOrFail($id);
+
+
+        $numberToWords = new NumberToWords();
+$numberTransformer = $numberToWords->getNumberTransformer('en');
+
+$amount = $fee->amount + $fee->transaction_fee;
+    $inWords = strtoupper($numberTransformer->toWords((int) $amount)) . ' TAKA ONLY';
+
+
+
+
+
+        $htmlContent = View::make('pdf.maintance_invoice', compact('fee','inWords'))->render();
+
+        $header = '
+<table width="100%" style="border-bottom: 2px solid #003366; font-family: bangla, sans-serif;">
+    <tr>
+        <td style="width: 60px; padding: 5px;">
+            <img src="https://softwebsys.com/fav.png" height="50" alt="logo">
+        </td>
+        <td style="padding-left: 10px; vertical-align: top; font-size: 12px;">
+            <div style="font-size: 18px; font-weight: bold; color: #003366;">Softweb System Solution</div>
+            <div><em>Professional and reliable web application development company</em></div>
+            <div>Panchagarh, Bangladesh</div>
+            <div>cell: +8801909756552 , +88 01713 760596 </div>
+            <div>e-mail: info@softwebsys.com, web: www.softwebsys.com</div>
+        </td>
+    </tr>
+</table>
+
+
+<table class="details-table">
+    <tr>
+        <td><strong>Reference No.:</strong> ' . $fee->union . '/' . now()->year . '/' . \Carbon\Carbon::parse($fee->payment_date)->format('m') . '</td>
+        <td style="text-align:right;"><strong>Date:</strong> ' . \Carbon\Carbon::parse($fee->payment_date)->format('d/m/Y') . '</td>
+    </tr>
+</table>
+
+
+';
+
+
+
+       $footer = '
+
+
+
+
+<br/>
+<br/>
+<br/>
+
+
+<table width="100%" style="background-color: #e8f0fa; border-top: 1px solid #ccc; padding: 10px; padding">
+    <tr>
+        <td width="15%" style="text-align: left; padding-left: 10px;">
+            <img src="' . base64("softwebsys.com-qrcode.png") . '" height="60" alt="QR">
+        </td>
+        <td style="font-size: 11px; color: #003366;">
+            <span style="font-size: 12px;"><strong>For questions concerning this invoice, please contact with us.</strong></span><br>
+            Softweb System Solution, Debiganj, Panchagarh.<br>
+            cell: +8801909756552, +88 01713 760596<br>
+            e-mail: <a href="mailto:info@softwebsys.com" style="color:#003366; text-decoration:none;">info@softwebsys.com</a>,
+            web: <a href="https://www.softwebsys.com" style="color:#003366; text-decoration:none;">www.softwebsys.com</a>
+        </td>
+    </tr>
+</table>
+
+
+
+
+';
+
+        $filename = 'invoice_' . $fee->id . '.pdf';
+        $font_family = 'bangla'; // or 'nikosh', 'solaimanlipi', etc. if supported
+        $sonod_logo = public_path('images/logo.png'); // Replace with your actual logo path
+
+
+
+
+
+
+
+
+
+
+        return generatePdf($htmlContent, $header, $footer, $filename, "A4", $font_family, $sonod_logo);
+    }
+
+
+
+
+
+
 }

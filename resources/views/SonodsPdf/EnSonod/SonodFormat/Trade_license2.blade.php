@@ -82,12 +82,30 @@ $orthoBchor = explode('-', $row->orthoBchor);
         </td>
     </tr>
 </table>
-
 @php
-$amount_details = $amount_details;
-$amount_details = json_decode($amount_details);
-$tredeLisenceFee = $amount_details->tredeLisenceFee;
-$vatAykor = ($tredeLisenceFee * $amount_details->vatAykor) / 100;
+    $amount_details = json_decode($amount_details);
+    $tredeLisenceFee = $amount_details->tredeLisenceFee ?? 0;
+    $pesaKor = $amount_details->pesaKor ?? 0;
+    $signboard_fee = property_exists($amount_details, 'signboard_fee') ? $amount_details->signboard_fee : 0;
+
+    if (isUnion()) {
+        $vatAykor = isset($amount_details->vatAykor) ? ($tredeLisenceFee * $amount_details->vatAykor) / 100 : 0;
+        $aykorAndUtssoKor = 0;
+    } else {
+        $vatAykor = isset($amount_details->vatAykor) ? ($pesaKor * $amount_details->vatAykor) / 100 : 0;
+        $aykorAndUtssoKor = $amount_details->aykorAndUtssoKor ?? 1000;
+    }
+
+    $currentlyPaid = $amount_details->currently_paid_money ?? 0;
+    $lastYearsMoney = $amount_details->last_years_money ?? 0;
+
+    $totalAmount = $currentlyPaid + $lastYearsMoney + $vatAykor + $aykorAndUtssoKor;
+
+ 
+        if (isUnion()) {
+            $totalAmount -= $vatAykor;
+        }
+   
 @endphp
 
 <table width='100%' style="font-size: 12px;margin-top:10px">
@@ -95,18 +113,18 @@ $vatAykor = ($tredeLisenceFee * $amount_details->vatAykor) / 100;
         <td width='50%'>
             <ul style='list-style:none'>
                 <li>Trade License Fee (Renewal):</li>
-                <li>Permit Fee: {{ ($tredeLisenceFee) }} Taka</li>
+                <li>Permit Fee: {{ $tredeLisenceFee }} Taka</li>
                 <li>Service Charge: 0.00 Taka</li>
-                <li>Arrears: {{ ($amount_details->last_years_money) }} Taka</li>
+                <li>Arrears: {{ $lastYearsMoney }} Taka</li>
                 <li>Subcharge: 0.00 Taka</li>
             </ul>
         </td>
         <td width='50%' align="right">
             <ul style='list-style:none'>
-                <li>Tax on Profession, Business, and Trade: {{ ($amount_details->pesaKor) }} Taka</li>
-                <li>Signboard (Identification): 0.00 Taka</li>
-                <li>Income Tax/Source Tax: 0.00 Taka</li>
-                <li>VAT: {{ ($vatAykor) }} Taka</li>
+                <li>Tax on Profession, Business, and Trade: {{ $pesaKor }} Taka</li>
+                <li>Signboard (Identification): {{ $signboard_fee }} Taka</li>
+                <li>Income Tax/Source Tax: {{ $aykorAndUtssoKor }} Taka</li>
+                <li>VAT: {{ $vatAykor }} Taka</li>
                 <li>Amendment Fee: 0.00 Taka</li>
             </ul>
         </td>
@@ -118,10 +136,11 @@ $vatAykor = ($tredeLisenceFee * $amount_details->vatAykor) / 100;
 <table width='100%' style="font-size: 12px">
     <tr>
         <td width='50%'>
-            <b style="color:#159513">Validity of this Trade License: Until {{ ("30-06-20" . $orthoBchor[1]) }}</b>
+            <b style="color:#159513">Validity of this Trade License: Until {{ "30-06-20" . $orthoBchor[1] }}</b>
         </td>
         <td width='50%' align="right">
-            <b style="color:black">Total Amount: {{ (($amount_details->currently_paid_money)+$amount_details->last_years_money) }} Taka Only</b>
+            <b style="color:black">Total Amount: {{ $totalAmount }} Taka Only</b>
         </td>
     </tr>
 </table>
+
