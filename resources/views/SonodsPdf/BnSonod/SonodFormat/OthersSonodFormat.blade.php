@@ -3,16 +3,11 @@
     table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 10px;
+
         font-size: 14px;
     }
 
-    table td, table th {
-        padding: 5px;
-        border: 1px solid #000;
-        vertical-align: top;
-        text-align: left;
-    }
+
 
     .no-border td {
         border: none;
