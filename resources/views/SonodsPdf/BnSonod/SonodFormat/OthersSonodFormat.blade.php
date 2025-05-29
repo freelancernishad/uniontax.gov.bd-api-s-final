@@ -1,45 +1,4 @@
 
-
-@if($row->sonod_name == 'পারিবারিক সনদ')
-<style>
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        font-size: 14px;
-    }
-
-    table td, table th {
-        padding: 5px;
-        border: 1px solid #000;
-        vertical-align: top;
-        text-align: left;
-    }
-
-    .no-border td {
-        border: none;
-        padding: 3px 5px;
-    }
-
-    .successor-table th {
-        background-color: #f2f2f2;
-        text-align: center;
-    }
-
-    .successor-table td {
-        text-align: center;
-    }
-
-    p {
-        font-size: 14px;
-        margin: 8px 0;
-    }
-</style>
-    
-@endif
-
-
-
 <table width="100%" style="margin-top:-40px">
     <tr>
         <td width="30%">সনদ নং</td><td>: {{ int_en_to_bn($row->sonod_Id) }}</td>
