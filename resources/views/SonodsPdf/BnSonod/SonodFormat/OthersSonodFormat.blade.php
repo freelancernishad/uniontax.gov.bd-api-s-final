@@ -4,7 +4,7 @@
         width: 100%;
         border-collapse: collapse;
 
-        font-size: 14px;
+        font-size: 13px;
     }
 
 
@@ -24,7 +24,7 @@
     }
 
     p {
-        font-size: 14px;
+        font-size: 13px;
         margin: 8px 0;
     }
 </style>
