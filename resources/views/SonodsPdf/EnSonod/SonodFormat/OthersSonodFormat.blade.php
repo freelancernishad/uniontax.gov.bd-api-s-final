@@ -5,6 +5,15 @@
 
     font-size: 12px;
 }
+
+    .no-border td {
+        border: none;
+        padding: 3px 5px;
+    }
+
+
+
+
 </style>
 @else
 <style>
@@ -154,7 +163,7 @@
 
 
     @if(!empty($successors))
-        <table border="1" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; margin-top: 10px; font-size: 12px;">
+        <table border="1" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; margin-top: 10px; font-size: 12px;border: none">
             <thead>
                 <tr>
                     <th>Name</th>
