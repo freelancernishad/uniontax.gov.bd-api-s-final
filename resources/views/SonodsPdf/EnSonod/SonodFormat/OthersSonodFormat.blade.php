@@ -163,7 +163,7 @@
 
 
     @if(!empty($successors))
-        <table border="1" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; margin-top: 10px; font-size: 12px;border: none">
+        <table border="0" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; margin-top: 10px; font-size: 12px;border: none">
             <thead>
                 <tr>
                     <th>Name</th>
