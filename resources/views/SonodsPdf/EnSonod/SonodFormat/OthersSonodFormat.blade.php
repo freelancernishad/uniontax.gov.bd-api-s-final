@@ -1,10 +1,19 @@
 
+@if ($row->sonod_name=='পারিবারিক সনদ')
+<style>
+.applicantDetailsTable tr td ,.detailsfontSize{
+
+    font-size: 12px;
+}
+</style>
+@else
 <style>
 .applicantDetailsTable tr td ,.detailsfontSize{
 
     font-size: 13px;
 }
 </style>
+@endif
 
 <table width="100%" style="margin-top:-40px" class="applicantDetailsTable">
     <tr>
@@ -145,7 +154,7 @@
 
 
     @if(!empty($successors))
-        <table border="1" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; margin-top: 10px; font-size: 13px;">
+        <table border="1" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; margin-top: 10px; font-size: 12px;">
             <thead>
                 <tr>
                     <th>Name</th>
