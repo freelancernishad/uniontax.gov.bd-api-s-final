@@ -1,4 +1,45 @@
 
+
+@if($row->sonod_name == 'পারিবারিক সনদ')
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 14px;
+    }
+
+    table td, table th {
+        padding: 5px;
+        border: 1px solid #000;
+        vertical-align: top;
+        text-align: left;
+    }
+
+    .no-border td {
+        border: none;
+        padding: 3px 5px;
+    }
+
+    .successor-table th {
+        background-color: #f2f2f2;
+        text-align: center;
+    }
+
+    .successor-table td {
+        text-align: center;
+    }
+
+    p {
+        font-size: 14px;
+        margin: 8px 0;
+    }
+</style>
+    
+@endif
+
+
+
 <table width="100%" style="margin-top:-40px">
     <tr>
         <td width="30%">সনদ নং</td><td>: {{ int_en_to_bn($row->sonod_Id) }}</td>
@@ -155,9 +196,10 @@
 @php
     $successors = json_decode($row->successor_list, true);
 @endphp
+
 @if($row->sonod_name=='পারিবারিক সনদ')
     @if(!empty($successors))
-        <table border="1" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; margin-top: 10px; font-size: 12px;">
+        <table border="1" width="100%" cellpadding="5" cellspacing="0" style="border-collapse: collapse; margin-top: 10px; font-size: 13px;">
             <thead>
                 <tr>
                     <th>ক্রমিক নং</th>
@@ -191,12 +233,11 @@
             </tbody>
         </table>
 
-        <p style="font-size: 12px;">
+        <p style="font-size: 13px;">
             এই সনদপত্র আবেদনকারীর প্রদত্ত তথ্যের ভিত্তিতে প্রদান করা হয়েছে। অতএব, পরিবারের কোনো সদস্য সম্পর্কে ভুল বা ভ্রান্ত তথ্য প্রদান করা হলে তার সম্পূর্ণ দায়ভার আবেদনকারীর উপর বর্তাবে। অনুমোদনকারী এ বিষয়ে কোনো দায়িত্ব নেবেন না এবং ভুল তথ্য প্রদান করা হলে উক্ত সনদপত্র বাতিল বলে গণ্য হবে।
         </p>
     @endif
 @endif
-
 
 
 
