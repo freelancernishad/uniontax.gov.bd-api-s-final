@@ -157,7 +157,7 @@
 @endphp
 @if($row->sonod_name=='পারিবারিক সনদ')
     @if(!empty($successors))
-        <table border="1" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; margin-top: 10px; font-size: 11px;">
+        <table border="1" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; margin-top: 10px; font-size: 12px;">
             <thead>
                 <tr>
                     <th>ক্রমিক নং</th>
@@ -191,7 +191,7 @@
             </tbody>
         </table>
 
-        <p style="font-size: 11px;">
+        <p style="font-size: 12px;">
             এই সনদপত্র আবেদনকারীর প্রদত্ত তথ্যের ভিত্তিতে প্রদান করা হয়েছে। অতএব, পরিবারের কোনো সদস্য সম্পর্কে ভুল বা ভ্রান্ত তথ্য প্রদান করা হলে তার সম্পূর্ণ দায়ভার আবেদনকারীর উপর বর্তাবে। অনুমোদনকারী এ বিষয়ে কোনো দায়িত্ব নেবেন না এবং ভুল তথ্য প্রদান করা হলে উক্ত সনদপত্র বাতিল বলে গণ্য হবে।
         </p>
     @endif
