@@ -19,7 +19,9 @@ class MaintanceFeeController extends Controller
     public function index()
     {
         $userUnion = Auth::user()->unioun;
-        $fees = MaintanceFee::where('union', $userUnion)->get();
+        $fees = MaintanceFee::where('union', $userUnion)
+            ->where('status', 'paid')
+            ->get();
 
         return response()->json($fees);
     }
