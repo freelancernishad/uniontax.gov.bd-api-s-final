@@ -175,6 +175,10 @@ class SonodController extends Controller
         // Save the Sonod entry
         $sonod = Sonod::create($sonodData);
 
+        // Handle file uploads securely
+        $this->handleSonodFileUploads($request, $filePath, $dateFolder,$sonod->id);
+
+
         if (
             !empty($insertData['holding_owner_name']) &&
             !empty($insertData['holding_owner_mobile']) &&
@@ -362,11 +366,20 @@ class SonodController extends Controller
     }
 
 
+
+}
+
+
+    private function handleSonodFileUploads($request, $filePath, $dateFolder,$id)
+{
+
+
+
+
         // ✅ SonodFile এর জন্য নতুন ফাইল টাইপস
     $fileTypes = [
         'recommendation' => 'সুপারিশ',
         'certification' => 'প্রত্যয়ন',
-        'nid_or_birth' => 'nid/জন্ম নিবন্ধন',
         'ssc_certificate' => 'এসএসসি সনদ',
         'hsc_certificate' => 'hsc সনদ',
         'vaccine_card' => 'টিকা কার্ড',
@@ -377,7 +390,7 @@ class SonodController extends Controller
     foreach ($fileTypes as $field => $label) {
         if ($request->hasFile($field)) {
             $file = $request->file($field);
-            SonodFile::uploadAndSave($file, $label, $filePath, $dateFolder, $sonodId);
+            SonodFile::uploadAndSave($file, $label, $filePath, $dateFolder, $id);
         }
     }
 
