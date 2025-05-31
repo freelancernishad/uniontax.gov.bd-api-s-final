@@ -180,7 +180,7 @@ public function store(Request $request)
 
       public function downloadInvoice($id)
     {
-        $fee = MaintanceFee::findOrFail($id);
+        $fee = MaintanceFee::where('id', $id)->where('status', 'paid')->firstOrFail();
 
 
         $numberToWords = new NumberToWords();
