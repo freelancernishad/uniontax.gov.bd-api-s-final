@@ -539,7 +539,7 @@ class UserSonodController extends Controller
             'english_sonod' => function ($query) {
             $query->select('id', 'sonod_Id'); // Select only the id and sonod_Id (foreign key)
             },
-            'holdingOwners' // Add the holdingOwners relationship
+            'holdingOwners','files' // Add the holdingOwners relationship
         ])->find($id);
 
         // Check if the Sonod record exists
