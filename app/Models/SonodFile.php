@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class SonodFile extends Model
 {
@@ -45,5 +46,14 @@ class SonodFile extends Model
 
         return null;
     }
+
+        /**
+     * Accessor to return full S3 URL
+     */
+    protected function filePath(): Attribute
+    {
+        return Attribute::get(fn ($value) => getUploadDocumentsToS3($value));
+    }
+
 
 }
