@@ -98,10 +98,11 @@ $orthoBchor = explode('-', $row->orthoBchor);
 
 
 
-        $aykorAndUtssoKorVatAykor = isset($amount_deails->vatAykor) ? ($aykorAndUtssoKor * $amount_deails->vatAykor) / 100 : 0;
+        $signboard_feeVatAykor = isset($amount_deails->vatAykor) ? ($signboard_fee * $amount_deails->vatAykor) / 100 : 0;
+        // $aykorAndUtssoKorVatAykor = isset($amount_deails->vatAykor) ? ($aykorAndUtssoKor * $amount_deails->vatAykor) / 100 : 0;
 
 
-        $vatAykor = $vatAykor + $aykorAndUtssoKorVatAykor;
+        $vatAykor = $vatAykor + $signboard_feeVatAykor;
     }
 
     $currentlyPaid = $amount_details->currently_paid_money ?? 0;

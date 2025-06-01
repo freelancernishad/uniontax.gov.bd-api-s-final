@@ -126,10 +126,13 @@ $orthoBchor = explode('-',$row->orthoBchor);
 
         \Log::info("vatAykor: $vatAykor");
         $aykorAndUtssoKor = isset($amount_deails->aykorAndUtssoKor) ? $amount_deails->aykorAndUtssoKor : 1000;
-        $aykorAndUtssoKorVatAykor = isset($amount_deails->vatAykor) ? ($aykorAndUtssoKor * $amount_deails->vatAykor) / 100 : 0;
-        \Log::info("aykorAndUtssoKor: $aykorAndUtssoKor");
 
-        $vatAykor = $vatAykor + $aykorAndUtssoKorVatAykor;
+        
+      $signboard_feeVatAykor = isset($amount_deails->vatAykor) ? ($signboard_fee * $amount_deails->vatAykor) / 100 : 0;
+        // $aykorAndUtssoKorVatAykor = isset($amount_deails->vatAykor) ? ($aykorAndUtssoKor * $amount_deails->vatAykor) / 100 : 0;
+
+
+        $vatAykor = $vatAykor + $signboard_feeVatAykor;
 
     }
 
