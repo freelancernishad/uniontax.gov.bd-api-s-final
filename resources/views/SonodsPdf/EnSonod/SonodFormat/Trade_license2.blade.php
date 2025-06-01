@@ -94,6 +94,14 @@ $orthoBchor = explode('-', $row->orthoBchor);
     } else {
         $vatAykor = isset($amount_details->vatAykor) ? ($pesaKor * $amount_details->vatAykor) / 100 : 0;
         $aykorAndUtssoKor = $amount_details->aykorAndUtssoKor ?? 1000;
+
+
+
+
+        $aykorAndUtssoKorVatAykor = isset($amount_deails->vatAykor) ? ($aykorAndUtssoKor * $amount_deails->vatAykor) / 100 : 0;
+
+
+        $vatAykor = $vatAykor + $aykorAndUtssoKorVatAykor;
     }
 
     $currentlyPaid = $amount_details->currently_paid_money ?? 0;
@@ -101,11 +109,11 @@ $orthoBchor = explode('-', $row->orthoBchor);
 
     $totalAmount = $currentlyPaid + $lastYearsMoney + $vatAykor + $aykorAndUtssoKor;
 
- 
+
         if (isUnion()) {
             $totalAmount -= $vatAykor;
         }
-   
+
 @endphp
 
 <table width='100%' style="font-size: 12px;margin-top:10px">

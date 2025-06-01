@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Api\Admin\Uniouninfo;
 
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Sonod;
 use App\Models\Payment;
 use App\Models\Uniouninfo;
 use Illuminate\Http\Request;
@@ -817,6 +818,45 @@ class AdminUniouninfoController extends Controller
 
         return response()->json(['contacts'=>$contacts,'savedcontacts'=>$savedcontacts], 200);
     }
+
+
+
+
+    public function updateSonodRecordsWithLocationDetailsByUpazila($upazilaId)
+{
+
+
+    // Fetch the Upazila with its related unions
+    $upazila = Upazila::with(['unions', 'district', 'district.division'])->find($upazilaId);
+
+    if (!$upazila) {
+        return response()->json([
+            'message' => 'Upazila not found',
+        ], 404);
+    }
+
+    // Get the union names from the Upazila and transform them
+    $unionNames = $upazila->unions->pluck('name')->map(function ($name) {
+        return str_replace(' ', '', strtolower($name));  // Remove spaces and convert to lowercase
+    })->toArray();
+    // Load the sonod records where union_name matches the transformed union names
+    $sonodRecords = Sonod::whereIn('union_name', $unionNames)->get();
+    return response()->json(['sonod_records' => $sonodRecords], 200);
+
+    // Loop through sonodRecords and update division_name, district_name, upazila_name
+    $updatedSonodRecords = $sonodRecords->map(function ($sonod) use ($upazila) {
+        $sonod->update([
+            'division_name' => $upazila->district->division->name ?? 'Unknown Division',
+            'district_name' => $upazila->district->name ?? 'Unknown District',
+            'upazila_name' => $upazila->name ?? 'Unknown Upazila',
+        ]);
+        return $sonod;
+    });
+
+    // Return the updated sonod records
+    return response()->json(['sonod_records' => $updatedSonodRecords], 200);
+}
+
 
 
 

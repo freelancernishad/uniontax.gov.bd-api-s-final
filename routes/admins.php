@@ -174,6 +174,7 @@ Route::prefix('admin')->group(function () {
 
 
         Route::post('upazilas/{upazilaId}/union-contacts', [AdminUniouninfoController::class, 'CreateUniouninfoContactByUpazila']);
+        Route::put('/upazila/{upazilaId}/update-sonod-records', [AdminUniouninfoController::class, 'updateSonodRecordsWithLocationDetailsByUpazila']);
 
 
 

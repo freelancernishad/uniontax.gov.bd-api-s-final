@@ -12,6 +12,9 @@ class Sonod extends Model
 
     protected $fillable = [
         'unioun_name',
+        'division_name',
+        'district_name',
+        'upazila_name',
         'year',
         'sonod_Id',
         'uniqeKey',

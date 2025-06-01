@@ -96,18 +96,25 @@ class ReportsController extends Controller
     {
         // Validate input
         $validator = Validator::make($request->all(), [
-            'union_name' => 'nullable|string', // No need for 'required' since we'll handle different cases
+            'union_name' => 'nullable|string',
             'sonod_name' => 'nullable|string',
             'division_name' => 'nullable|string',
             'district_name' => 'nullable|string',
             'upazila_name' => 'nullable|string',
             'auth' => 'nullable',
             'detials' => 'nullable',
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date|after_or_equal:from_date',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
         }
+
+
+
+        $fromDate = $request->input('from_date') ?? null;
+        $toDate = $request->input('to_date') ?? null;
 
 
         if($request->auth){
@@ -143,7 +150,7 @@ class ReportsController extends Controller
         // If upazila is provided, fetch unions by upazila and call the report generation
         if ($upazilaName) {
 
-                $datas =  $this->getReportsByUpazila($upazilaName, $sonodName,$detials);
+                $datas =  $this->getReportsByUpazila($upazilaName, $sonodName, $detials, $fromDate, $toDate);
                 return response()->json($datas);
 
         }
@@ -169,98 +176,113 @@ class ReportsController extends Controller
     }
 
     // Function to get reports by Union
-    public function getReportsByUnion(array $unionNames, $sonodName = null, $detials = null)
-    {
-        // Log::info($unionNames);
-        if ($detials) {
-            // If detials is true, fetch union-level details
-            $detailedSonodReports = Sonod::whereIn('unioun_name', $unionNames)
-                ->when($sonodName, function ($query) use ($sonodName) {
-                    $query->where('sonod_name', $sonodName);
-                })
-                ->selectRaw("
-                    unioun_name,
-                    sonod_name,
-                    COUNT(CASE WHEN stutus = 'Pending' THEN 1 END) as pending_count,
-                    COUNT(CASE WHEN stutus = 'approved' THEN 1 END) as approved_count,
-                    COUNT(CASE WHEN stutus = 'cancel' THEN 1 END) as cancel_count
-                ")
-                ->groupBy('unioun_name', 'sonod_name')
-                ->get();
+   public function getReportsByUnion(array $unionNames, $sonodName = null, $detials = null, $fromDate = null, $toDate = null)
+{
 
-            // Calculate totals specific to detailed view
-            $totalPending = $detailedSonodReports->sum('pending_count');
-            $totalApproved = $detailedSonodReports->sum('approved_count');
-            $totalCancel = $detailedSonodReports->sum('cancel_count');
+    if ($detials) {
+        // Detailed view with filters
+        $detailedSonodReports = Sonod::whereIn('unioun_name', $unionNames)
+            ->when($sonodName, function ($query) use ($sonodName) {
+                $query->where('sonod_name', $sonodName);
+            })
+            ->when($fromDate, function ($query) use ($fromDate) {
+                $query->whereDate('created_at', '>=', $fromDate);
+            })
+            ->when($toDate, function ($query) use ($toDate) {
+                $query->whereDate('created_at', '<=', $toDate);
+            })
+            ->selectRaw("
+                unioun_name,
+                sonod_name,
+                COUNT(CASE WHEN stutus = 'Pending' THEN 1 END) as pending_count,
+                COUNT(CASE WHEN stutus = 'approved' THEN 1 END) as approved_count,
+                COUNT(CASE WHEN stutus = 'cancel' THEN 1 END) as cancel_count
+            ")
+            ->groupBy('unioun_name', 'sonod_name')
+            ->get();
 
-            // Format response for detailed view
-            return [
-                'detailed_sonod_reports' => $detailedSonodReports,
-                'sonodName' => $sonodName,
-                'totals' => [
-                    'total_pending' => $totalPending,
-                    'total_approved' => $totalApproved,
-                    'total_cancel' => $totalCancel,
-                ],
-            ];
-        } else {
-            // Define base queries with union_name filter
-            $sonodQuery = Sonod::whereIn('unioun_name', $unionNames)
-                ->selectRaw("
-                    sonod_name,
-                    COUNT(CASE WHEN stutus = 'Pending' THEN 1 END) as pending_count,
-                    COUNT(CASE WHEN stutus = 'approved' THEN 1 END) as approved_count,
-                    COUNT(CASE WHEN stutus = 'cancel' THEN 1 END) as cancel_count
-                ")
-                ->groupBy('sonod_name');
+        // Totals
+        $totalPending = $detailedSonodReports->sum('pending_count');
+        $totalApproved = $detailedSonodReports->sum('approved_count');
+        $totalCancel = $detailedSonodReports->sum('cancel_count');
 
-            $paymentQuery = Payment::whereIn('union', $unionNames)->where('status', 'Paid')
-                ->selectRaw("
-                    sonod_type,
-                    COUNT(*) as total_payments,
-                    SUM(amount) as total_amount
-                ")
-                ->groupBy('sonod_type');
+        return [
+            'detailed_sonod_reports' => $detailedSonodReports,
+            'sonodName' => $sonodName,
+            'totals' => [
+                'total_pending' => $totalPending,
+                'total_approved' => $totalApproved,
+                'total_cancel' => $totalCancel,
+            ],
+        ];
+    } else {
+        // Summary view
+        $sonodQuery = Sonod::whereIn('unioun_name', $unionNames)
+            ->when($sonodName, function ($query) use ($sonodName) {
+                $query->where('sonod_name', $sonodName);
+            })
+            ->when($fromDate, function ($query) use ($fromDate) {
+                $query->whereDate('created_at', '>=', $fromDate);
+            })
+            ->when($toDate, function ($query) use ($toDate) {
+                $query->whereDate('created_at', '<=', $toDate);
+            })
+            ->selectRaw("
+                sonod_name,
+                COUNT(CASE WHEN stutus = 'Pending' THEN 1 END) as pending_count,
+                COUNT(CASE WHEN stutus = 'approved' THEN 1 END) as approved_count,
+                COUNT(CASE WHEN stutus = 'cancel' THEN 1 END) as cancel_count
+            ")
+            ->groupBy('sonod_name');
 
-            // Apply optional sonod_name filter
-            if ($sonodName) {
-                $sonodQuery->where('sonod_name', $sonodName);
-                $paymentQuery->where('sonod_type', $sonodName);
-            }
+        $paymentQuery = Payment::whereIn('union', $unionNames)
+            ->where('status', 'Paid')
+            ->when($sonodName, function ($query) use ($sonodName) {
+                $query->where('sonod_type', $sonodName);
+            })
+            ->when($fromDate, function ($query) use ($fromDate) {
+                $query->whereDate('created_at', '>=', $fromDate);
+            })
+            ->when($toDate, function ($query) use ($toDate) {
+                $query->whereDate('created_at', '<=', $toDate);
+            })
+            ->selectRaw("
+                sonod_type,
+                COUNT(*) as total_payments,
+                SUM(amount) as total_amount
+            ")
+            ->groupBy('sonod_type');
 
-            // Fetch results
-            $sonodReports = $sonodQuery->get();
-            $paymentReports = $paymentQuery->get();
+        // Fetch results
+        $sonodReports = $sonodQuery->get();
+        $paymentReports = $paymentQuery->get();
 
-            $paymentReports->each(function ($report) {
-                $report->sonod_type = translateToBangla($report->sonod_type);
-                $report->total_amount = number_format((float) $report->total_amount, 2, '.', '');
-            });
+        $paymentReports->each(function ($report) {
+            $report->sonod_type = translateToBangla($report->sonod_type);
+            $report->total_amount = number_format((float) $report->total_amount, 2, '.', '');
+        });
 
-            // Calculate totals for summary view
-            $totalPending = $sonodReports->sum('pending_count');
-            $totalApproved = $sonodReports->sum('approved_count');
-            $totalCancel = $sonodReports->sum('cancel_count');
-            $totalPayments = $paymentReports->sum('total_payments');
-            $totalAmount = $paymentReports->sum('total_amount');
+        // Totals
+        $totalPending = $sonodReports->sum('pending_count');
+        $totalApproved = $sonodReports->sum('approved_count');
+        $totalCancel = $sonodReports->sum('cancel_count');
+        $totalPayments = $paymentReports->sum('total_payments');
+        $totalAmount = number_format((float) $paymentReports->sum('total_amount'), 2, '.', '');
 
-            // Format amounts to two decimal places
-            $totalAmount = number_format((float) $totalAmount, 2, '.', '');
-
-            // Format response for summary view
-            return [
-                'sonod_reports' => $sonodReports,
-                'payment_reports' => $paymentReports,
-                'totals' => [
-                    'total_pending' => ($totalPending),
-                    'total_approved' => ($totalApproved),
-                    'total_cancel' => ($totalCancel),
-                    'total_payments' => ($totalPayments),
-                    'total_amount' => ($totalAmount),
-                ],
-            ];
-        }
+        return [
+            'sonod_reports' => $sonodReports,
+            'payment_reports' => $paymentReports,
+            'totals' => [
+                'total_pending' => $totalPending,
+                'total_approved' => $totalApproved,
+                'total_cancel' => $totalCancel,
+                'total_payments' => $totalPayments,
+                'total_amount' => $totalAmount,
+            ],
+        ];
     }
+}
+
 
 
 
@@ -343,7 +365,7 @@ private function getReportsByDivision($division, $sonodName = null, $detials = n
 
 
 // Function to get reports by Upazila
-private function getReportsByUpazila($upazila, $sonodName = null, $detials = null)
+private function getReportsByUpazila($upazila, $sonodName = null, $detials = null, $fromDate = null, $toDate = null)
 {
     // Get all union names related to the given upazila
     $upazilaModel = Upazila::where('name', $upazila)->firstOrFail();
@@ -355,13 +377,13 @@ private function getReportsByUpazila($upazila, $sonodName = null, $detials = nul
         $unionName = str_replace(' ', '', strtolower($union->name));
         $unionNames[] = $unionName;
 
-        $unionReports[$union->bn_name] =  $this->getReportsByUnion([$unionName], $sonodName, $detials);
+        $unionReports[$union->bn_name] =  $this->getReportsByUnion([$unionName], $sonodName, $detials, $fromDate, $toDate);
     }
 
     // Return full upazila-level report along with union-level breakdown
     return [
         'title' => addressEnToBn($upazila, "upazila") . " উপজেলার সকল ইউনিয়নের প্রতিবেদন",
-        'total_report' => $this->getReportsByUnion(array_unique($unionNames), $sonodName, $detials),
+        'total_report' => $this->getReportsByUnion(array_unique($unionNames), $sonodName, $detials, $fromDate, $toDate),
         'divided_reports' => $unionReports
     ];
 }
