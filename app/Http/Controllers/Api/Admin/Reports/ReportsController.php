@@ -254,56 +254,42 @@ private function getReportsByDivision($division, $sonodName = null, $detials = n
 
 private function getReportsByDistrict($district, $sonodName = null, $detials = null, $fromDate = null, $toDate = null)
 {
-    // জেলা মডেল নিয়ে আসা
     $districtModel = District::where('name', $district)->firstOrFail();
 
-    // জেলা লেভেলের রিপোর্ট একবারে আনা
     $districtReport = DashboardHelper::getReportsDetails('district_name', $district, $sonodName, $detials, $fromDate, $toDate);
 
-    // $districtReport এর মধ্যে যদি payment_reports এবং sonod_reports আলাদা থাকে, তা কালেকশনে রূপান্তর করুন
-    $districtReportCollection = [
-        'payment_reports' => collect($districtReport['payment_reports'] ?? []),
-        'sonod_reports' => collect($districtReport['sonod_reports'] ?? []),
-    ];
+    // রিপোর্ট কালেকশন করা
+    $sonodReports = collect($districtReport['detailed_sonod_reports'] ?? $districtReport['sonod_reports'] ?? []);
+    $paymentReports = collect($districtReport['payment_reports'] ?? []);
 
-    // উপজেলা ভিত্তিক রিপোর্ট গুলো বানানোর জন্য একটা অ্যারে (সাথে totals)
     $upazilaReports = [];
-$sonodReportsCollection = $districtReportCollection['sonod_reports'];
-$paymentReportsCollection = $districtReportCollection['payment_reports'];
 
-foreach ($districtModel->upazilas as $upazila) {
-    $paymentReports = $paymentReportsCollection->filter(function ($item) use ($upazila) {
-        return isset($item['upazila_name']) && $item['upazila_name'] == $upazila->name;
-    })->values();
+    foreach ($districtModel->upazilas as $upazila) {
+        $upazilaSonodReports = $sonodReports->filter(function ($item) use ($upazila) {
 
-    // Remove matched from collection
-    $paymentReportsCollection = $paymentReportsCollection->reject(function ($item) use ($upazila) {
-        return isset($item['upazila_name']) && $item['upazila_name'] == $upazila->name;
-    });
+            return isset($item->upazila_name) && $item->upazila_name == $upazila->name;
+        })->values();
 
-    $sonodReports = $sonodReportsCollection->filter(function ($item) use ($upazila) {
-        return isset($item['upazila_name']) && $item['upazila_name'] == $upazila->name;
-    })->values();
 
-    // Remove matched from collection
-    $sonodReportsCollection = $sonodReportsCollection->reject(function ($item) use ($upazila) {
-        return isset($item['upazila_name']) && $item['upazila_name'] == $upazila->name;
-    });
 
-    $reports = $paymentReports->merge($sonodReports);
+        $upazilaPaymentReports = $paymentReports->filter(function ($item) use ($upazila) {
+            return isset($item->upazila_name) && $item->upazila_name == $upazila->name;
+        })->values();
 
-    $upazilaReports[$upazila->bn_name] = [
-        'sonod_reports'   => $sonodReports,
-        'payment_reports' => $paymentReports,
-        'totals' => [
-            'total_pending'  => $reports->sum('pending_count'),
-            'total_approved' => $reports->sum('approved_count'),
-            'total_cancel'   => $reports->sum('cancel_count'),
-            'total_payments' => $reports->sum('total_payments'),
-            'total_amount'   => number_format((float) $reports->sum('total_amount'), 2, '.', ''),
-        ],
-    ];
-}
+        $all = $upazilaSonodReports->merge($upazilaPaymentReports);
+
+        $upazilaReports[$upazila->bn_name] = [
+            'sonod_reports'   => $upazilaSonodReports,
+            'payment_reports' => $upazilaPaymentReports,
+            'totals' => [
+                'total_pending'  => $all->sum('pending_count'),
+                'total_approved' => $all->sum('approved_count'),
+                'total_cancel'   => $all->sum('cancel_count'),
+                'total_payments' => $all->sum('total_payments'),
+                'total_amount'   => number_format((float) $all->sum('total_amount'), 2, '.', ''),
+            ],
+        ];
+    }
 
     return [
         'title' => addressEnToBn($district, "district") . " জেলার সকল উপজেলার প্রতিবেদন",

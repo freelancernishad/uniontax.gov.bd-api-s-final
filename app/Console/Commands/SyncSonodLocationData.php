@@ -8,6 +8,8 @@ use App\Models\Uniouninfo;
 
 class SyncSonodLocationData extends Command
 {
+
+    // php artisan sync:sonod-location
     protected $signature = 'sync:sonod-location';
 
     protected $description = 'Sync Sonod records with division, district, and upazila from unioninfos';
