@@ -304,13 +304,13 @@ private function getReportsByDistrict($district, $sonodName = null, $detials = n
 
 private function getReportsByUpazila($upazila, $sonodName = null, $detials = null, $fromDate = null, $toDate = null)
 {
-    // উপজেলা মডেল নিয়ে আসা
+    // উপজেলা মডেল
     $upazilaModel = Upazila::where('name', $upazila)->firstOrFail();
 
-    // উপজেলা লেভেলের রিপোর্ট একবারে আনা
+    // উপজেলা রিপোর্ট আনা
     $upazilaReport = DashboardHelper::getReportsDetails('upazila_name', $upazila, $sonodName, $detials, $fromDate, $toDate);
 
-    // কালেকশনে রূপান্তর
+    // কালেকশন বানানো
     $upazilaReportCollection = [
         'payment_reports' => collect($upazilaReport['payment_reports'] ?? []),
         'sonod_reports' => collect($upazilaReport['sonod_reports'] ?? []),
@@ -321,17 +321,14 @@ private function getReportsByUpazila($upazila, $sonodName = null, $detials = nul
     foreach ($upazilaModel->unions as $union) {
         $unionKey = str_replace(' ', '', strtolower($union->name));
 
-        // এই ইউনিয়নের payment রিপোর্ট
         $paymentReports = $upazilaReportCollection['payment_reports']->filter(function ($item) use ($unionKey) {
             return isset($item->union) && str_replace(' ', '', strtolower($item->union)) == $unionKey;
         })->values();
 
-        // এই ইউনিয়নের sonod রিপোর্ট
         $sonodReports = $upazilaReportCollection['sonod_reports']->filter(function ($item) use ($unionKey) {
             return isset($item->unioun_name) && str_replace(' ', '', strtolower($item->unioun_name)) == $unionKey;
         })->values();
 
-        // রিপোর্ট একত্রিত করা (totals বের করতে)
         $reports = $paymentReports->map(function ($item) {
             return [
                 'pending_count'  => $item['pending_count'] ?? 0,
@@ -365,34 +362,39 @@ private function getReportsByUpazila($upazila, $sonodName = null, $detials = nul
         ];
     }
 
-    // উপজেলা লেভেলের মোট totals হিসাব করা
-    $totalReports = $upazilaReportCollection['payment_reports']->map(function ($item) {
-        return [
-            'pending_count'  => $item['pending_count'] ?? 0,
-            'approved_count' => $item['approved_count'] ?? 0,
-            'cancel_count'   => $item['cancel_count'] ?? 0,
-            'total_payments' => $item['total_payments'] ?? 0,
-            'total_amount'   => (float) ($item['total_amount'] ?? 0),
-        ];
-    })->merge(
-        $upazilaReportCollection['sonod_reports']->map(function ($item) {
+    // ✅ এখন total_report['sonod_reports'] → unique sonod_name দিয়ে group করে summary
+    $sonodSummary = $upazilaReportCollection['sonod_reports']
+        ->groupBy('sonod_name')
+        ->map(function ($group) {
             return [
-                'pending_count'  => $item['pending_count'] ?? 0,
-                'approved_count' => $item['approved_count'] ?? 0,
-                'cancel_count'   => $item['cancel_count'] ?? 0,
-                'total_payments' => 0,
-                'total_amount'   => 0,
+                'sonod_name'     => $group->first()['sonod_name'] ?? '',
+                'pending_count'  => $group->sum('pending_count'),
+                'approved_count' => $group->sum('approved_count'),
+                'cancel_count'   => $group->sum('cancel_count'),
             ];
-        })
-    );
+        })->values();
 
+    // ✅ total_report['payment_reports'] → unique sonod_type দিয়ে group করে summary
+    $paymentSummary = $upazilaReportCollection['payment_reports']
+        ->groupBy('sonod_type')
+        ->map(function ($group) {
+            return [
+                'sonod_type'     => $group->first()['sonod_type'] ?? '',
+                'total_payments'          => $group->sum('total_payments'),
+                'total_amount'            => (float) $group->sum('total_amount'),
+            ];
+        })->values();
 
     return [
         'title' => addressEnToBn($upazila, "upazila") . " উপজেলার সকল ইউনিয়নের প্রতিবেদন",
-        'total_report' => $upazilaReport,
+        'total_report' => [
+            'sonod_reports'   => $sonodSummary,
+            'payment_reports' => $paymentSummary,
+        ],
         'divided_reports' => $unionReports,
     ];
 }
+
 
 
 
