@@ -266,7 +266,6 @@ private function getReportsByDistrict($district, $sonodName = null, $detials = n
 
     foreach ($districtModel->upazilas as $upazila) {
         $upazilaSonodReports = $sonodReports->filter(function ($item) use ($upazila) {
-
             return isset($item->upazila_name) && $item->upazila_name == $upazila->name;
         })->values();
 
@@ -277,6 +276,7 @@ private function getReportsByDistrict($district, $sonodName = null, $detials = n
         })->values();
 
         $all = $upazilaSonodReports->merge($upazilaPaymentReports);
+
 
         $upazilaReports[$upazila->bn_name] = [
             'sonod_reports'   => $upazilaSonodReports,
@@ -290,6 +290,9 @@ private function getReportsByDistrict($district, $sonodName = null, $detials = n
             ],
         ];
     }
+
+
+
 
     return [
         'title' => addressEnToBn($district, "district") . " জেলার সকল উপজেলার প্রতিবেদন",
@@ -320,12 +323,12 @@ private function getReportsByUpazila($upazila, $sonodName = null, $detials = nul
 
         // এই ইউনিয়নের payment রিপোর্ট
         $paymentReports = $upazilaReportCollection['payment_reports']->filter(function ($item) use ($unionKey) {
-            return isset($item['union']) && str_replace(' ', '', strtolower($item['union'])) == $unionKey;
+            return isset($item->union) && str_replace(' ', '', strtolower($item->union)) == $unionKey;
         })->values();
 
         // এই ইউনিয়নের sonod রিপোর্ট
         $sonodReports = $upazilaReportCollection['sonod_reports']->filter(function ($item) use ($unionKey) {
-            return isset($item['unioun_name']) && str_replace(' ', '', strtolower($item['unioun_name'])) == $unionKey;
+            return isset($item->unioun_name) && str_replace(' ', '', strtolower($item->unioun_name)) == $unionKey;
         })->values();
 
         // রিপোর্ট একত্রিত করা (totals বের করতে)

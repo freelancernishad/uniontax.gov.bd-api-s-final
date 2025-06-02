@@ -4,13 +4,13 @@ namespace App\Helpers\Dashboard;
 
 use App\Models\Sonod;
 use App\Models\Payment;
-use Illuminate\Support\Facades\DB;
 
 class DashboardHelper
 {
     public static function getReportsDetails($keyname, $value, $sonodName = null, $detials = null, $fromDate = null, $toDate = null)
     {
         $paymentKeyName = $keyname === 'unioun_name' ? 'union' : $keyname;
+        
 
         // Format dates
         if ($fromDate) {
@@ -42,14 +42,14 @@ class DashboardHelper
                 ->selectRaw("
                     unioun_name,
                     sonod_name,
-                    MAX(division_name) as division_name,
-                    MAX(district_name) as district_name,
-                    MAX(upazila_name) as upazila_name,
+                    division_name,
+                    district_name,
+                    upazila_name,
                     COUNT(CASE WHEN stutus = 'Pending' THEN 1 END) as pending_count,
                     COUNT(CASE WHEN stutus = 'approved' THEN 1 END) as approved_count,
                     COUNT(CASE WHEN stutus = 'cancel' THEN 1 END) as cancel_count
                 ")
-                ->groupBy('unioun_name', 'sonod_name')
+                ->groupBy('unioun_name', 'sonod_name', 'division_name', 'district_name', 'upazila_name')
                 ->get();
 
             return [
@@ -59,26 +59,27 @@ class DashboardHelper
             ];
         }
 
-        // Summary: One row per sonod_name, grouped by sonod_name
+        // Summary: One row per sonod_name, grouped by sonod_name and location fields
         $sonodReports = Sonod::query()
             ->tap($applySonodFilters)
             ->selectRaw("
+                unioun_name,
                 sonod_name,
-                MAX(division_name) as division_name,
-                MAX(district_name) as district_name,
-                MAX(upazila_name) as upazila_name,
+                division_name,
+                district_name,
+                upazila_name,
                 COUNT(CASE WHEN stutus = 'Pending' THEN 1 END) as pending_count,
                 COUNT(CASE WHEN stutus = 'approved' THEN 1 END) as approved_count,
                 COUNT(CASE WHEN stutus = 'cancel' THEN 1 END) as cancel_count
             ")
-            ->groupBy('sonod_name')
+            ->groupBy('unioun_name','sonod_name', 'division_name', 'district_name', 'upazila_name')
             ->get()
             ->map(function ($report) {
                 $report->sonod_name = translateToBangla($report->sonod_name);
                 return $report;
             });
 
-        // Payment summary: One row per sonod_type
+        // Payment summary: One row per sonod_type, grouped by sonod_type and location fields
         $paymentReports = Payment::query()
             ->where($paymentKeyName, $value)
             ->where('status', 'Paid')
@@ -93,14 +94,15 @@ class DashboardHelper
                 $q->where('created_at', '<=', "{$toDate} 23:59:59")
             )
             ->selectRaw("
+                `union` as `union`,
                 sonod_type,
-                MAX(division_name) as division_name,
-                MAX(district_name) as district_name,
-                MAX(upazila_name) as upazila_name,
+                division_name,
+                district_name,
+                upazila_name,
                 COUNT(*) as total_payments,
                 SUM(amount) as total_amount
             ")
-            ->groupBy('sonod_type')
+            ->groupBy('union','sonod_type', 'division_name', 'district_name', 'upazila_name')
             ->get()
             ->map(function ($report) {
                 $report->sonod_type = translateToBangla($report->sonod_type);
