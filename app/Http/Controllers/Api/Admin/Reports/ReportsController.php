@@ -201,34 +201,58 @@ public function getReportsByUnion(string $unionName, $sonodName = null, $detials
 
 
     // Function to get reports by Division
-private function getReportsByDivision($division, $sonodName = null, $detials = null, $fromDate = null, $toDate = null)
+private function getReportsByDivision($division, $sonodName = null, $details = null, $fromDate = null, $toDate = null)
 {
-    // Division মডেল
+    // Division মডেল নিয়ে আসা
     $divisionModel = Division::where('name', $division)->firstOrFail();
 
-    // রিপোর্ট আনা
-    $divisionReport = DashboardHelper::getReportsDetails('division_name', $division, $sonodName, $detials, $fromDate, $toDate);
+    // DashboardHelper থেকে রিপোর্ট ডেটা আনা
+    $divisionReport = DashboardHelper::getReportsDetails('division_name', $division, $sonodName, $details, $fromDate, $toDate);
 
-    // কালেকশন বানানো
-    $divisionReportCollection = [
-        'payment_reports' => collect($divisionReport['payment_reports'] ?? []),
-        'sonod_reports'   => collect($divisionReport['sonod_reports'] ?? []),
-    ];
+    // Collection বানানো
+    $paymentReportsCollection = collect($divisionReport['payment_reports'] ?? []);
+    $sonodReportsCollection = collect($divisionReport['sonod_reports'] ?? []);
 
     $districtReports = [];
 
+    // Division এর প্রতিটি district এর জন্য লুপ
     foreach ($divisionModel->districts as $district) {
         $districtKey = str_replace(' ', '', strtolower($district->name));
 
-        $paymentReports = $divisionReportCollection['payment_reports']->filter(function ($item) use ($districtKey) {
-            return isset($item['district_name']) && str_replace(' ', '', strtolower($item['district_name'])) === $districtKey;
+        // district অনুযায়ী payment_reports filter করা
+        $paymentReports = $paymentReportsCollection->filter(function ($item) use ($districtKey) {
+            return isset($item->district_name) && str_replace(' ', '', strtolower($item->district_name)) == $districtKey;
         })->values();
 
-        $sonodReports = $divisionReportCollection['sonod_reports']->filter(function ($item) use ($districtKey) {
-            return isset($item['district_name']) && str_replace(' ', '', strtolower($item['district_name'])) === $districtKey;
+        // district অনুযায়ী sonod_reports filter করা
+        $sonodReports = $sonodReportsCollection->filter(function ($item) use ($districtKey) {
+            return isset($item->district_name) && str_replace(' ', '', strtolower($item->district_name)) == $districtKey;
         })->values();
 
-        $reports = $paymentReports->map(function ($item) {
+        // payment_reports এবং sonod_reports থেকে আলাদা আলাদা summary তৈরি
+        $sonodSummary = $sonodReports
+            ->groupBy('sonod_name')
+            ->map(function ($group) {
+                return [
+                    'sonod_name'     => $group->first()['sonod_name'] ?? '',
+                    'pending_count'  => $group->sum('pending_count'),
+                    'approved_count' => $group->sum('approved_count'),
+                    'cancel_count'   => $group->sum('cancel_count'),
+                ];
+            })->values();
+
+        $paymentSummary = $paymentReports
+            ->groupBy('sonod_type')
+            ->map(function ($group) {
+                return [
+                    'sonod_type'     => $group->first()['sonod_type'] ?? '',
+                    'total_payments' => $group->sum('total_payments'),
+                    'total_amount'   => (float) $group->sum('total_amount'),
+                ];
+            })->values();
+
+        // payment_reports + sonod_reports মিলিয়ে total হিসাব
+        $totalReports = $paymentReports->map(function ($item) {
             return [
                 'pending_count'  => $item['pending_count'] ?? 0,
                 'approved_count' => $item['approved_count'] ?? 0,
@@ -249,20 +273,20 @@ private function getReportsByDivision($division, $sonodName = null, $detials = n
         );
 
         $districtReports[$district->bn_name] = [
-            'sonod_reports'   => $sonodReports,
-            'payment_reports' => $paymentReports,
+            'sonod_reports'   => $sonodSummary,
+            'payment_reports' => $paymentSummary,
             'totals' => [
-                'total_pending'   => $reports->sum('pending_count'),
-                'total_approved'  => $reports->sum('approved_count'),
-                'total_cancel'    => $reports->sum('cancel_count'),
-                'total_payments'  => $reports->sum('total_payments'),
-                'total_amount'    => number_format((float) $reports->sum('total_amount'), 2, '.', ''),
+                'total_pending'   => $totalReports->sum('pending_count'),
+                'total_approved'  => $totalReports->sum('approved_count'),
+                'total_cancel'    => $totalReports->sum('cancel_count'),
+                'total_payments'  => $totalReports->sum('total_payments'),
+                'total_amount'    => number_format($totalReports->sum('total_amount'), 2, '.', ''),
             ],
         ];
     }
 
-    // ✅ total_report['sonod_reports'] → unique sonod_name দিয়ে group করে summary
-    $sonodSummary = $divisionReportCollection['sonod_reports']
+    // Division এর sonod_reports থেকে sonod_name অনুযায়ী summary তৈরি
+    $sonodReportsSummary = $sonodReportsCollection
         ->groupBy('sonod_name')
         ->map(function ($group) {
             return [
@@ -273,8 +297,8 @@ private function getReportsByDivision($division, $sonodName = null, $detials = n
             ];
         })->values();
 
-    // ✅ total_report['payment_reports'] → unique sonod_type দিয়ে group করে summary
-    $paymentSummary = $divisionReportCollection['payment_reports']
+    // Division এর payment_reports থেকে sonod_type অনুযায়ী summary তৈরি
+    $paymentReportsSummary = $paymentReportsCollection
         ->groupBy('sonod_type')
         ->map(function ($group) {
             return [
@@ -287,13 +311,14 @@ private function getReportsByDivision($division, $sonodName = null, $detials = n
     return [
         'title' => addressEnToBn($division, "division") . " বিভাগের সকল জেলার প্রতিবেদন",
         'total_report' => [
-            'sonod_reports'   => $sonodSummary,
-            'payment_reports' => $paymentSummary,
-            'totals' => $divisionReport['totals'] ?? [],
+            'sonod_reports'   => $sonodReportsSummary,
+            'payment_reports' => $paymentReportsSummary,
+            'totals'         => $divisionReport['totals'] ?? [],
         ],
         'divided_reports' => $districtReports,
     ];
 }
+
 
 
 
@@ -344,9 +369,31 @@ private function getReportsByDistrict($district, $sonodName = null, $detials = n
             })
         );
 
+        // ➡️ এখানে sonod_reports এবং payment_reports কে unique করে summary করলাম
+        $sonodSummary = $sonodReports
+            ->groupBy('sonod_name')
+            ->map(function ($group) {
+                return [
+                    'sonod_name'     => $group->first()['sonod_name'] ?? '',
+                    'pending_count'  => $group->sum('pending_count'),
+                    'approved_count' => $group->sum('approved_count'),
+                    'cancel_count'   => $group->sum('cancel_count'),
+                ];
+            })->values();
+
+        $paymentSummary = $paymentReports
+            ->groupBy('sonod_type')
+            ->map(function ($group) {
+                return [
+                    'sonod_type'     => $group->first()['sonod_type'] ?? '',
+                    'total_payments' => $group->sum('total_payments'),
+                    'total_amount'   => (float) $group->sum('total_amount'),
+                ];
+            })->values();
+
         $upazilaReports[$upazila->bn_name] = [
-            'sonod_reports'   => $sonodReports,
-            'payment_reports' => $paymentReports,
+            'sonod_reports'   => $sonodSummary,
+            'payment_reports' => $paymentSummary,
             'totals' => [
                 'total_pending'  => $reports->sum('pending_count'),
                 'total_approved' => $reports->sum('approved_count'),
@@ -357,7 +404,7 @@ private function getReportsByDistrict($district, $sonodName = null, $detials = n
         ];
     }
 
-    // ✅ মোট রিপোর্টের সারাংশ: sonod_reports -> sonod_name দিয়ে group করে
+    // মোট রিপোর্টের সারাংশ: sonod_reports -> sonod_name দিয়ে group করে
     $sonodSummary = $districtReportCollection['sonod_reports']
         ->groupBy('sonod_name')
         ->map(function ($group) {
@@ -369,7 +416,7 @@ private function getReportsByDistrict($district, $sonodName = null, $detials = n
             ];
         })->values();
 
-    // ✅ মোট রিপোর্টের সারাংশ: payment_reports -> sonod_type দিয়ে group করে
+    // মোট রিপোর্টের সারাংশ: payment_reports -> sonod_type দিয়ে group করে
     $paymentSummary = $districtReportCollection['payment_reports']
         ->groupBy('sonod_type')
         ->map(function ($group) {
@@ -392,15 +439,13 @@ private function getReportsByDistrict($district, $sonodName = null, $detials = n
 }
 
 
+
 private function getReportsByUpazila($upazila, $sonodName = null, $detials = null, $fromDate = null, $toDate = null)
 {
-    // উপজেলা মডেল
     $upazilaModel = Upazila::where('name', $upazila)->firstOrFail();
 
-    // উপজেলা রিপোর্ট আনা
     $upazilaReport = DashboardHelper::getReportsDetails('upazila_name', $upazila, $sonodName, $detials, $fromDate, $toDate);
 
-    // কালেকশন বানানো
     $upazilaReportCollection = [
         'payment_reports' => collect($upazilaReport['payment_reports'] ?? []),
         'sonod_reports' => collect($upazilaReport['sonod_reports'] ?? []),
@@ -439,9 +484,33 @@ private function getReportsByUpazila($upazila, $sonodName = null, $detials = nul
             })
         );
 
+        // ✅ ইউনিয়ন লেভেলে summary যুক্ত করা হচ্ছে
+        $sonodSummary = $sonodReports
+            ->groupBy('sonod_name')
+            ->map(function ($group) {
+                return [
+                    'sonod_name'     => $group->first()['sonod_name'] ?? '',
+                    'pending_count'  => $group->sum('pending_count'),
+                    'approved_count' => $group->sum('approved_count'),
+                    'cancel_count'   => $group->sum('cancel_count'),
+                ];
+            })->values();
+
+        $paymentSummary = $paymentReports
+            ->groupBy('sonod_type')
+            ->map(function ($group) {
+                return [
+                    'sonod_type'     => $group->first()['sonod_type'] ?? '',
+                    'total_payments' => $group->sum('total_payments'),
+                    'total_amount'   => (float) $group->sum('total_amount'),
+                ];
+            })->values();
+
         $unionReports[$union->bn_name] = [
-            'sonod_reports'   => $sonodReports,
-            'payment_reports' => $paymentReports,
+            'sonod_reports'    => $sonodReports,
+            'payment_reports'  => $paymentReports,
+            'sonod_summary'    => $sonodSummary,
+            'payment_summary'  => $paymentSummary,
             'totals' => [
                 'total_pending'  => $reports->sum('pending_count'),
                 'total_approved' => $reports->sum('approved_count'),
@@ -452,7 +521,6 @@ private function getReportsByUpazila($upazila, $sonodName = null, $detials = nul
         ];
     }
 
-    // ✅ এখন total_report['sonod_reports'] → unique sonod_name দিয়ে group করে summary
     $sonodSummary = $upazilaReportCollection['sonod_reports']
         ->groupBy('sonod_name')
         ->map(function ($group) {
@@ -464,14 +532,13 @@ private function getReportsByUpazila($upazila, $sonodName = null, $detials = nul
             ];
         })->values();
 
-    // ✅ total_report['payment_reports'] → unique sonod_type দিয়ে group করে summary
     $paymentSummary = $upazilaReportCollection['payment_reports']
         ->groupBy('sonod_type')
         ->map(function ($group) {
             return [
                 'sonod_type'     => $group->first()['sonod_type'] ?? '',
-                'total_payments'          => $group->sum('total_payments'),
-                'total_amount'            => (float) $group->sum('total_amount'),
+                'total_payments' => $group->sum('total_payments'),
+                'total_amount'   => (float) $group->sum('total_amount'),
             ];
         })->values();
 
@@ -485,6 +552,7 @@ private function getReportsByUpazila($upazila, $sonodName = null, $detials = nul
         'divided_reports' => $unionReports,
     ];
 }
+
 
 
 
