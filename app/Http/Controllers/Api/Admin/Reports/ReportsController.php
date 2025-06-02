@@ -48,13 +48,14 @@ class ReportsController extends Controller
 
         // If a specific union_name is provided, use it to filter
         if ($unionName) {
-            $data =  $this->getReportsByUnion([$unionName], $sonodName,$detials);
+            $data =  $this->getReportsByUnion($unionName, $sonodName,$detials);
             return $this->genratePdf($data,$reportTitle,$detials);
         }
 
         // If upazila is provided, fetch unions by upazila and call the report generation
         if ($upazilaName) {
             $data =  $this->getReportsByUpazila($upazilaName, $sonodName,$detials);
+            // return response()->json($data);
             return $this->genratePdf($data,$reportTitle,$detials);
         }
 
@@ -67,6 +68,7 @@ class ReportsController extends Controller
         // If a division is provided, fetch districts by division and call the report generation
         if ($divisionName) {
             $data =  $this->getReportsByDivision($divisionName, $sonodName,$detials);
+
             return $this->genratePdf($data,$reportTitle,$detials);
         }
 
@@ -203,6 +205,11 @@ public function getReportsByUnion(string $unionName, $sonodName = null, $detials
     // Function to get reports by Division
 private function getReportsByDivision($division, $sonodName = null, $details = null, $fromDate = null, $toDate = null)
 {
+
+     $groupoBy = 'sonod_name';
+    if($detials==1){
+        $groupoBy = 'unioun_name';
+    }
     // Division মডেল নিয়ে আসা
     $divisionModel = Division::where('name', $division)->firstOrFail();
 
@@ -210,7 +217,11 @@ private function getReportsByDivision($division, $sonodName = null, $details = n
     $divisionReport = DashboardHelper::getReportsDetails('division_name', $division, $sonodName, $details, $fromDate, $toDate);
 
     // Collection বানানো
-    $paymentReportsCollection = collect($divisionReport['payment_reports'] ?? []);
+    $paymentReportsCollection = collect(
+        $divisionReport['payment_reports']
+        ?? $divisionReport['detailed_sonod_reports']
+        ?? []
+    );
     $sonodReportsCollection = collect($divisionReport['sonod_reports'] ?? []);
 
     $districtReports = [];
@@ -231,9 +242,10 @@ private function getReportsByDivision($division, $sonodName = null, $details = n
 
         // payment_reports এবং sonod_reports থেকে আলাদা আলাদা summary তৈরি
         $sonodSummary = $sonodReports
-            ->groupBy('sonod_name')
+            ->groupBy($groupoBy)
             ->map(function ($group) {
                 return [
+                    'unioun_name'     => $group->first()['unioun_name'] ?? '',
                     'sonod_name'     => $group->first()['sonod_name'] ?? '',
                     'pending_count'  => $group->sum('pending_count'),
                     'approved_count' => $group->sum('approved_count'),
@@ -287,9 +299,10 @@ private function getReportsByDivision($division, $sonodName = null, $details = n
 
     // Division এর sonod_reports থেকে sonod_name অনুযায়ী summary তৈরি
     $sonodReportsSummary = $sonodReportsCollection
-        ->groupBy('sonod_name')
+        ->groupBy($groupoBy)
         ->map(function ($group) {
             return [
+                'unioun_name'     => $group->first()['unioun_name'] ?? '',
                 'sonod_name'     => $group->first()['sonod_name'] ?? '',
                 'pending_count'  => $group->sum('pending_count'),
                 'approved_count' => $group->sum('approved_count'),
@@ -324,11 +337,22 @@ private function getReportsByDivision($division, $sonodName = null, $details = n
 
 private function getReportsByDistrict($district, $sonodName = null, $detials = null, $fromDate = null, $toDate = null)
 {
+
+
+ $groupoBy = 'sonod_name';
+    if($detials==1){
+        $groupoBy = 'unioun_name';
+    }
+
     // জেলা মডেল
     $districtModel = District::where('name', $district)->firstOrFail();
 
     // রিপোর্ট আনো
     $districtReport = DashboardHelper::getReportsDetails('district_name', $district, $sonodName, $detials, $fromDate, $toDate);
+
+
+
+
 
     // কালেকশন তৈরি
     $districtReportCollection = [
@@ -371,9 +395,10 @@ private function getReportsByDistrict($district, $sonodName = null, $detials = n
 
         // ➡️ এখানে sonod_reports এবং payment_reports কে unique করে summary করলাম
         $sonodSummary = $sonodReports
-            ->groupBy('sonod_name')
+            ->groupBy($groupoBy)
             ->map(function ($group) {
                 return [
+                    'unioun_name'     => $group->first()['unioun_name'] ?? '',
                     'sonod_name'     => $group->first()['sonod_name'] ?? '',
                     'pending_count'  => $group->sum('pending_count'),
                     'approved_count' => $group->sum('approved_count'),
@@ -406,9 +431,10 @@ private function getReportsByDistrict($district, $sonodName = null, $detials = n
 
     // মোট রিপোর্টের সারাংশ: sonod_reports -> sonod_name দিয়ে group করে
     $sonodSummary = $districtReportCollection['sonod_reports']
-        ->groupBy('sonod_name')
+        ->groupBy($groupoBy)
         ->map(function ($group) {
             return [
+                'unioun_name'     => $group->first()['unioun_name'] ?? '',
                 'sonod_name'     => $group->first()['sonod_name'] ?? '',
                 'pending_count'  => $group->sum('pending_count'),
                 'approved_count' => $group->sum('approved_count'),
@@ -442,13 +468,20 @@ private function getReportsByDistrict($district, $sonodName = null, $detials = n
 
 private function getReportsByUpazila($upazila, $sonodName = null, $detials = null, $fromDate = null, $toDate = null)
 {
+     $groupoBy = 'sonod_name';
+    if($detials==1){
+        $groupoBy = 'unioun_name';
+    }
+
+
+
     $upazilaModel = Upazila::where('name', $upazila)->firstOrFail();
 
     $upazilaReport = DashboardHelper::getReportsDetails('upazila_name', $upazila, $sonodName, $detials, $fromDate, $toDate);
 
     $upazilaReportCollection = [
         'payment_reports' => collect($upazilaReport['payment_reports'] ?? []),
-        'sonod_reports' => collect($upazilaReport['sonod_reports'] ?? []),
+        'sonod_reports' => collect($upazilaReport['sonod_reports'] ?? $upazilaReport['detailed_sonod_reports']),
     ];
 
     $unionReports = [];
@@ -486,9 +519,10 @@ private function getReportsByUpazila($upazila, $sonodName = null, $detials = nul
 
         // ✅ ইউনিয়ন লেভেলে summary যুক্ত করা হচ্ছে
         $sonodSummary = $sonodReports
-            ->groupBy('sonod_name')
+            ->groupBy($groupoBy)
             ->map(function ($group) {
                 return [
+                    'unioun_name'     => $group->first()['unioun_name'] ?? '',
                     'sonod_name'     => $group->first()['sonod_name'] ?? '',
                     'pending_count'  => $group->sum('pending_count'),
                     'approved_count' => $group->sum('approved_count'),
@@ -522,9 +556,10 @@ private function getReportsByUpazila($upazila, $sonodName = null, $detials = nul
     }
 
     $sonodSummary = $upazilaReportCollection['sonod_reports']
-        ->groupBy('sonod_name')
+        ->groupBy($groupoBy)
         ->map(function ($group) {
             return [
+                'unioun_name'     => $group->first()['unioun_name'] ?? '',
                 'sonod_name'     => $group->first()['sonod_name'] ?? '',
                 'pending_count'  => $group->sum('pending_count'),
                 'approved_count' => $group->sum('approved_count'),

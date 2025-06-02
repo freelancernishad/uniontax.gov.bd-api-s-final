@@ -1,5 +1,4 @@
 <div class="container mt-5">
-
     <!-- Centered Report Title and Date with Government Logo -->
     <div class="text-center mb-4">
         <img src="{{ base64('backend/bd-logo.png') }}" alt="Government Logo" class="gov-logo">
@@ -17,7 +16,6 @@
                     <tr>
                         <th>#</th>
                         <th>{{ $is_union ? 'ইউনিয়ন নাম' : 'পৌরসভা নাম' }}</th>
-                        {{-- <th>সনদের নাম</th> --}}
                         <th class="text-center">পেন্ডিং</th>
                         <th class="text-center">অনুমোদিত</th>
                         <th class="text-center">বাতিল</th>
@@ -25,28 +23,32 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($data['detailed_sonod_reports'] as $index => $report)
+                    @foreach($data['total_report']['sonod_reports'] as $index => $report)
+
                     <tr>
                         <td>{{ int_en_to_bn($index + 1) }}</td>
-                        <td>{{ UnionenBnName($report->unioun_name) }}</td>
-                        {{-- <td>{{ $report->sonod_name }}</td> --}}
-                        <td class="text-center">{{ int_en_to_bn($report->pending_count) }}</td>
-                        <td class="text-center">{{ int_en_to_bn($report->approved_count) }}</td>
-                        <td class="text-center">{{ int_en_to_bn($report->cancel_count) }}</td>
+                        <td>{{ UnionenBnName($report['unioun_name']) }}</td>
+                        <td class="text-center">{{ int_en_to_bn($report['pending_count']) }}</td>
+                        <td class="text-center">{{ int_en_to_bn($report['approved_count']) }}</td>
+                        <td class="text-center">{{ int_en_to_bn($report['cancel_count']) }}</td>
                         <td class="text-center">
-                            {{ int_en_to_bn($report->pending_count + $report->approved_count + $report->cancel_count) }}
+                            {{ int_en_to_bn($report['pending_count'] + $report['approved_count'] + $report['cancel_count']) }}
                         </td>
                     </tr>
                     @endforeach
                 </tbody>
                 <tfoot>
                     <tr>
+                                                 @php
+\Log::info($data['total_report']);
+                    @endphp
                         <th colspan="2" class="text-end">মোট:</th>
-                        <th class="text-center">{{ int_en_to_bn($data['totals']['total_pending']) }}</th>
-                        <th class="text-center">{{ int_en_to_bn($data['totals']['total_approved']) }}</th>
-                        <th class="text-center">{{ int_en_to_bn($data['totals']['total_cancel']) }}</th>
+                        <th class="text-center">{{ int_en_to_bn($data['total_report']['totals']['total_pending']) }}</th>
+                        <th class="text-center">{{ int_en_to_bn($data['total_report']['totals']['total_approved']) }}</th>
+                        <th class="text-center">{{ int_en_to_bn($data['total_report']['totals']['total_cancel']) }}</th>
                         <th class="text-center">
-                            {{ int_en_to_bn($data['totals']['total_pending'] + $data['totals']['total_approved'] + $data['totals']['total_cancel']) }}
+   
+                            {{ int_en_to_bn($data['total_report']['totals']['total_pending'] + $data['total_report']['totals']['total_approved'] + $data['total_report']['totals']['total_cancel']) }}
                         </th>
                     </tr>
                 </tfoot>
@@ -58,7 +60,7 @@
 <!-- Custom CSS -->
 <style>
     .gov-logo {
-        width: 80px; /* Adjust the size as needed */
+        width: 80px;
         height: auto;
     }
 
@@ -126,5 +128,4 @@
     .mb-4 {
         margin-bottom: 16px;
     }
-
 </style>
