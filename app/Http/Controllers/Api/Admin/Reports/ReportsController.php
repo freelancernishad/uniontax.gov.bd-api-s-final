@@ -207,7 +207,7 @@ private function getReportsByDivision($division, $sonodName = null, $details = n
 {
 
      $groupoBy = 'sonod_name';
-    if($detials==1){
+    if($details==1){
         $groupoBy = 'unioun_name';
     }
     // Division মডেল নিয়ে আসা
