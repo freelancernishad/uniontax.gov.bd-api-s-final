@@ -25,7 +25,8 @@ class ReportsController extends Controller
         $upazilaName = $request->input('upazila_name');
         $detials = $request->input('detials');
 
-
+        $fromDate = $request->input('from_date') ?? null;
+        $toDate = $request->input('to_date') ?? null;
 
         $sonod_name = '';
         if($detials){
@@ -48,26 +49,26 @@ class ReportsController extends Controller
 
         // If a specific union_name is provided, use it to filter
         if ($unionName) {
-            $data =  $this->getReportsByUnion($unionName, $sonodName,$detials);
+            $data =  $this->getReportsByUnion($unionName, $sonodName,$detials, $fromDate, $toDate);
             return $this->genratePdf($data,$reportTitle,$detials);
         }
 
         // If upazila is provided, fetch unions by upazila and call the report generation
         if ($upazilaName) {
-            $data =  $this->getReportsByUpazila($upazilaName, $sonodName,$detials);
+            $data =  $this->getReportsByUpazila($upazilaName, $sonodName,$detials, $fromDate, $toDate);
             // return response()->json($data);
             return $this->genratePdf($data,$reportTitle,$detials);
         }
 
         // If a district is provided, fetch unions by district and call the report generation
         if ($districtName) {
-            $data =  $this->getReportsByDistrict($districtName, $sonodName,$detials);
+            $data =  $this->getReportsByDistrict($districtName, $sonodName,$detials, $fromDate, $toDate);
             return $this->genratePdf($data,$reportTitle,$detials);
         }
 
         // If a division is provided, fetch districts by division and call the report generation
         if ($divisionName) {
-            $data =  $this->getReportsByDivision($divisionName, $sonodName,$detials);
+            $data =  $this->getReportsByDivision($divisionName, $sonodName,$detials, $fromDate, $toDate);
 
             return $this->genratePdf($data,$reportTitle,$detials);
         }
