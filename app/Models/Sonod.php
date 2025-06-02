@@ -122,6 +122,26 @@ class Sonod extends Model
         'font_family' => 'bangla', // Set default value
     ];
 
+
+    protected static function booted()
+{
+    static::creating(function ($sonod) {
+        if (!empty($sonod->unioun_name)) {
+            $union = Uniouninfo::where('short_name_e', $sonod->unioun_name)->first();
+            if ($union) {
+                $sonod->division_name = $union->division_name;
+                $sonod->district_name = $union->district_name;
+                $sonod->upazila_name = $union->upazila_name;
+            }
+        }
+    });
+}
+
+
+
+
+
+
     // Relationship: A Sonod has many payments
     public function payments()
     {

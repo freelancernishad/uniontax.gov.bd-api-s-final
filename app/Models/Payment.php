@@ -26,6 +26,9 @@ class Payment extends Model
         'payable_type',
         'payable_id',
         'union', // New column
+        'division_name', // Newly added
+        'district_name', // Newly added
+        'upazila_name', // Newly added
         'trxId', // New column
         'sonodId', // New column
         'sonod_type', // New column
@@ -47,6 +50,27 @@ class Payment extends Model
         'paid_at' => 'datetime', // Cast as a datetime
         // 'date' => 'datetime', // Cast as a datetime
     ];
+
+
+protected static function booted()
+{
+    static::creating(function ($payment) {
+        if (!empty($payment->union)) {
+            $union = Uniouninfo::where('short_name_e', $payment->union)->first(); // অথবা 'bn_name' বা 'id' অনুযায়ী পরিবর্তন করুন
+
+            if ($union) {
+                $payment->division_name = $union->division_name;
+                $payment->district_name = $union->district_name;
+                $payment->upazila_name = $union->upazila_name;
+            }
+        }
+    });
+}
+
+
+
+
+
 
     // Define relationship with User model
     public function user()
@@ -159,11 +183,11 @@ class Payment extends Model
 
     }
 
-    public function tenderinvoice()
-    {
-        // Defines a belongsTo relationship with the TanderInvoice model using sonodId as the foreign key
-        return $this->belongsTo(TanderInvoice::class, 'sonodId', 'id');
-    }
+    // public function tenderinvoice()
+    // {
+    //     // Defines a belongsTo relationship with the TanderInvoice model using sonodId as the foreign key
+    //     return $this->belongsTo(TanderInvoice::class, 'sonodId', 'id');
+    // }
 
 
 }

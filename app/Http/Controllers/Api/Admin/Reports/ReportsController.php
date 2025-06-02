@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Devfaysal\BangladeshGeocode\Models\Upazila;
 use Devfaysal\BangladeshGeocode\Models\District;
 use Devfaysal\BangladeshGeocode\Models\Division;
+use App\Helpers\Dashboard\DashboardHelper;
 
 class ReportsController extends Controller
 {
@@ -142,7 +143,7 @@ class ReportsController extends Controller
 
         // If a specific union_name is provided, use it to filter
         if ($unionName) {
-                $datas =  $this->getReportsByUnion([$unionName], $sonodName,$detials);
+                $datas =  $this->getReportsByUnion($unionName, $sonodName,$detials,$fromDate, $toDate);
                 return response()->json($datas);
 
         }
@@ -158,7 +159,7 @@ class ReportsController extends Controller
         // If a district is provided, fetch unions by district and call the report generation
         if ($districtName) {
 
-                $datas =  $this->getReportsByDistrict($districtName, $sonodName,$detials);
+                $datas =  $this->getReportsByDistrict($districtName, $sonodName,$detials, $fromDate, $toDate);
                 return response()->json($datas);
 
         }
@@ -166,7 +167,7 @@ class ReportsController extends Controller
         // If a division is provided, fetch districts by division and call the report generation
         if ($divisionName) {
 
-                $datas =  $this->getReportsByDivision($divisionName, $sonodName,$detials);
+                $datas =  $this->getReportsByDivision($divisionName, $sonodName,$detials, $fromDate, $toDate);
                 return response()->json($datas);
 
         }
@@ -176,181 +177,70 @@ class ReportsController extends Controller
     }
 
     // Function to get reports by Union
-   public function getReportsByUnion(array $unionNames, $sonodName = null, $detials = null, $fromDate = null, $toDate = null)
+public function getReportsByUnion(string $unionName, $sonodName = null, $detials = null, $fromDate = null, $toDate = null)
 {
-
-    if ($detials) {
-        // Detailed view with filters
-        $detailedSonodReports = Sonod::whereIn('unioun_name', $unionNames)
-            ->when($sonodName, function ($query) use ($sonodName) {
-                $query->where('sonod_name', $sonodName);
-            })
-            ->when($fromDate, function ($query) use ($fromDate) {
-                $query->whereDate('created_at', '>=', $fromDate);
-            })
-            ->when($toDate, function ($query) use ($toDate) {
-                $query->whereDate('created_at', '<=', $toDate);
-            })
-            ->selectRaw("
-                unioun_name,
-                sonod_name,
-                COUNT(CASE WHEN stutus = 'Pending' THEN 1 END) as pending_count,
-                COUNT(CASE WHEN stutus = 'approved' THEN 1 END) as approved_count,
-                COUNT(CASE WHEN stutus = 'cancel' THEN 1 END) as cancel_count
-            ")
-            ->groupBy('unioun_name', 'sonod_name')
-            ->get();
-
-        // Totals
-        $totalPending = $detailedSonodReports->sum('pending_count');
-        $totalApproved = $detailedSonodReports->sum('approved_count');
-        $totalCancel = $detailedSonodReports->sum('cancel_count');
-
-        return [
-            'detailed_sonod_reports' => $detailedSonodReports,
-            'sonodName' => $sonodName,
-            'totals' => [
-                'total_pending' => $totalPending,
-                'total_approved' => $totalApproved,
-                'total_cancel' => $totalCancel,
-            ],
-        ];
-    } else {
-        // Summary view
-        $sonodQuery = Sonod::whereIn('unioun_name', $unionNames)
-            ->when($sonodName, function ($query) use ($sonodName) {
-                $query->where('sonod_name', $sonodName);
-            })
-            ->when($fromDate, function ($query) use ($fromDate) {
-                $query->whereDate('created_at', '>=', $fromDate);
-            })
-            ->when($toDate, function ($query) use ($toDate) {
-                $query->whereDate('created_at', '<=', $toDate);
-            })
-            ->selectRaw("
-                sonod_name,
-                COUNT(CASE WHEN stutus = 'Pending' THEN 1 END) as pending_count,
-                COUNT(CASE WHEN stutus = 'approved' THEN 1 END) as approved_count,
-                COUNT(CASE WHEN stutus = 'cancel' THEN 1 END) as cancel_count
-            ")
-            ->groupBy('sonod_name');
-
-        $paymentQuery = Payment::whereIn('union', $unionNames)
-            ->where('status', 'Paid')
-            ->when($sonodName, function ($query) use ($sonodName) {
-                $query->where('sonod_type', $sonodName);
-            })
-            ->when($fromDate, function ($query) use ($fromDate) {
-                $query->whereDate('created_at', '>=', $fromDate);
-            })
-            ->when($toDate, function ($query) use ($toDate) {
-                $query->whereDate('created_at', '<=', $toDate);
-            })
-            ->selectRaw("
-                sonod_type,
-                COUNT(*) as total_payments,
-                SUM(amount) as total_amount
-            ")
-            ->groupBy('sonod_type');
-
-        // Fetch results
-        $sonodReports = $sonodQuery->get();
-        $paymentReports = $paymentQuery->get();
-
-        $paymentReports->each(function ($report) {
-            $report->sonod_type = translateToBangla($report->sonod_type);
-            $report->total_amount = number_format((float) $report->total_amount, 2, '.', '');
-        });
-
-        // Totals
-        $totalPending = $sonodReports->sum('pending_count');
-        $totalApproved = $sonodReports->sum('approved_count');
-        $totalCancel = $sonodReports->sum('cancel_count');
-        $totalPayments = $paymentReports->sum('total_payments');
-        $totalAmount = number_format((float) $paymentReports->sum('total_amount'), 2, '.', '');
-
-        return [
-            'sonod_reports' => $sonodReports,
-            'payment_reports' => $paymentReports,
-            'totals' => [
-                'total_pending' => $totalPending,
-                'total_approved' => $totalApproved,
-                'total_cancel' => $totalCancel,
-                'total_payments' => $totalPayments,
-                'total_amount' => $totalAmount,
-            ],
-        ];
-    }
-}
-
-
-
-
-private function getReportsByDistrict($district, $sonodName = null, $detials = null)
-{
-    $districtModel = District::where('name', $district)->firstOrFail();
-
-    $districtUnionNames = [];
-    $upazilaReports = [];
-
-    foreach ($districtModel->upazilas as $upazila) {
-        $upazilaUnionNames = [];
-
-        foreach ($upazila->unions as $union) {
-            $unionName = str_replace(' ', '', strtolower($union->name));
-            $districtUnionNames[] = $unionName;
-            $upazilaUnionNames[] = $unionName;
-        }
-
-        $upazilaReports[$upazila->bn_name] =  $this->getReportsByUnion($upazilaUnionNames, $sonodName, $detials);
-    }
+    // ইউনিয়ন নামের উপর রিপোর্ট নেবে
+    $totalReport = DashboardHelper::getReportsDetails(
+        'unioun_name',
+        $unionName,
+        $sonodName,
+        $detials,
+        $fromDate,
+        $toDate
+    );
 
     return [
-        'title' => addressEnToBn($district, "district") . " জেলার সকল উপজেলার প্রতিবেদন",
-        'total_report' => $this->getReportsByUnion(array_unique($districtUnionNames), $sonodName, $detials),
-        'divided_reports' => $upazilaReports
+        'title' => addressEnToBn($unionName, "union") . " ইউনিয়নের প্রতিবেদন",
+        'total_report' => $totalReport,
+        'divided_reports' => [],  // ফাঁকা রাখা হলো
     ];
 }
 
+
+
+
+
     // Function to get reports by Division
-private function getReportsByDivision($division, $sonodName = null, $detials = null)
+private function getReportsByDivision($division, $sonodName = null, $detials = null, $fromDate = null, $toDate = null)
 {
     // Get the division model
     $divisionModel = Division::where('name', $division)->firstOrFail();
 
-    $divisionUnionNames = [];
-    foreach ($divisionModel->districts as $district) {
-        if (isUnion()) {
-            foreach ($district->upazilas as $upazila) {
-                foreach ($upazila->unions as $union) {
-                    $divisionUnionNames[] = str_replace(' ', '', strtolower($union->name));
-                }
-            }
-        } else {
-            $divisionUnionNames = ['panchagarh', 'debiganj', 'boda'];
-        }
-    }
+    // Get main division-level report (only once)
+    $divisionReport = DashboardHelper::getReportsDetails('division_name', $division, $sonodName, $detials, $fromDate, $toDate);
 
-    $divisionUnionNames = array_unique($divisionUnionNames);
+    // If it's not a collection, make it one
+    // $divisionReport এর মধ্যে যদি payment_reports এবং sonod_reports দুইটি আলাদা array থাকে
+    $divisionReportCollection = [
+        'payment_reports' => collect($divisionReport['payment_reports'] ?? []),
+        'sonod_reports' => collect($divisionReport['sonod_reports'] ?? []),
+    ];
 
-    // Get main division-level report
-    $divisionReport = $this->getReportsByUnion($divisionUnionNames, $sonodName, $detials);
-
-    // Now build reports per district
+    // প্রতিটি জেলার জন্য আলাদা রিপোর্ট তৈরি করুন এবং totals যোগ করুন
     $districtReports = [];
-
     foreach ($divisionModel->districts as $district) {
-        $districtUnionNames = [];
+        $paymentReports = $divisionReportCollection['payment_reports']->filter(function ($item) use ($district) {
+            return isset($item['district_name']) && $item['district_name'] == $district->name;
+        })->values();
 
-        foreach ($district->upazilas as $upazila) {
-            foreach ($upazila->unions as $union) {
-                $districtUnionNames[] = str_replace(' ', '', strtolower($union->name));
-            }
-        }
+        $sonodReports = $divisionReportCollection['sonod_reports']->filter(function ($item) use ($district) {
+            return isset($item['district_name']) && $item['district_name'] == $district->name;
+        })->values();
 
-        $districtUnionNames = array_unique($districtUnionNames);
+        // Merge both collections for totals calculation
+        $reports = $paymentReports->merge($sonodReports);
 
-        $districtReports[$district->bn_name] = $this->getReportsByUnion($districtUnionNames, $sonodName, $detials);
+        $districtReports[$district->bn_name] = [
+            'sonod_reports'   => $sonodReports,
+            'payment_reports' => $paymentReports,
+            'totals' => [
+                'total_pending'   => $reports->sum('pending_count'),
+                'total_approved'  => $reports->sum('approved_count'),
+                'total_cancel'    => $reports->sum('cancel_count'),
+                'total_payments'  => $reports->sum('total_payments'),
+                'total_amount'    => number_format((float) $reports->sum('total_amount'), 2, '.', ''),
+            ],
+        ];
     }
 
     return [
@@ -362,31 +252,159 @@ private function getReportsByDivision($division, $sonodName = null, $detials = n
 
 
 
+private function getReportsByDistrict($district, $sonodName = null, $detials = null, $fromDate = null, $toDate = null)
+{
+    // জেলা মডেল নিয়ে আসা
+    $districtModel = District::where('name', $district)->firstOrFail();
+
+    // জেলা লেভেলের রিপোর্ট একবারে আনা
+    $districtReport = DashboardHelper::getReportsDetails('district_name', $district, $sonodName, $detials, $fromDate, $toDate);
+
+    // $districtReport এর মধ্যে যদি payment_reports এবং sonod_reports আলাদা থাকে, তা কালেকশনে রূপান্তর করুন
+    $districtReportCollection = [
+        'payment_reports' => collect($districtReport['payment_reports'] ?? []),
+        'sonod_reports' => collect($districtReport['sonod_reports'] ?? []),
+    ];
+
+    // উপজেলা ভিত্তিক রিপোর্ট গুলো বানানোর জন্য একটা অ্যারে (সাথে totals)
+    $upazilaReports = [];
+$sonodReportsCollection = $districtReportCollection['sonod_reports'];
+$paymentReportsCollection = $districtReportCollection['payment_reports'];
+
+foreach ($districtModel->upazilas as $upazila) {
+    $paymentReports = $paymentReportsCollection->filter(function ($item) use ($upazila) {
+        return isset($item['upazila_name']) && $item['upazila_name'] == $upazila->name;
+    })->values();
+
+    // Remove matched from collection
+    $paymentReportsCollection = $paymentReportsCollection->reject(function ($item) use ($upazila) {
+        return isset($item['upazila_name']) && $item['upazila_name'] == $upazila->name;
+    });
+
+    $sonodReports = $sonodReportsCollection->filter(function ($item) use ($upazila) {
+        return isset($item['upazila_name']) && $item['upazila_name'] == $upazila->name;
+    })->values();
+
+    // Remove matched from collection
+    $sonodReportsCollection = $sonodReportsCollection->reject(function ($item) use ($upazila) {
+        return isset($item['upazila_name']) && $item['upazila_name'] == $upazila->name;
+    });
+
+    $reports = $paymentReports->merge($sonodReports);
+
+    $upazilaReports[$upazila->bn_name] = [
+        'sonod_reports'   => $sonodReports,
+        'payment_reports' => $paymentReports,
+        'totals' => [
+            'total_pending'  => $reports->sum('pending_count'),
+            'total_approved' => $reports->sum('approved_count'),
+            'total_cancel'   => $reports->sum('cancel_count'),
+            'total_payments' => $reports->sum('total_payments'),
+            'total_amount'   => number_format((float) $reports->sum('total_amount'), 2, '.', ''),
+        ],
+    ];
+}
+
+    return [
+        'title' => addressEnToBn($district, "district") . " জেলার সকল উপজেলার প্রতিবেদন",
+        'total_report' => $districtReport,
+        'divided_reports' => $upazilaReports,
+    ];
+}
 
 
-// Function to get reports by Upazila
 private function getReportsByUpazila($upazila, $sonodName = null, $detials = null, $fromDate = null, $toDate = null)
 {
-    // Get all union names related to the given upazila
+    // উপজেলা মডেল নিয়ে আসা
     $upazilaModel = Upazila::where('name', $upazila)->firstOrFail();
 
-    $unionNames = [];
+    // উপজেলা লেভেলের রিপোর্ট একবারে আনা
+    $upazilaReport = DashboardHelper::getReportsDetails('upazila_name', $upazila, $sonodName, $detials, $fromDate, $toDate);
+
+    // কালেকশনে রূপান্তর
+    $upazilaReportCollection = [
+        'payment_reports' => collect($upazilaReport['payment_reports'] ?? []),
+        'sonod_reports' => collect($upazilaReport['sonod_reports'] ?? []),
+    ];
+
     $unionReports = [];
 
     foreach ($upazilaModel->unions as $union) {
-        $unionName = str_replace(' ', '', strtolower($union->name));
-        $unionNames[] = $unionName;
+        $unionKey = str_replace(' ', '', strtolower($union->name));
 
-        $unionReports[$union->bn_name] =  $this->getReportsByUnion([$unionName], $sonodName, $detials, $fromDate, $toDate);
+        // এই ইউনিয়নের payment রিপোর্ট
+        $paymentReports = $upazilaReportCollection['payment_reports']->filter(function ($item) use ($unionKey) {
+            return isset($item['union']) && str_replace(' ', '', strtolower($item['union'])) == $unionKey;
+        })->values();
+
+        // এই ইউনিয়নের sonod রিপোর্ট
+        $sonodReports = $upazilaReportCollection['sonod_reports']->filter(function ($item) use ($unionKey) {
+            return isset($item['unioun_name']) && str_replace(' ', '', strtolower($item['unioun_name'])) == $unionKey;
+        })->values();
+
+        // রিপোর্ট একত্রিত করা (totals বের করতে)
+        $reports = $paymentReports->map(function ($item) {
+            return [
+                'pending_count'  => $item['pending_count'] ?? 0,
+                'approved_count' => $item['approved_count'] ?? 0,
+                'cancel_count'   => $item['cancel_count'] ?? 0,
+                'total_payments' => $item['total_payments'] ?? 0,
+                'total_amount'   => (float) ($item['total_amount'] ?? 0),
+            ];
+        })->merge(
+            $sonodReports->map(function ($item) {
+                return [
+                    'pending_count'  => $item['pending_count'] ?? 0,
+                    'approved_count' => $item['approved_count'] ?? 0,
+                    'cancel_count'   => $item['cancel_count'] ?? 0,
+                    'total_payments' => 0,
+                    'total_amount'   => 0,
+                ];
+            })
+        );
+
+        $unionReports[$union->bn_name] = [
+            'sonod_reports'   => $sonodReports,
+            'payment_reports' => $paymentReports,
+            'totals' => [
+                'total_pending'  => $reports->sum('pending_count'),
+                'total_approved' => $reports->sum('approved_count'),
+                'total_cancel'   => $reports->sum('cancel_count'),
+                'total_payments' => $reports->sum('total_payments'),
+                'total_amount'   => number_format((float) $reports->sum('total_amount'), 2, '.', ''),
+            ],
+        ];
     }
 
-    // Return full upazila-level report along with union-level breakdown
+    // উপজেলা লেভেলের মোট totals হিসাব করা
+    $totalReports = $upazilaReportCollection['payment_reports']->map(function ($item) {
+        return [
+            'pending_count'  => $item['pending_count'] ?? 0,
+            'approved_count' => $item['approved_count'] ?? 0,
+            'cancel_count'   => $item['cancel_count'] ?? 0,
+            'total_payments' => $item['total_payments'] ?? 0,
+            'total_amount'   => (float) ($item['total_amount'] ?? 0),
+        ];
+    })->merge(
+        $upazilaReportCollection['sonod_reports']->map(function ($item) {
+            return [
+                'pending_count'  => $item['pending_count'] ?? 0,
+                'approved_count' => $item['approved_count'] ?? 0,
+                'cancel_count'   => $item['cancel_count'] ?? 0,
+                'total_payments' => 0,
+                'total_amount'   => 0,
+            ];
+        })
+    );
+
+
     return [
         'title' => addressEnToBn($upazila, "upazila") . " উপজেলার সকল ইউনিয়নের প্রতিবেদন",
-        'total_report' => $this->getReportsByUnion(array_unique($unionNames), $sonodName, $detials, $fromDate, $toDate),
-        'divided_reports' => $unionReports
+        'total_report' => $upazilaReport,
+        'divided_reports' => $unionReports,
     ];
 }
+
 
 
 }

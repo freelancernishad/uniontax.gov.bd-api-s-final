@@ -779,9 +779,9 @@ class AdminUniouninfoController extends Controller
             // Base name structure without role
             $baseName = sprintf(
                 "%s - %s - %s (%s)",
-                $upazila->district->name ?? 'Unknown District',
-                $upazila->name,
                 $uniouninfo->short_name_e ?? 'Unknown Union',
+                $upazila->name,
+                $upazila->district->name ?? 'Unknown District',
                 $uniouninfo->full_name
             );
 
@@ -822,11 +822,9 @@ class AdminUniouninfoController extends Controller
 
 
 
-    public function updateSonodRecordsWithLocationDetailsByUpazila($upazilaId)
+public function updateSonodRecordsWithLocationDetailsByUpazila($upazilaId)
 {
-
-
-    // Fetch the Upazila with its related unions
+    // Fetch the Upazila with its related unions, district, and division
     $upazila = Upazila::with(['unions', 'district', 'district.division'])->find($upazilaId);
 
     if (!$upazila) {
@@ -835,26 +833,43 @@ class AdminUniouninfoController extends Controller
         ], 404);
     }
 
-    // Get the union names from the Upazila and transform them
+    // Get the union names and transform them
     $unionNames = $upazila->unions->pluck('name')->map(function ($name) {
-        return str_replace(' ', '', strtolower($name));  // Remove spaces and convert to lowercase
+        return str_replace(' ', '', strtolower($name));
     })->toArray();
-    // Load the sonod records where union_name matches the transformed union names
-    $sonodRecords = Sonod::whereIn('union_name', $unionNames)->get();
-    return response()->json(['sonod_records' => $sonodRecords], 200);
 
-    // Loop through sonodRecords and update division_name, district_name, upazila_name
-    $updatedSonodRecords = $sonodRecords->map(function ($sonod) use ($upazila) {
-        $sonod->update([
+
+    // --- Update Sonod records ---
+    // $sonodRecords = Sonod::whereIn('unioun_name', $unionNames)->get();
+
+    // $updatedSonodRecords = $sonodRecords->map(function ($sonod) use ($upazila) {
+    //     $sonod->update([
+    //         'division_name' => $upazila->district->division->name ?? 'Unknown Division',
+    //         'district_name' => $upazila->district->name ?? 'Unknown District',
+    //         'upazila_name' => $upazila->name ?? 'Unknown Upazila',
+    //     ]);
+    //     return $sonod;
+    // });
+
+    // --- Update Unioninfo records ---
+// Only select the fields needed for update (id and the fields to be updated)
+$unionInfoRecords = Uniouninfo::select('id', 'short_name_e', 'division_name', 'district_name', 'upazila_name')
+    ->whereIn('short_name_e', $unionNames)
+    ->get();
+
+    $updatedUnionInfos = $unionInfoRecords->map(function ($union) use ($upazila) {
+        $union->update([
             'division_name' => $upazila->district->division->name ?? 'Unknown Division',
             'district_name' => $upazila->district->name ?? 'Unknown District',
             'upazila_name' => $upazila->name ?? 'Unknown Upazila',
         ]);
-        return $sonod;
+        return $union;
     });
 
-    // Return the updated sonod records
-    return response()->json(['sonod_records' => $updatedSonodRecords], 200);
+    return response()->json([
+        // 'sonod_records' => $updatedSonodRecords,
+        'unioninfo_records' => $updatedUnionInfos,
+    ], 200);
 }
 
 

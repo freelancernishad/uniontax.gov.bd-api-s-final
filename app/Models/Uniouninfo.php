@@ -13,6 +13,9 @@ class Uniouninfo extends Model
     protected $fillable = [
         'full_name',
         'short_name_e',
+        'division_name',
+        'district_name',
+        'upazila_name',
         'domain',
         'portal',
         'short_name_b',
