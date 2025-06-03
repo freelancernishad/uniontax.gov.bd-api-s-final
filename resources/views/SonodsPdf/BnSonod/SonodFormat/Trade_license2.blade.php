@@ -127,7 +127,7 @@ $orthoBchor = explode('-',$row->orthoBchor);
         \Log::info("vatAykor: $vatAykor");
         $aykorAndUtssoKor = isset($amount_deails->aykorAndUtssoKor) ? $amount_deails->aykorAndUtssoKor : 1000;
 
-        
+
       $signboard_feeVatAykor = isset($amount_deails->vatAykor) ? ($signboard_fee * $amount_deails->vatAykor) / 100 : 0;
         // $aykorAndUtssoKorVatAykor = isset($amount_deails->vatAykor) ? ($aykorAndUtssoKor * $amount_deails->vatAykor) / 100 : 0;
 
@@ -141,7 +141,7 @@ $orthoBchor = explode('-',$row->orthoBchor);
 
 
 
-    if($row->hasEnData){
+    if($row->hasEnData==1){
 
         if(isUnion()){
             $totalAmount =  (int)$totalAmount - (int)$vatAykor;
