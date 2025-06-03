@@ -146,6 +146,10 @@ $orthoBchor = explode('-',$row->orthoBchor);
         if(isUnion()){
             $totalAmount =  (int)$totalAmount - (int)$vatAykor;
         }
+    }else{
+        if(isUnion()){
+            $totalAmount =  (int)$totalAmount - (int)$vatAykor;
+        }
     }
 
     $totalAmount = int_en_to_bn($totalAmount ?? 0);
