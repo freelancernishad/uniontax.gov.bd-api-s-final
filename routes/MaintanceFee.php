@@ -25,4 +25,9 @@ Route::middleware(AuthenticateAdmin::class)->prefix('admin/maintance-fees')->gro
     Route::get('/{id}', [AdminMaintanceFeeController::class, 'show']);
     Route::put('/{id}', [AdminMaintanceFeeController::class, 'update']);
     Route::delete('/{id}', [AdminMaintanceFeeController::class, 'destroy']);
+
+
+    Route::post('/maintenance/unpaid-unions', [AdminMaintanceFeeController::class, 'unionListByStatus']);
+
+
 });
