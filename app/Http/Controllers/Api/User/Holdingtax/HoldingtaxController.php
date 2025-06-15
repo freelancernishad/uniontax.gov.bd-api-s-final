@@ -6,7 +6,9 @@ use App\Models\Payment;
 use App\Models\Holdingtax;
 use App\Models\Uniouninfo;
 use Illuminate\Http\Request;
+use App\Helpers\SmsNocHelper;
 use App\Models\HoldingBokeya;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -370,7 +372,7 @@ class HoldingtaxController extends Controller
         //     $userUnion = $auth->unioun;
         // }
         // Apply union filter based on the authenticated user's union
-     
+
 
         // Apply search conditions for various fields (holding_no, maliker_name, etc.)
         if ($search) {
@@ -666,6 +668,142 @@ class HoldingtaxController extends Controller
             'data' => $bokeya
         ], 201);
     }
+
+
+
+
+public function holdingTaxBokeyaList(Request $request)
+{
+    ini_set('max_execution_time', '60000');
+    ini_set("pcre.backtrack_limit", "50000000000000000");
+    ini_set('memory_limit', '12008M');
+
+    $authenticatedEntity = Auth::user();
+
+    if (!$authenticatedEntity) {
+        return response()->json(['error' => 'Unauthorized.'], 401);
+    }
+
+    $union = $authenticatedEntity->unioun;
+    $word = $request->word;
+    $status = 'Unpaid';
+
+    $uniouninfo = Uniouninfo::where('short_name_e', $union)->first();
+
+    $query = Holdingtax::select('id', 'maliker_name', 'holding_no', 'word_no', 'nid_no', 'mobile_no')
+        ->with(['holdingBokeyas' => function ($query) use ($status) {
+            $query->where('status', $status)->where('price', '!=', 0);
+        }]);
+
+    // Filtering
+    if ($union) {
+        $query->where('unioun', $union);
+    }
+
+    if ($word) {
+        $query->where('word_no', $word);
+    }
+
+    $holdingtaxs = $query->orderBy('id', 'desc')->get();
+
+    // Filter and transform
+    $filtered = $holdingtaxs->filter(function ($holdingTax) {
+        return !$holdingTax->holdingBokeyas->isEmpty();
+    })->map(function ($holdingTax) {
+        return [
+            'maliker_name' => $holdingTax->maliker_name,
+            'holding_no'   => $holdingTax->holding_no,
+            'word_no'      => $holdingTax->word_no,
+            'nid_no'       => $holdingTax->nid_no,
+            'mobile_no'    => $holdingTax->mobile_no,
+            'total_price'  => $holdingTax->holdingBokeyas->sum('price'),
+        ];
+    })->values();
+
+    return response()->json([
+        // 'union_info' => $uniouninfo,
+        'word' => $word,
+        'data' => $filtered,
+    ]);
+}
+
+
+public function sendHoldingTaxSMS(Request $request)
+{
+    $user = Auth::user();
+
+    if (!$user) {
+        return response()->json(['error' => 'Unauthorized.'], 401);
+    }
+
+    $union = $user->unioun;
+
+    $unionInfo = Uniouninfo::where('short_name_e', $union)->first();
+    $unionName = $unionInfo?->full_name ?? '০৩ নং তেঁতুলিয়া ইউপি';
+
+    $validator = Validator::make($request->all(), [
+        'holdingtax' => 'required|array|min:1',
+        'holdingtax.*.maliker_name' => 'required|string|max:255',
+        'holdingtax.*.holding_no'   => 'required|string|max:255',
+        'holdingtax.*.mobile_no'    => 'required',
+        'holdingtax.*.total_price'  => 'required|numeric|min:0',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
+    }
+
+    $holdingtaxItems = $request->input('holdingtax');
+    $results = [];
+
+    foreach ($holdingtaxItems as $item) {
+        $originalMobile = $item['mobile_no'] ?? null;
+
+        if (!$originalMobile) {
+            $results[] = [
+                'holding_no' => $item['holding_no'],
+                'status' => 'Skipped: মোবাইল নম্বর পাওয়া যায়নি।',
+            ];
+            continue;
+        }
+
+        // Normalize mobile number to 01XXXXXXXXX
+        $mobile = preg_replace('/^(?:\+?88)?/', '', $originalMobile);
+
+        if (!preg_match('/^01[0-9]{9}$/', $mobile)) {
+            $results[] = [
+                'original_mobile' => $originalMobile,
+                'holding_no' => $item['holding_no'],
+                'status' => 'Skipped: ভুল মোবাইল নম্বর',
+            ];
+            continue;
+        }
+
+        // SMS message with commas and periods instead of line breaks
+        $message = "আসসালামু আলাইকুম {$item['maliker_name']}, " .
+            "আপনার গৃহ/ভবনের ট্যাক্স আগামী ৩০/০৬/২০২৫খ্রি তারিখের মধ্যে পরিশোধ করুন। " .
+            "হোল্ডিং নং: {$item['holding_no']}, " .
+            "বকেয়া: {$item['total_price']} টাকা। " .
+            "জন্ম ও মৃত্যুর ৪৫ দিনের মধ্যে নিবন্ধন করুন। " .
+            "অনুরোধক্রমে, {$unionName} কর্তৃপক্ষ।";
+
+        $smsResult = SmsNocHelper::sendSms($message, $mobile, $union);
+
+        $results[] = [
+            'original_mobile' => $originalMobile,
+            'converted_mobile' => $mobile,
+            'holding_no' => $item['holding_no'],
+            'status' => $smsResult,
+        ];
+    }
+
+    return response()->json([
+        'message' => 'SMS প্রসেস শেষ হয়েছে।',
+        'results' => $results,
+    ]);
+}
+
+
 
 
 }

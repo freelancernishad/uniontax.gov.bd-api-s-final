@@ -73,6 +73,9 @@ Route::prefix('user')->group(function () {
         Route::get('holdingtax/{id}', [HoldingtaxController::class, 'getSingleHoldingTaxWithBokeyas']);
         Route::put('/holding-bokeya/{id}/update-price', [HoldingtaxController::class, 'updateUnpaidHoldingBokeyaPrice']);
 
+        Route::get('/holdingtax/bokeya/list', [HoldingtaxController::class, 'holdingTaxBokeyaList']);
+        Route::post('/holdingtax/bokeya/sms/send', [HoldingtaxController::class, 'sendHoldingTaxSMS']);
+
         Route::post('/holding-tax/import', [HoldingTaxImportController::class, 'import']);
         Route::get('/holding-tax/export', [HoldingTaxImportController::class, 'export']);
 
