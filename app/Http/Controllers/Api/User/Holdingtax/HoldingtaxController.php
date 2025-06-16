@@ -727,6 +727,9 @@ public function holdingTaxBokeyaList(Request $request)
     ]);
 }
 
+
+
+
 public function sendHoldingTaxSMS(Request $request)
 {
     $user = Auth::user();
@@ -753,6 +756,7 @@ public function sendHoldingTaxSMS(Request $request)
     $holdingtaxItems = $request->input('holdingtax');
     $results = [];
 
+    $successCount = 0;
     $currentBalance = $unionInfo->smsBalance;
     $lastSentHolding = null;
 
@@ -767,7 +771,6 @@ public function sendHoldingTaxSMS(Request $request)
             continue;
         }
 
-        // Normalize mobile number
         $mobile = preg_replace('/^(?:\+?88)?/', '', $originalMobile);
 
         if (!preg_match('/^01[0-9]{9}$/', $mobile)) {
@@ -778,8 +781,9 @@ public function sendHoldingTaxSMS(Request $request)
             ];
             continue;
         }
+        $message = "আসসালামু আলাইকুম {$item['maliker_name']}, ";
 
-        // Prepare the message
+        // SMS message with commas and periods instead of line breaks
         // $message = "আসসালামু আলাইকুম {$item['maliker_name']}, " .
         //     "আপনার গৃহ/ভবনের ট্যাক্স আগামী ৩০/০৬/২০২৫খ্রি তারিখের মধ্যে পরিশোধ করুন। " .
         //     "হোল্ডিং নং: {$item['holding_no']}, " .
@@ -787,12 +791,6 @@ public function sendHoldingTaxSMS(Request $request)
         //     "জন্ম ও মৃত্যুর ৪৫ দিনের মধ্যে নিবন্ধন করুন। " .
         //     "অনুরোধক্রমে, {$unionName} কর্তৃপক্ষ।";
 
-
-               $message = "আসসালামু আলাইকুম {$item['maliker_name']}, ";
-
-
-
-        // Check character count and calculate SMS count
         $isUnicode = preg_match('/[^\x00-\x7F]/', $message);
         $charCount = mb_strlen($message, 'UTF-8');
         $limitPerMessage = $isUnicode ? 70 : 160;
@@ -806,12 +804,12 @@ public function sendHoldingTaxSMS(Request $request)
             break;
         }
 
-        // Send the SMS
         $smsResult = SmsNocHelper::sendSms($message, $mobile, $union);
 
         if (strpos($smsResult, 'successfully') !== false) {
+            $successCount++;
             $currentBalance -= $smsCount;
-            $lastSentHolding = $item; // ✅ শেষ সফল হোল্ডিং সংরক্ষণ
+            $lastSentHolding = $item;
         }
 
         $results[] = [
@@ -822,7 +820,6 @@ public function sendHoldingTaxSMS(Request $request)
         ];
     }
 
-    $successCount = collect($results)->where('status', 'LIKE', '%successfully%')->count();
     $message = "SMS প্রসেস শেষ হয়েছে। সফলভাবে {$successCount} জন প্রাপকের কাছে SMS পাঠানো হয়েছে।";
 
     if ($lastSentHolding) {
@@ -835,6 +832,7 @@ public function sendHoldingTaxSMS(Request $request)
         'results' => $results,
     ]);
 }
+
 
 
 
