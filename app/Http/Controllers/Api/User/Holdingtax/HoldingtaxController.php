@@ -789,7 +789,7 @@ public function sendHoldingTaxSMS(Request $request)
             "হোল্ডিং নং: {$item['holding_no']}, " .
             "বকেয়া: {$item['total_price']} টাকা। " .
             "জন্ম ও মৃত্যুর ৪৫ দিনের মধ্যে নিবন্ধন করুন। " .
-            "অনুরোধক্রমে, {$unionName} কর্তৃপক্ষ।";
+            "অনুরোধক্রমে, {$unionName} কর্তৃপক্ষ ।";
 
 
         $isUnicode = preg_match('/[^\x00-\x7F]/', $message);
