@@ -780,12 +780,17 @@ public function sendHoldingTaxSMS(Request $request)
         }
 
         // Prepare the message
-        $message = "আসসালামু আলাইকুম {$item['maliker_name']}, " .
-            "আপনার গৃহ/ভবনের ট্যাক্স আগামী ৩০/০৬/২০২৫খ্রি তারিখের মধ্যে পরিশোধ করুন। " .
-            "হোল্ডিং নং: {$item['holding_no']}, " .
-            "বকেয়া: {$item['total_price']} টাকা। " .
-            "জন্ম ও মৃত্যুর ৪৫ দিনের মধ্যে নিবন্ধন করুন। " .
-            "অনুরোধক্রমে, {$unionName} কর্তৃপক্ষ।";
+        // $message = "আসসালামু আলাইকুম {$item['maliker_name']}, " .
+        //     "আপনার গৃহ/ভবনের ট্যাক্স আগামী ৩০/০৬/২০২৫খ্রি তারিখের মধ্যে পরিশোধ করুন। " .
+        //     "হোল্ডিং নং: {$item['holding_no']}, " .
+        //     "বকেয়া: {$item['total_price']} টাকা। " .
+        //     "জন্ম ও মৃত্যুর ৪৫ দিনের মধ্যে নিবন্ধন করুন। " .
+        //     "অনুরোধক্রমে, {$unionName} কর্তৃপক্ষ।";
+
+
+               $message = "আসসালামু আলাইকুম {$item['maliker_name']}, ";
+
+
 
         // Check character count and calculate SMS count
         $isUnicode = preg_match('/[^\x00-\x7F]/', $message);
