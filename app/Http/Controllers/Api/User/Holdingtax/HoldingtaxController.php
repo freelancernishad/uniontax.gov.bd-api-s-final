@@ -817,7 +817,8 @@ public function sendHoldingTaxSMS(Request $request)
         ];
     }
 
-    $message = 'SMS প্রসেস শেষ হয়েছে।';
+    $successCount = collect($results)->where('status', 'LIKE', '%successfully%')->count();
+    $message = "SMS প্রসেস শেষ হয়েছে। সফলভাবে {$successCount} জন প্রাপকের কাছে SMS পাঠানো হয়েছে।";
 
     if ($lastSentHolding) {
         $message .= ' সর্বশেষ যাকে পাঠানো হয়েছে: ' .
