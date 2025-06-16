@@ -15,7 +15,6 @@ class SmsNocHelper
         // Fetch union info from database
         $unionInfo = Uniouninfo::where('short_name_e', $union)->first();
 
-        // Check if union info exists
         if (!$unionInfo) {
             return 'Union not found';
         }
@@ -25,47 +24,55 @@ class SmsNocHelper
             return 'You do not have enough balance';
         }
 
-        // Prepare API credentials and message details
-        $smsnocApiKey = env('SMSNOC_API_KEY');  // Store in .env file
-        $smsnocSenderId = env('SMSNOC_SENDER_ID');  // Store in .env file
+        // ✅ Detect if the message is Unicode (Bangla or other non-ASCII)
+        $isUnicode = preg_match('/[^\x00-\x7F]/', $description);
 
-        // Prepare the SMS payload
+        // ✅ Count characters accurately using multibyte support
+        $charCount = mb_strlen($description, 'UTF-8');
+
+        // ✅ Set character limit per message
+        $limitPerMessage = $isUnicode ? 70 : 160;
+
+        // ✅ Calculate how many SMS this message will consume
+        $smsCount = (int) ceil($charCount / $limitPerMessage);
+
+        // ✅ Check if balance is sufficient
+        if ($unionInfo->smsBalance < $smsCount) {
+            return "Insufficient SMS balance. You need {$smsCount} SMS credits.";
+        }
+
+        // Prepare API credentials and message details
+        $smsnocApiKey = env('SMSNOC_API_KEY');
+        $smsnocSenderId = env('SMSNOC_SENDER_ID');
+
         $payload = [
             'recipient' => '88' . $applicantMobile,
             'sender_id' => $smsnocSenderId,
-            'type' => 'plain',
+            'type' => $isUnicode ? 'unicode' : 'plain',
             'message' => $description,
         ];
 
         try {
-            // Make the API request using Laravel HTTP client
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $smsnocApiKey,
-            ])
-            ->post('https://app.smsnoc.com/api/v3/sms/send', $payload);
+            ])->post('https://app.smsnoc.com/api/v3/sms/send', $payload);
 
-            // Check if the response is successful
             if ($response->successful()) {
-                // Decrement the SMS balance
-                $unionInfo->decrement('smsBalance', 1);
+                // Decrement the actual used balance
+                $unionInfo->decrement('smsBalance', $smsCount);
 
-                // Log the successful SMS
-                Log::info("SMS sent successfully to {$applicantMobile} for union {$union}");
+                Log::info("SMS sent to {$applicantMobile} for union {$union}. Char: {$charCount}, SMS used: {$smsCount}");
 
-                return 'SMS sent successfully';
+                return "SMS sent successfully using {$smsCount} credit(s).";
             } else {
-                // Log the error response
                 Log::error('SMS sending failed. Response: ' . $response->body());
-
                 return 'SMS sending failed. Please try again later.';
             }
-
         } catch (Exception $e) {
-            // Log the exception error
             Log::error('Error sending SMS: ' . $e->getMessage());
-
             return 'An error occurred while sending SMS.';
         }
     }
+
 }
