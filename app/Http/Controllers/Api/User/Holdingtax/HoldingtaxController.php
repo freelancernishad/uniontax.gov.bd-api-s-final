@@ -734,9 +734,9 @@ public function sendHoldingTaxSMS(Request $request)
 {
 
             // Set memory and execution limits
-        ini_set('max_execution_time', '60000');
-        ini_set("pcre.backtrack_limit", "50000000000000000");
-        ini_set('memory_limit', '12008M');
+        // ini_set('max_execution_time', '60000');
+        // ini_set("pcre.backtrack_limit", "50000000000000000");
+        // ini_set('memory_limit', '12008M');
 
 
     $user = Auth::user();
