@@ -9,6 +9,7 @@ use App\Models\EnglishSonod;
 use Illuminate\Http\Request;
 use App\Helpers\SmsNocHelper;
 use App\Models\Sonodnamelist;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -592,6 +593,44 @@ $sonod->applicant_birth_certificate_attachment = !empty($sonod->applicant_birth_
         $sonod = EnglishSonod::find($id);
         return response()->json($sonod);
     }
+
+
+
+
+    public function SonodFilesUpdate(Request $request, $id)
+    {
+        $sonod = Sonod::findOrFail($id);
+
+        DB::beginTransaction();
+        try {
+            
+            $sonodName = $sonod->sonod_name;
+            $sonodEnName = Sonodnamelist::where('bnname', $sonodName)->first();
+            $filePath = str_replace(' ', '_', $sonodEnName->enname);
+            $dateFolder = date("Y/m/d");
+
+
+            // Step 1: Update direct file columns in Sonod
+            $updateData = [];
+            handleFileUploads($request, $updateData, $filePath, $dateFolder, $id);
+            if (!empty($updateData)) {
+                $sonod->update($updateData);
+            }
+
+            // Step 2: Update related SonodFile entries
+            handleSonodFileUploads($request, $filePath, $dateFolder, $id);
+
+            DB::commit();
+
+            return response()->json(['message' => 'সনদের ফাইলসমূহ সফলভাবে আপডেট হয়েছে।'], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'ফাইল আপডেট করতে ব্যর্থ: ' . $e->getMessage()], 500);
+        }
+    }
+
+
+
 
 
 }

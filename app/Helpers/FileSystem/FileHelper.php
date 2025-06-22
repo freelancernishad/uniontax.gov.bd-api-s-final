@@ -337,12 +337,45 @@ function isLocalRequest()
 
 
 
-function handleFileUploads($request, &$insertData, $filePath, $dateFolder, $sonodId)
+// function handleFileUploads($request, &$insertData, $filePath, $dateFolder, $sonodId)
+// {
+//     // Handle file uploads to S3
+//     if (isset($request->bn['image']) && $request->bn['image']) {
+//         uploadFile($request->bn['image'], $insertData, 'image', $filePath, $dateFolder, $sonodId);
+//     }
+
+//     if ($request->hasFile('applicant_national_id_front_attachment')) {
+//         $insertData['applicant_national_id_front_attachment'] = uploadDocumentsToS3(
+//             $request->file('applicant_national_id_front_attachment'),
+//             $filePath,
+//             $dateFolder,
+//             $sonodId
+//         );
+//     }
+
+//     if ($request->hasFile('applicant_national_id_back_attachment')) {
+//         $insertData['applicant_national_id_back_attachment'] = uploadDocumentsToS3(
+//             $request->file('applicant_national_id_back_attachment'),
+//             $filePath,
+//             $dateFolder,
+//             $sonodId
+//         );
+//     }
+
+//     if ($request->hasFile('applicant_birth_certificate_attachment')) {
+//         $insertData['applicant_birth_certificate_attachment'] = uploadDocumentsToS3(
+//             $request->file('applicant_birth_certificate_attachment'),
+//             $filePath,
+//             $dateFolder,
+//             $sonodId
+//         );
+//     }
+// }
+
+
+     function handleFileUploads($request, &$insertData, $filePath, $dateFolder, $sonodId)
 {
-    // Handle file uploads to S3
-    if (isset($request->bn['image']) && $request->bn['image']) {
-        uploadFile($request->bn['image'], $insertData, 'image', $filePath, $dateFolder, $sonodId);
-    }
+
 
     if ($request->hasFile('applicant_national_id_front_attachment')) {
         $insertData['applicant_national_id_front_attachment'] = uploadDocumentsToS3(
@@ -370,7 +403,46 @@ function handleFileUploads($request, &$insertData, $filePath, $dateFolder, $sono
             $sonodId
         );
     }
+
+
+
 }
+
+
+     function handleSonodFileUploads($request, $filePath, $dateFolder,$id)
+{
+
+
+
+
+        // ✅ SonodFile এর জন্য নতুন ফাইল টাইপস
+    $fileTypes = [
+        'recommendation' => 'সুপারিশ',
+        'certification' => 'প্রত্যয়ন',
+        'ssc_certificate' => 'এসএসসি সনদ',
+        'hsc_certificate' => 'hsc সনদ',
+        'vaccine_card' => 'টিকা কার্ড',
+        'parents_id' => 'পিতা/মাতার আইডি',
+        'others' => 'অন্যান্য',
+    ];
+
+    foreach ($fileTypes as $field => $label) {
+        if ($request->hasFile($field)) {
+            $file = $request->file($field);
+            SonodFile::uploadAndSave($file, $label, $filePath, $dateFolder, $id);
+        }
+    }
+
+
+
+
+
+}
+
+
+
+
+
 
 
 
@@ -454,3 +526,9 @@ function uploadFile($fileData, &$insertData, $field, $filePath, $dateFolder, $so
     }
     return null;
 }
+
+
+
+
+
+

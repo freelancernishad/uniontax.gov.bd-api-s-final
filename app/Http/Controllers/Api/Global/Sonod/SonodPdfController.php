@@ -11,6 +11,7 @@ use App\Models\Sonodnamelist;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
+use Google\Service\ServiceControl\Auth;
 
 class SonodPdfController extends Controller
 {
@@ -64,13 +65,20 @@ class SonodPdfController extends Controller
             $font_family = $row->font_family;
         }
 
+
         // Check for cancellation status
         if ($stutus == 'cancel') {
             return response("<h1 style='color:red;text-align:center'>সনদটি বাতিল করা হয়েছে!<h1>", 403);
         }
 
         // Check for approval status
-        if ($stutus != 'approved') {
+        $auth = null;
+        if ($request->has('token')) {
+            // Optionally, you can validate the token here
+            $auth = true;
+        }
+
+        if (!$auth && $stutus != 'approved') {
             return response("<h1 style='color:red;text-align:center'>সনদটি এখনো অনুমোদন করা হয়নি !<h1>", 403);
         }
 
@@ -85,9 +93,23 @@ class SonodPdfController extends Controller
         $sonodnames = Sonodnamelist::where('bnname', $sonod_name)->first();
         $filename = str_replace(" ", "_", $sonodnames->enname) . "-$row->sonod_Id.pdf";
 
-        // Handle sonod_logo for Uniouninfo
-        $sonod_logo = $uniouninfo->sonod_logo;
+
+
+
+        if($auth){
+            $sonod_logo = "nomuna-watermark.png";
+
+        }else{
+
+            // Handle sonod_logo for Uniouninfo
+            $sonod_logo = $uniouninfo->sonod_logo;
+        }
+
         $uniouninfo->sonod_logo = convertToBase64($uniouninfo->sonod_logo);
+
+// return response()->json($sonod_logo);
+
+
 
         // Log the data (for debugging)
         // Log::info($row->image);

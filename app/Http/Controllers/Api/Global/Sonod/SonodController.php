@@ -94,7 +94,7 @@ class SonodController extends Controller
 
 
 
-        //  $this->handleFileUploads($request, $insertData, 'ddd', '$dateFolder', '$sonodId');
+
         // return response()->json($insertData);
 
         // Process successor_list for bnData
@@ -141,7 +141,7 @@ class SonodController extends Controller
         $insertData = array_merge($insertData, $this->prepareSonodData($request, $sonodName, $successor_list, $unionName, $sonodId));
 
         // Handle file uploads securely
-        $this->handleFileUploads($request, $insertData, $filePath, $dateFolder, $sonodId);
+        handleFileUploads($request, $insertData, $filePath, $dateFolder, $sonodId);
 
         // Check if annual income is provided and process accordingly
         if (isset($bnData['Annual_income'])) {
@@ -176,7 +176,7 @@ class SonodController extends Controller
         $sonod = Sonod::create($sonodData);
 
         // Handle file uploads securely
-        $this->handleSonodFileUploads($request, $filePath, $dateFolder,$sonod->id);
+        handleSonodFileUploads($request, $filePath, $dateFolder,$sonod->id);
 
 
         if (
@@ -334,71 +334,6 @@ class SonodController extends Controller
         return $insertData;
     }
 
-    private function handleFileUploads($request, &$insertData, $filePath, $dateFolder, $sonodId)
-{
-
-
-    if ($request->hasFile('applicant_national_id_front_attachment')) {
-        $insertData['applicant_national_id_front_attachment'] = uploadDocumentsToS3(
-            $request->file('applicant_national_id_front_attachment'),
-            $filePath,
-            $dateFolder,
-            $sonodId
-        );
-    }
-
-    if ($request->hasFile('applicant_national_id_back_attachment')) {
-        $insertData['applicant_national_id_back_attachment'] = uploadDocumentsToS3(
-            $request->file('applicant_national_id_back_attachment'),
-            $filePath,
-            $dateFolder,
-            $sonodId
-        );
-    }
-
-    if ($request->hasFile('applicant_birth_certificate_attachment')) {
-        $insertData['applicant_birth_certificate_attachment'] = uploadDocumentsToS3(
-            $request->file('applicant_birth_certificate_attachment'),
-            $filePath,
-            $dateFolder,
-            $sonodId
-        );
-    }
-
-
-
-}
-
-
-    private function handleSonodFileUploads($request, $filePath, $dateFolder,$id)
-{
-
-
-
-
-        // ✅ SonodFile এর জন্য নতুন ফাইল টাইপস
-    $fileTypes = [
-        'recommendation' => 'সুপারিশ',
-        'certification' => 'প্রত্যয়ন',
-        'ssc_certificate' => 'এসএসসি সনদ',
-        'hsc_certificate' => 'hsc সনদ',
-        'vaccine_card' => 'টিকা কার্ড',
-        'parents_id' => 'পিতা/মাতার আইডি',
-        'others' => 'অন্যান্য',
-    ];
-
-    foreach ($fileTypes as $field => $label) {
-        if ($request->hasFile($field)) {
-            $file = $request->file($field);
-            SonodFile::uploadAndSave($file, $label, $filePath, $dateFolder, $id);
-        }
-    }
-
-
-
-
-
-}
 
 
 

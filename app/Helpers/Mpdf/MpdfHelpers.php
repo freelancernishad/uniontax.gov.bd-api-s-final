@@ -43,7 +43,7 @@ use Mccarlosen\LaravelMpdf\LaravelMpdf;
     $mpdf->WriteHTML($html);
     $mpdf->useSubstitutions = false;
     $mpdf->simpleTables = true;
-    Log::info(convertToBase64($sonod_logo));
+
     $mpdf->SetWatermarkImage(
         convertToBase64($sonod_logo), // Image as base64
         0.12,       // Opacity
