@@ -424,6 +424,7 @@ function isLocalRequest()
         'hsc_certificate' => 'hsc সনদ',
         'vaccine_card' => 'টিকা কার্ড',
         'parents_id' => 'পিতা/মাতার আইডি',
+        'holding_tax_promanok' => 'হোল্ডিং ট্যাক্সের  প্রমাণক',
         'others' => 'অন্যান্য',
     ];
 
