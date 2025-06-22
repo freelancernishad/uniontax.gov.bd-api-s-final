@@ -1,6 +1,7 @@
 <?php
 
 use Aws\S3\S3Client;
+use App\Models\SonodFile;
 use Illuminate\Support\Str;
 use Intervention\Image\Image;
 use Illuminate\Http\UploadedFile;
