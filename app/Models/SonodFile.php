@@ -34,12 +34,16 @@ class SonodFile extends Model
      */
     public static function uploadAndSave($file, $type, $filePath, $dateFolder, $sonodId)
     {
+        // Delete previous files of this type for this sonod_id (optional: add ->where('type', $type) if needed)
+        self::where('sonod_id', $sonodId)->where('type', $type)->delete();
+
+        // Upload new file
         $url = uploadDocumentsToS3($file, $filePath, $dateFolder, $sonodId);
 
         if ($url) {
             return self::create([
-                'sonod_id' => $sonodId,
-                'type'     => $type,
+                'sonod_id'  => $sonodId,
+                'type'      => $type,
                 'file_path' => $url,
             ]);
         }
