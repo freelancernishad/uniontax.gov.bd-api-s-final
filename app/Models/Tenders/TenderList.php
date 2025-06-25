@@ -50,6 +50,21 @@ class TenderList extends Model
        'permitDetials',
     ];
 
+    protected $hidden = [
+        'committe1pass',
+        'commette2pass',
+        'commette3pass',
+    ];
+
+    protected $appends = ['is_committee_created'];
+
+    public function getIsCommitteeCreatedAttribute()
+    {
+        return $this->committe1name && $this->committe1position && $this->commette1phone && $this->commette1pass &&
+               $this->committe2name && $this->committe2position && $this->commette2phone && $this->commette2pass &&
+               $this->committe3name && $this->committe3position && $this->commette3phone && $this->commette3pass
+               ? true : false;
+    }
 
     public function tanderInvoices()
     {
