@@ -150,17 +150,6 @@ Route::post('/form/submit', function (Request $request) {
 
 
 
-
-        // $deposit_details = $request->file('deposit_details');
-        // $extension = $deposit_details->getClientOriginalExtension();
-        // $path = public_path('files/deposit_details/');
-        // $fileName = $request->dorId.'-'.uniqid().'.'.$extension;
-        // $deposit_details->move($path, $fileName);
-        // $deposit_details = asset('files/deposit_details/'.$fileName);
-        // $data['deposit_details'] = $deposit_details;
-
-
-
         $data['bank_draft_image'] = $bank_draft_image;
         $data['payment_status'] = 'Unpaid';
 
