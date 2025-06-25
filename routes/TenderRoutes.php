@@ -65,6 +65,11 @@ Route::post('tender/selection/{tender_id}', [TenderListController::class,'Seleti
         $tenderList->update($updatedData);
 
 
+        return response()->json([
+            'status' => 'success',
+            'message' => 'কমিটি আপডেট হয়েছে',
+            'data' => $tenderList
+        ]);
 
     });
 
