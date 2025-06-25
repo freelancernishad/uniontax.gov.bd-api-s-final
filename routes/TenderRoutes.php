@@ -246,43 +246,42 @@ Route::post('/drop/tender', function (Request $request) {
 Route::post('/tender/committee/validation', function (Request $request) {
     $validator = Validator::make($request->all(), [
         'tender_list_id' => 'required|exists:tender_lists,id',
-        'committee' => 'required|array|size:3',
-        'committee.*.phone' => 'required|string',
-        'committee.*.pass' => 'required|string',
+
+        'commette1phone' => 'required|string',
+        'commette1pass' => 'required|string',
+
+        'commette2phone' => 'required|string',
+        'commette2pass' => 'required|string',
+
+        'commette3phone' => 'required|string',
+        'commette3pass' => 'required|string',
     ]);
 
     if ($validator->fails()) {
         return response()->json([
             'status' => 'error',
-            'errors' => $validator->errors()
+            'errors' => $validator->errors(),
         ], 422);
     }
 
-    $tender = \App\Models\Tenders\TenderList::find($request->tender_list_id);
+    $tender = TenderList::find($request->tender_list_id);
 
-    $expected = [
-        ['phone' => $tender->commette1phone, 'pass' => $tender->commette1pass],
-        ['phone' => $tender->commette2phone, 'pass' => $tender->commette2pass],
-        ['phone' => $tender->commette3phone, 'pass' => $tender->commette3pass],
+    $results = [
+        [
+            'phone' => $request->commette1phone,
+            'status' => ($request->commette1phone === $tender->commette1phone && $request->commette1pass === $tender->commette1pass) ? 'valid' : 'invalid',
+        ],
+        [
+            'phone' => $request->commette2phone,
+            'status' => ($request->commette2phone === $tender->commette2phone && $request->commette2pass === $tender->commette2pass) ? 'valid' : 'invalid',
+        ],
+        [
+            'phone' => $request->commette3phone,
+            'status' => ($request->commette3phone === $tender->commette3phone && $request->commette3pass === $tender->commette3pass) ? 'valid' : 'invalid',
+        ],
     ];
 
-    $results = [];
-
-    foreach ($request->committee as $index => $input) {
-        $valid = false;
-        foreach ($expected as $exp) {
-            if ($input['phone'] == $exp['phone'] && $input['pass'] == $exp['pass']) {
-                $valid = true;
-                break;
-            }
-        }
-        $results[] = [
-            'phone' => $input['phone'],
-            'status' => $valid ? 'valid' : 'invalid'
-        ];
-    }
-
-    $allValid = collect($results)->every(fn ($r) => $r['status'] === 'valid');
+    $allValid = collect($results)->every(fn($r) => $r['status'] === 'valid');
 
     return response()->json([
         'status' => $allValid ? 'success' : 'partial',
