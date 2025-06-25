@@ -51,7 +51,7 @@ class TenderList extends Model
     ];
 
     protected $hidden = [
-        'committe1pass',
+        'commette1pass',
         'commette2pass',
         'commette3pass',
     ];
