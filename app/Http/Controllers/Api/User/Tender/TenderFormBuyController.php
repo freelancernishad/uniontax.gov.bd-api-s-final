@@ -1,12 +1,13 @@
 <?php
 
 namespace App\Http\Controllers\Api\User\Tender;
-use App\Http\Controllers\Controller;
 use App\Models\Payment;
-use App\Models\TanderInvoice;
-use App\Models\Tender;
+
 use Illuminate\Http\Request;
-use App\Models\TenderFormBuy;
+use App\Models\Tenders\Tender;
+use App\Http\Controllers\Controller;
+use App\Models\Tenders\TanderInvoice;
+use App\Models\Tenders\TenderFormBuy;
 
 class TenderFormBuyController extends Controller
 {

@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\Api\User\Tender;
 
-use App\Models\Tender;
+
+use QrCode;
 use App\Models\Payment;
-use App\Models\TenderFormBuy;
-use App\Models\TenderList;
 use App\Models\Uniouninfo;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\Tenders\Tender;
+use App\Models\Tenders\TenderList;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Session;
 use Rakibhstu\Banglanumber\NumberToBangla;
 use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf;
-use Illuminate\Support\Facades\Session;
-use App\Http\Controllers\Controller;
 
 
 class TenderListController extends Controller
@@ -335,9 +336,13 @@ $style = '';
 
         // $qrurl = url("/verification/sonod/$row->id");
         //in Controller
-        $qrcode = \QrCode::size(70)
-            ->format('svg')
-            ->generate($qrurl);
+        // $qrcode = QrCode::size(70)
+        //     ->format('svg')
+        //     ->generate($qrurl);
+
+        $qrcode = '';
+
+
         $output = '
         <table width="100%" style="border-collapse: collapse;" border="0">
                               <tr>
@@ -640,9 +645,11 @@ $style = '';
 
         // $qrurl = url("/verification/sonod/$row->id");
         //in Controller
-        $qrcode = \QrCode::size(70)
-            ->format('svg')
-            ->generate($qrurl);
+        // $qrcode = \QrCode::size(70)
+        //     ->format('svg')
+        //     ->generate($qrurl);
+
+
         $output = '
         <table width="100%" style="border-collapse: collapse;" border="0">
                               <tr>
@@ -769,7 +776,11 @@ $style = '';
         // return $sonod->unioun_name;
 
 
-            $redirectutl = ekpayToken($trnx_id, $trns_info, $cust_info,'payment',$unioun_name);
+            $redirectutl = ekpayToken($trnx_id, $trns_info, $cust_info, 'payment', $unioun_name, [
+                "c_uri" => url("payment/cancel"),
+                "f_uri" => url("payment/fail"),
+                "s_uri" => url("payment/success")
+            ]);
 
 
 

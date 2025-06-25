@@ -55,9 +55,9 @@ if (file_exists($MaintanceFee = __DIR__.'/MaintanceFee.php')) {
 }
 
 
-// if (file_exists($TenderRoutes = __DIR__.'/TenderRoutes.php')) {
-//     require $TenderRoutes;
-// }
+if (file_exists($TenderRoutes = __DIR__.'/TenderRoutes.php')) {
+    require $TenderRoutes;
+}
 
 
 

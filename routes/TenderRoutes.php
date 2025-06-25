@@ -1,5 +1,12 @@
 <?php
+use Illuminate\Http\Request;
+use App\Helpers\SmsNocHelper;
+use App\Models\Tenders\Tender;
+use App\Models\Tenders\TenderList;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\User\Tender\TenderListController;
+use App\Http\Controllers\Api\User\Tender\TanderInvoiceController;
+use App\Http\Controllers\Api\User\Tender\TenderFormBuyController;
 
 
 
@@ -46,9 +53,9 @@ Route::post('tender/selection/{tender_id}', [TenderListController::class,'Seleti
 
         $tenderList = TenderList::find($id);
 
-        SmsNocSmsSend("ইযারা মূল্যায়নের পাসওয়ার্ড ".$updatedData['commette1pass'],$updatedData['commette1phone'],$tenderList->union_name);
-        SmsNocSmsSend("ইযারা মূল্যায়নের পাসওয়ার্ড ".$updatedData['commette2pass'],$updatedData['commette2phone'],$tenderList->union_name);
-        SmsNocSmsSend("ইযারা মূল্যায়নের পাসওয়ার্ড ".$updatedData['commette3pass'],$updatedData['commette3phone'],$tenderList->union_name);
+        SmsNocHelper::sendSms("ইযারা মূল্যায়নের পাসওয়ার্ড ".$updatedData['commette1pass'],$updatedData['commette1phone'],$tenderList->union_name);
+        SmsNocHelper::sendSms("ইযারা মূল্যায়নের পাসওয়ার্ড ".$updatedData['commette2pass'],$updatedData['commette2phone'],$tenderList->union_name);
+        SmsNocHelper::sendSms("ইযারা মূল্যায়নের পাসওয়ার্ড ".$updatedData['commette3pass'],$updatedData['commette3phone'],$tenderList->union_name);
 
 
 
@@ -60,3 +67,172 @@ Route::post('tender/selection/{tender_id}', [TenderListController::class,'Seleti
 
 
     });
+
+
+    Route::get('get/all/tender/list', function (Request $request) {
+    $union_name = $request->union_name;
+
+    if($union_name){
+        return TenderList::where('union_name',$union_name)->orderBy('id','desc')->get();
+    }else{
+        return TenderList::orderBy('id','desc')->get();
+
+    }
+  });
+
+Route::get('get/single/tender/{id}', function (Request $request,$id) {
+
+        return TenderList::find($id);
+
+  });
+
+    Route::apiResource('tander_invoices', TanderInvoiceController::class);
+Route::get('tender/payment/{tender_id}', [TanderInvoiceController::class,'tanderDepositAmount']);
+
+
+
+ Route::get('/pdf/tenders/work/access/{tender_id}', [TenderListController::class,'workAccessPdf']);
+Route::get('/pdf/tenders/{tender_id}', [TenderListController::class,'viewpdf']);
+
+Route::get('/tenders/form/buy/{tender_id}', function ($tender_id) {
+
+
+    $tender_list_count = TenderList::where('tender_id',$tender_id)->count();
+    if($tender_list_count<1){
+        return '<h1 style="text-align:center;color:red">কোনও তথ্য খুজে পাওয়া জায় নি</h1>';
+    }
+
+    $tender_list = TenderList::where('tender_id',$tender_id)->first();
+
+      $currentDate = strtotime(date("d-m-Y H:i:s"));
+
+    $form_buy_last_date = strtotime(date("d-m-Y H:i:s",strtotime($tender_list->form_buy_last_date)));
+
+
+
+   if($currentDate<$form_buy_last_date){
+
+    $tender_list->update(['status'=>'active']);
+       return view('tender.formbuy',compact('tender_list'));
+
+    }else{
+
+        return '<h1 style="text-align:center;color:red">সিডিউল ফর্ম কেনার সময় শেষ</h1>';
+   }
+
+
+
+
+
+});
+
+Route::get('/tenders/payment/{id}', [TenderListController::class,'PaymentCreate']);
+
+
+Route::get('/tenders/{tender_id}', [TenderListController::class,'TenderForm']);
+Route::post('/tenders/{tender_id}', [TenderListController::class,'TenderForm']);
+
+Route::post('/form/submit', function (Request $request) {
+
+        $data = $request->except(['_token','bank_draft_image','deposit_details']);
+        $bank_draft_image = $request->file('bank_draft_image');
+        $extension = $bank_draft_image->getClientOriginalExtension();
+        $path = public_path('files/bank_draft_image/');
+        $fileName = $request->dorId.'-'.uniqid().'.'.$extension;
+        $bank_draft_image->move($path, $fileName);
+        $bank_draft_image = asset('files/bank_draft_image/'.$fileName);
+
+
+
+
+
+        // $deposit_details = $request->file('deposit_details');
+        // $extension = $deposit_details->getClientOriginalExtension();
+        // $path = public_path('files/deposit_details/');
+        // $fileName = $request->dorId.'-'.uniqid().'.'.$extension;
+        // $deposit_details->move($path, $fileName);
+        // $deposit_details = asset('files/deposit_details/'.$fileName);
+        // $data['deposit_details'] = $deposit_details;
+
+
+
+        $data['bank_draft_image'] = $bank_draft_image;
+        $data['payment_status'] = 'Unpaid';
+
+
+
+
+
+      $tender =  Tender::create($data);
+    //   Session::flash('Smessage', 'আপনার দরপত্রটি দাখিল হয়েছে');
+
+      return redirect("/tenders/payment/$tender->id");
+
+    //   return redirect()->back();
+
+
+    });
+
+
+Route::get('/pdf/sder/download/{tender_id}', function (Request $request,$tender_id) {
+
+    $html = '
+    <style>
+    td{
+        border: 1px solid black;
+        padding:4px 10px;
+        font-size: 14px;
+    }    th{
+        border: 1px solid black;
+        padding:4px 10px;
+        font-size: 14px;
+    }
+    </style>
+        <p style="text-align:center;font-size:25px">দরপত্র দাখিল কারীর তালিকা</p>
+
+
+    <table class="table" border="1" style="border-collapse: collapse;width:100%">
+    <thead>
+        <tr>
+        <td>দরপত্র নম্বর</td>
+        <td>নাম</td>
+        <td>পিতার নাম</td>
+        <td>ঠিকানা</td>
+        <td>মোবাইল</td>
+        <td>দরের পরিমাণ</td>
+        <td>কথায়</td>
+        <td>জামানতের পরিমাণ</td>
+        </tr>
+    </thead>
+    <tbody>';
+            $tenders =  Tender::where('tender_id',$tender_id)->get();
+        foreach ($tenders as $application) {
+
+
+        $html .= " <tr>
+            <td>$application->dorId</td>
+            <td>$application->applicant_orgName</td>
+            <td>$application->applicant_org_fatherName</td>
+            <td>গ্রাম- $application->vill, ডাকঘর- $application->postoffice, উপজেলা- $application->thana, জেলা- $application->distric</td>
+            <td>$application->mobile</td>
+            <td>$application->DorAmount</td>
+            <td>$application->DorAmountText</td>
+            <td>$application->depositAmount</td>
+        </tr>";
+    }
+
+
+        $html .= '
+
+    </tbody>
+    </table>
+
+
+
+    ';
+       return PdfMaker('A4',$html,'list',false);
+
+
+
+    });
+
