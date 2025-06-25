@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\Tenders\Tender;
 use App\Models\Tenders\TenderList;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Rakibhstu\Banglanumber\NumberToBangla;
 use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf;
@@ -23,9 +24,15 @@ class TenderListController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+
+
     public function index(Request $request)
     {
-        $union_name = $request->union_name;
+
+        $auth = Auth::user();
+        $union_name = $auth->unioun;
+
         $status = $request->status;
         if($union_name && $status){
             return TenderList::where(['union_name'=>$union_name,'status'=>$status])->orderBy('id','desc')->get();
@@ -37,6 +44,8 @@ class TenderListController extends Controller
 
         return TenderList::orderBy('id','desc')->get();
     }
+
+
 
     /**
      * Show the form for creating a new resource.
