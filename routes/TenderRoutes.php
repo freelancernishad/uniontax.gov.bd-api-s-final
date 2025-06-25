@@ -137,7 +137,7 @@ Route::get('/tenders/payment/{id}', [TenderListController::class,'PaymentCreate'
 Route::get('/tenders/{tender_id}', [TenderListController::class,'TenderForm']);
 Route::post('/tenders/{tender_id}', [TenderListController::class,'TenderForm']);
 
-Route::post('/form/submit', function (Request $request) {
+Route::post('/drop/tender', function (Request $request) {
 
         $data = $request->except(['_token','bank_draft_image','deposit_details']);
         $bank_draft_image = $request->file('bank_draft_image');
