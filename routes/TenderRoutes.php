@@ -171,7 +171,7 @@ Route::post('/form/submit', function (Request $request) {
       $tender =  Tender::create($data);
     //   Session::flash('Smessage', 'আপনার দরপত্রটি দাখিল হয়েছে');
 
-      return redirect("/tenders/payment/$tender->id");
+      return url("/api/tenders/payment/$tender->id");
 
     //   return redirect()->back();
 
