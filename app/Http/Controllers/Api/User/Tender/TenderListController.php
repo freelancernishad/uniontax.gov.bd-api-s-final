@@ -824,169 +824,67 @@ $style = '';
 
 
 
-    function TenderForm(Request $request,$tender_id) {
+function TenderForm(Request $request, $tender_id)
+{
+    $requestMethod = request()->method();
 
+    $tender_list = TenderList::where('tender_id', $tender_id)->first();
 
-         $requestMethod = request()->method();
-
-        //  if($requestMethod=='POST'){
-
-        //      $PhoneNumber = $request->PhoneNumber;
-        //      $form_code = $request->form_code;
-        //      $TenderFormBuy =  TenderFormBuy::where(['PhoneNumber'=>$PhoneNumber,'form_code'=>$form_code,'status'=>'Paid'])->count();
-
-        //     if($TenderFormBuy<1){
-        //         // $messageData =  "
-        //         //     <h1 style='color:red;text-align:center'>মোবাইল নং অথবা ফর্ম নং ভুল। দরপত্র দাখিক করার জন্য সঠিক মোবাইল নং এবং সঠিক ফর্ম নং প্রদান করুন।</h1>
-        //         // ";
-
-        //         $messageData =  "মোবাইল নং অথবা ফর্ম নং ভুল। দরপত্র দাখিক করার জন্য সঠিক মোবাইল নং এবং সঠিক ফর্ম নং প্রদান করুন।";
-
-        //         Session::flash('Fmessage', $messageData);
-        //         return redirect()->back();
-        //     }
-
-
-        //  }
-
-
-
-
-
-        $tender_list_count = TenderList::where('tender_id',$tender_id)->count();
-        if($tender_list_count<1){
-            return 'No data Found';
-        }
-
-        $tender_list = TenderList::where('tender_id',$tender_id)->first();
-        $tenderCount =  Tender::where('tender_id',$tender_list->id)->count();
-        if($tenderCount>0){
-            $tender = Tender::where('tender_id',$tender_list->id)->orderBy('id','desc')->first();
-            $dorId = $tender->dorId+1;
-        }else{
-            $dorId = 120001;
-        }
-
-
-
-        // return view('form');
-          $currentDate = strtotime(date("d-m-Y H:i:s"));
-
-        $startDate = strtotime(date("d-m-Y H:i:s",strtotime($tender_list->tender_start)));
-
-        $EndDate = strtotime(date("d-m-Y H:i:s",strtotime($tender_list->tender_end)));
-
-
-        // <h1 style='text-align:center;margin-top:20px;color:green'>ফলাফল এর জন্য অপেক্ষা করুন :- ".date('d-m-Y h:i A',strtotime($tender_list->tender_open))."  পর্যন্ত</h1>
-
-       if($currentDate>$EndDate){
-
-
-           if($tender_list->status=='Completed'){
-            $selectedPerson = Tender::where(['tender_id'=>$tender_list->id,'status'=>'Selected'])->get();
-
-            $table = "";
-            $table .="
-            <table class='table' border='1' style='border-collapse:collapse'>
-            <thead>
-                <tr>
-                <th scope='col'>দরপত্র নম্বর</th>
-                <th scope='col'>নাম</th>
-                <th scope='col'>পিতার নাম</th>
-                <th scope='col'>ঠিকানা</th>
-                <th scope='col'>মোবাইল</th>
-                <th scope='col'>দরের পরিমাণ</th>
-                <th scope='col'>কথায়</th>
-                <th scope='col'>জামানতের পরিমাণ</th>
-                </tr>
-            </thead>
-            <tbody>";
-
-            foreach ($selectedPerson as $application) {
-
-
-                $table .="
-                <tr>
-                <th scope='row'>$application->dorId</th>
-                    <td>$application->applicant_orgName</td>
-                    <td>$application->applicant_org_fatherName</td>
-                    <td>গ্রাম- $application->vill, ডাকঘর- $application->postoffice, উপজেলা- $application->thana, জেলা- $application->distric</td>
-                    <td>$application->mobile</td>
-                    <td>$application->DorAmount</td>
-                    <td>$application->DorAmountText</td>
-                    <th>$application->depositAmount</td>
-                    </tr>";
-
-                }
-
-
-            $table .="</tbody>
-            </table>";
-
-
-            return "
-
-                <style>
-
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                }
-
-                tr:nth-of-type(odd) {
-                    background: #eee;
-                }
-                th {
-                    background: green;
-                    color: white;
-                    font-weight: bold;
-                }
-                td, th {
-                    padding: 6px;
-                    border: 1px solid #ccc;
-                    text-align: left;
-                }
-                </style>
-
-            <h1 style='text-align:center;margin-top:20px;color:green'>এই ইজারার নির্বাচিত সদস্য এর তথ্য নিচে দেখুন।</h1>
-
-                $table
-
-
-            ";
-        }else{
-            $tender_list->update(['status'=>'proccesing']);
-            return "
-            <h1 style='text-align:center;margin-top:20px;color:red'>দরপত্র দাখিলের সময় শেষ</h1>
-            <h1 style='text-align:center;margin-top:20px;color:green'>ফলাফল এর জন্য অপেক্ষা করুন </h1>
-            ";
-        }
-
-
-
-
-
-        }
-
-       if($currentDate>$startDate){
-        $tender_list->update(['status'=>'active']);
-
-
-
-
-
-           return view('tender.form',compact('dorId','tender_list','requestMethod'));
-
-
-
-        }else{
-
-            return view('tender.countdown',compact('tender_list'));
-       }
-
-
-
+    if (!$tender_list) {
+        return response()->json(['message' => 'No data found'], 404);
     }
+
+    $tenderCount = Tender::where('tender_id', $tender_list->id)->count();
+    $dorId = $tenderCount > 0
+        ? Tender::where('tender_id', $tender_list->id)->orderBy('id', 'desc')->first()->dorId + 1
+        : 120001;
+
+    $currentDate = strtotime(now());
+    $startDate = strtotime($tender_list->tender_start);
+    $endDate = strtotime($tender_list->tender_end);
+
+    // দরপত্র সময় শেষ হয়ে গেলে
+    if ($currentDate > $endDate) {
+        if ($tender_list->status === 'Completed') {
+            $selected = Tender::where([
+                'tender_id' => $tender_list->id,
+                'status' => 'Selected'
+            ])->get();
+
+            return response()->json([
+                'message' => 'নির্বাচিত দরদাতার তালিকা',
+                'status' => 'completed',
+                'selected_applicants' => $selected
+            ]);
+        } else {
+            $tender_list->update(['status' => 'proccesing']);
+            return response()->json([
+                'message' => 'দরপত্র দাখিলের সময় শেষ, ফলাফলের জন্য অপেক্ষা করুন',
+                'status' => 'ended'
+            ]);
+        }
+    }
+
+    // দরপত্র জমা শুরু হয়েছে
+    if ($currentDate > $startDate) {
+        $tender_list->update(['status' => 'active']);
+
+        return response()->json([
+            'message' => 'দরপত্র জমা চলছে',
+            'status' => 'active',
+            'dorId' => $dorId,
+            'tender_list' => $tender_list,
+            'method' => $requestMethod
+        ]);
+    }
+
+    // এখনও সময় শুরু হয়নি
+    return response()->json([
+        'message' => 'দরপত্র জমা শুরু হয়নি',
+        'status' => 'waiting',
+        'start_time' => $tender_list->tender_start
+    ]);
+}
 
 
 
