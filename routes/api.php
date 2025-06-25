@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\Gateway\Ekpay\EkpayController;
 use App\Http\Controllers\Api\Server\ServerStatusController;
 use App\Http\Controllers\Api\Global\Address\AddressController;
 use App\Http\Controllers\Api\Payments\FailedPaymentController;
+use App\Http\Controllers\Api\User\Tender\TenderListController;
 use App\Http\Controllers\Api\User\Uniouninfo\VillageController;
 use App\Http\Controllers\Api\User\Package\UserPackageController;
 use App\Http\Controllers\Api\User\Holdingtax\HoldingtaxController;
