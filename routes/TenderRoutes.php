@@ -4,6 +4,7 @@ use App\Helpers\SmsNocHelper;
 use App\Models\Tenders\Tender;
 use App\Models\Tenders\TenderList;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\User\Tender\TenderListController;
 use App\Http\Controllers\Api\User\Tender\TanderInvoiceController;
 use App\Http\Controllers\Api\User\Tender\TenderFormBuyController;
@@ -177,65 +178,121 @@ Route::post('/drop/tender', function (Request $request) {
     });
 
 
-Route::get('/pdf/sder/download/{tender_id}', function (Request $request,$tender_id) {
-
-    $html = '
-    <style>
-    td{
-        border: 1px solid black;
-        padding:4px 10px;
-        font-size: 14px;
-    }    th{
-        border: 1px solid black;
-        padding:4px 10px;
-        font-size: 14px;
-    }
-    </style>
-        <p style="text-align:center;font-size:25px">দরপত্র দাখিল কারীর তালিকা</p>
+    Route::get('/pdf/sder/download/{tender_id}', function (Request $request,$tender_id) {
 
 
-    <table class="table" border="1" style="border-collapse: collapse;width:100%">
-    <thead>
-        <tr>
-        <td>দরপত্র নম্বর</td>
-        <td>নাম</td>
-        <td>পিতার নাম</td>
-        <td>ঠিকানা</td>
-        <td>মোবাইল</td>
-        <td>দরের পরিমাণ</td>
-        <td>কথায়</td>
-        <td>জামানতের পরিমাণ</td>
-        </tr>
-    </thead>
-    <tbody>';
-            $tenders =  Tender::where('tender_id',$tender_id)->get();
-        foreach ($tenders as $application) {
+        $html = '
+        <style>
+        td{
+            border: 1px solid black;
+            padding:4px 10px;
+            font-size: 14px;
+        }    th{
+            border: 1px solid black;
+            padding:4px 10px;
+            font-size: 14px;
+        }
+        </style>
+            <p style="text-align:center;font-size:25px">দরপত্র দাখিল কারীর তালিকা</p>
 
 
-        $html .= " <tr>
-            <td>$application->dorId</td>
-            <td>$application->applicant_orgName</td>
-            <td>$application->applicant_org_fatherName</td>
-            <td>গ্রাম- $application->vill, ডাকঘর- $application->postoffice, উপজেলা- $application->thana, জেলা- $application->distric</td>
-            <td>$application->mobile</td>
-            <td>$application->DorAmount</td>
-            <td>$application->DorAmountText</td>
-            <td>$application->depositAmount</td>
-        </tr>";
-    }
+        <table class="table" border="1" style="border-collapse: collapse;width:100%">
+        <thead>
+            <tr>
+            <td>দরপত্র নম্বর</td>
+            <td>নাম</td>
+            <td>পিতার নাম</td>
+            <td>ঠিকানা</td>
+            <td>মোবাইল</td>
+            <td>দরের পরিমাণ</td>
+            <td>কথায়</td>
+            <td>জামানতের পরিমাণ</td>
+            </tr>
+        </thead>
+        <tbody>';
+                $tenders =  Tender::where('tender_id',$tender_id)->get();
+            foreach ($tenders as $application) {
 
 
-        $html .= '
+            $html .= " <tr>
+                <td>$application->dorId</td>
+                <td>$application->applicant_orgName</td>
+                <td>$application->applicant_org_fatherName</td>
+                <td>গ্রাম- $application->vill, ডাকঘর- $application->postoffice, উপজেলা- $application->thana, জেলা- $application->distric</td>
+                <td>$application->mobile</td>
+                <td>$application->DorAmount</td>
+                <td>$application->DorAmountText</td>
+                <td>$application->depositAmount</td>
+            </tr>";
+        }
 
-    </tbody>
-    </table>
+
+            $html .= '
+
+        </tbody>
+        </table>
 
 
 
-    ';
-       return PdfMaker('A4',$html,'list',false);
+        ';
+        return PdfMaker('A4',$html,'list',false);
 
 
 
     });
+
+
+
+Route::post('/tender/committee/validation', function (Request $request) {
+    $validator = Validator::make($request->all(), [
+        'tender_list_id' => 'required|exists:tender_lists,id',
+        'committee' => 'required|array|size:3',
+        'committee.*.phone' => 'required|string',
+        'committee.*.pass' => 'required|string',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'status' => 'error',
+            'errors' => $validator->errors()
+        ], 422);
+    }
+
+    $tender = \App\Models\Tenders\TenderList::find($request->tender_list_id);
+
+    $expected = [
+        ['phone' => $tender->commette1phone, 'pass' => $tender->commette1pass],
+        ['phone' => $tender->commette2phone, 'pass' => $tender->commette2pass],
+        ['phone' => $tender->commette3phone, 'pass' => $tender->commette3pass],
+    ];
+
+    $results = [];
+
+    foreach ($request->committee as $index => $input) {
+        $valid = false;
+        foreach ($expected as $exp) {
+            if ($input['phone'] === $exp['phone'] && $input['pass'] === $exp['pass']) {
+                $valid = true;
+                break;
+            }
+        }
+        $results[] = [
+            'phone' => $input['phone'],
+            'status' => $valid ? 'valid' : 'invalid'
+        ];
+    }
+
+    $allValid = collect($results)->every(fn ($r) => $r['status'] === 'valid');
+
+    return response()->json([
+        'status' => $allValid ? 'success' : 'partial',
+        'all_valid' => $allValid,
+        'results' => $results
+    ]);
+});
+
+
+
+
+
 
