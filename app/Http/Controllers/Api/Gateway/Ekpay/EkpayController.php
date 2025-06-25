@@ -104,7 +104,9 @@ class EkpayController extends Controller
     private function updateTenderFormStatus($payment, &$Insertdata, $data)
     {
         $TenderFormBuy = Tender::find($payment->sonodId);
+        Log::info('TenderFormBuy: ' . json_encode($TenderFormBuy));  // Log TenderFormBuy for debugging
         $TenderFormBuy->update(['payment_status' => 'Paid']);  // Mark TenderForm as paid
+        Log::info('TenderFormBuy updated: ' . json_encode($TenderFormBuy));  // Log after update
 
         $tenderList = TenderList::find($TenderFormBuy->tender_id);
         $unioun_name = $tenderList->union_name;
