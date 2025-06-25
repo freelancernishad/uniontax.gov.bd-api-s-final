@@ -141,7 +141,7 @@ Route::post('/drop/tender', function (Request $request) {
 
 
 
-        $data = $request->except(['_token','bank_draft_image','deposit_details']);
+        $data = $request->except(['_token','bank_draft_image','deposit_details','dorId']);
 
         // $bank_draft_image = $request->file('bank_draft_image');
         // $extension = $bank_draft_image->getClientOriginalExtension();

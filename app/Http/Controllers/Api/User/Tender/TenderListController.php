@@ -797,6 +797,9 @@ $style = '';
 
         $customerData = [
             'union' => $unioun_name,
+            'division_name' => $unioninfos->division_name,
+            'district_name' => $unioninfos->district_name,
+            'upazila_name' => $unioninfos->upazila_name,
             'trxId' => $trnx_id,
             'sonodId' => $id,
             'sonod_type' => 'Tenders_form',
