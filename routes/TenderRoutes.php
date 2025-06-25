@@ -11,6 +11,8 @@ use App\Http\Controllers\Api\User\Tender\TenderFormBuyController;
 
 
 
+
+
 Route::resources([
 	'tender' => TenderListController::class,
 	'tenderform' => TenderFormBuyController::class,
