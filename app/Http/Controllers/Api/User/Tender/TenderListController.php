@@ -857,7 +857,7 @@ function TenderForm(Request $request, $tender_id)
             $tender_list->update(['status' => 'proccesing']);
             return response()->json([
                 'message' => 'দরপত্র দাখিলের সময় শেষ, ফলাফলের জন্য অপেক্ষা করুন',
-                'status' => 'ended'
+                'status' => 'proccesing'
             ]);
         }
     }
