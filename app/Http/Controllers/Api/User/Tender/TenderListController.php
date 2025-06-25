@@ -276,10 +276,7 @@ class TenderListController extends Controller
               <table width="100%" style="border-collapse: collapse;" border="0">
                   <tr>
                       <td style="text-align: center;" width="20%">
-					  <span style="color:#b400ff;"><b>
-					  উন্নয়নের গণতন্ত্র,  <br /> শেখ হাসিনার মূলমন্ত্র </b>
-
-					  </span>
+					
                       </td>
                       <td style="text-align: center;" width="20%">
                           <img width="70px" src="' . base64('backend/bd-logo.png') . '">
