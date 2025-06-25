@@ -786,9 +786,9 @@ $style = '';
 
 
             $redirectutl = ekpayToken($trnx_id, $trns_info, $cust_info, 'payment', $unioun_name, [
-                "c_uri" => url("payment/cancel"),
-                "f_uri" => url("payment/fail"),
-                "s_uri" => url("payment/success")
+                "c_uri" => "https://uniontax.gov.bd/payment-cancel",
+                "f_uri" => "https://uniontax.gov.bd/payment-failed",
+                "s_uri" => "https://uniontax.gov.bd/payment-success"
             ]);
 
 
