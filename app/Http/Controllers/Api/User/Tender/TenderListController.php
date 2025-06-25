@@ -276,7 +276,7 @@ class TenderListController extends Controller
               <table width="100%" style="border-collapse: collapse;" border="0">
                   <tr>
                       <td style="text-align: center;" width="20%">
-					
+
                       </td>
                       <td style="text-align: center;" width="20%">
                           <img width="70px" src="' . base64('backend/bd-logo.png') . '">
@@ -850,7 +850,7 @@ function TenderForm(Request $request, $tender_id)
 
             return response()->json([
                 'message' => 'নির্বাচিত দরদাতার তালিকা',
-                'status' => 'completed',
+                'status' => 'Completed',
                 'selected_applicants' => $selected
             ]);
         } else {
@@ -879,7 +879,7 @@ function TenderForm(Request $request, $tender_id)
     // এখনও সময় শুরু হয়নি
     return response()->json([
         'message' => 'দরপত্র জমা শুরু হয়নি',
-        'status' => 'waiting',
+        'status' => 'pending',
         'start_time' => $tender_list->tender_start
     ]);
 }
