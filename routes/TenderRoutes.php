@@ -269,15 +269,15 @@ Route::post('/tender/committee/validation', function (Request $request) {
     $results = [
         [
             'phone' => $request->commette1phone,
-            'status' => ($request->commette1phone === $tender->commette1phone && $request->commette1pass === $tender->commette1pass) ? 'valid' : 'invalid',
+            'status' => ($request->commette1phone == $tender->commette1phone && $request->commette1pass == $tender->commette1pass) ? 'valid' : 'invalid',
         ],
         [
             'phone' => $request->commette2phone,
-            'status' => ($request->commette2phone === $tender->commette2phone && $request->commette2pass === $tender->commette2pass) ? 'valid' : 'invalid',
+            'status' => ($request->commette2phone == $tender->commette2phone && $request->commette2pass == $tender->commette2pass) ? 'valid' : 'invalid',
         ],
         [
             'phone' => $request->commette3phone,
-            'status' => ($request->commette3phone === $tender->commette3phone && $request->commette3pass === $tender->commette3pass) ? 'valid' : 'invalid',
+            'status' => ($request->commette3phone == $tender->commette3phone && $request->commette3pass == $tender->commette3pass) ? 'valid' : 'invalid',
         ],
     ];
 
