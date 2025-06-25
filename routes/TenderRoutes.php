@@ -139,14 +139,17 @@ Route::post('/tenders/{tender_id}', [TenderListController::class,'TenderForm']);
 
 Route::post('/drop/tender', function (Request $request) {
 
-        $data = $request->except(['_token','bank_draft_image','deposit_details']);
-        $bank_draft_image = $request->file('bank_draft_image');
-        $extension = $bank_draft_image->getClientOriginalExtension();
-        $path = public_path('files/bank_draft_image/');
-        $fileName = $request->dorId.'-'.uniqid().'.'.$extension;
-        $bank_draft_image->move($path, $fileName);
-        $bank_draft_image = asset('files/bank_draft_image/'.$fileName);
 
+
+        $data = $request->except(['_token','bank_draft_image','deposit_details']);
+
+        // $bank_draft_image = $request->file('bank_draft_image');
+        // $extension = $bank_draft_image->getClientOriginalExtension();
+        // $path = public_path('files/bank_draft_image/');
+        // $fileName = $request->dorId.'-'.uniqid().'.'.$extension;
+        // $bank_draft_image->move($path, $fileName);
+        // $bank_draft_image = asset('files/bank_draft_image/'.$fileName);
+        $bank_draft_image = 'images/bank_draft_image/default.png';
 
 
 
@@ -160,7 +163,13 @@ Route::post('/drop/tender', function (Request $request) {
       $tender =  Tender::create($data);
     //   Session::flash('Smessage', 'আপনার দরপত্রটি দাখিল হয়েছে');
 
-      return url("/api/tenders/payment/$tender->id");
+      $redirectUrl = url("/api/tenders/payment/$tender->id");
+      return response()->json([
+          'status' => 'success',
+          'message' => 'আপনার দরপত্রটি দাখিল হয়েছে',
+          'redirect_url' => $redirectUrl,
+          'data' => $tender
+      ]);
 
     //   return redirect()->back();
 
