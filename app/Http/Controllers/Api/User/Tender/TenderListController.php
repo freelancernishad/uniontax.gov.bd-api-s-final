@@ -65,10 +65,13 @@ class TenderListController extends Controller
      */
     public function store(Request $request)
     {
+        $auth = Auth::user();
+        $union_name = $auth->unioun;
         $datas = $request->all();
         $random = Str::random(20);
         $datas['tender_id'] = time().$random;
         $datas['status'] = 'pending';
+        $datas['union_name'] = $union_name;
 
         return TenderList::create($datas);
     }
