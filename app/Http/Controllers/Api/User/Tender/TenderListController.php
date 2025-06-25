@@ -873,6 +873,7 @@ function TenderForm(Request $request, $tender_id)
             'message' => 'দরপত্র জমা চলছে',
             'status' => 'active',
             'dorId' => $dorId,
+            'tender_end_time' => $tender_list->tender_end,
             'tender_list' => $tender_list,
             'method' => $requestMethod
         ]);
