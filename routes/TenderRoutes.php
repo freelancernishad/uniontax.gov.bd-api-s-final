@@ -271,7 +271,7 @@ Route::post('/tender/committee/validation', function (Request $request) {
     foreach ($request->committee as $index => $input) {
         $valid = false;
         foreach ($expected as $exp) {
-            if ($input['phone'] === $exp['phone'] && $input['pass'] === $exp['pass']) {
+            if ($input['phone'] == $exp['phone'] && $input['pass'] == $exp['pass']) {
                 $valid = true;
                 break;
             }
