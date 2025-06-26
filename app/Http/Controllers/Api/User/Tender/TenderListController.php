@@ -31,7 +31,7 @@ class TenderListController extends Controller
     {
 
         $auth = Auth::user();
-        if ($auth && property_exists($auth, 'unioun')) {
+        if ($auth) {
             $union_name = $auth->unioun;
         } else {
             $union_name = $request->union_name;
