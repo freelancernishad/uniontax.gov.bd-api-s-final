@@ -347,7 +347,12 @@ $style = '';
 
 
 
-         $qrurl = url("/pdf/tenders/$row->tender_id");
+         $qrurl = url("api/pdf/tenders/$row->tender_id");
+         $qrurl = "https://api.qrserver.com/v1/create-qr-code/?data={{ $qrurl }}&size=80x80";
+
+
+
+
 
         // $qrurl = url("/verification/sonod/$row->id");
         //in Controller
@@ -355,7 +360,7 @@ $style = '';
         //     ->format('svg')
         //     ->generate($qrurl);
 
-        $qrcode = '';
+
 
 
         $output = '
@@ -363,7 +368,13 @@ $style = '';
                               <tr>
                                   <td  style="text-align: center;" width="40%">
                              <div class="signature text-center position-relative">
-                                      ' . $qrcode . '<br/>
+
+                            <img src="' . $qrurl . '"/>
+
+
+                                      <br/>
+
+
                                        ' . $sonodNO . '
                                     </div>
                                   </td>
