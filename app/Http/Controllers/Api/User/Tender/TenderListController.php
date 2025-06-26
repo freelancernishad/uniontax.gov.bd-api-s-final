@@ -341,7 +341,7 @@ $color = '#5c1caa';
 $style = '';
 
 
-            $ccc = '<img width="170px"  style="'.$style.'" src="' . base64($uniouninfo->c_signture) . '"><br/>
+            $ccc = '<img width="170px"  style="'.$style.'" src="' . convertToBase64($uniouninfo->c_signture) . '"><br/>
                               <b><span style="color:'.$C_color.';font-size:'.$C_size.';">' . $uniouninfo->c_name . '</span> <br />
                                       </b><span style="font-size:16px;">চেয়ারম্যান</span><br />';
 
@@ -368,7 +368,7 @@ $style = '';
                                     </div>
                                   </td>
                                   <td style="text-align: center; width: 200px;" width="30%">
-                                      <img width="100px" src="' . base64($uniouninfo->sonod_logo) . '">
+                                      <img width="100px" src="' . convertToBase64($uniouninfo->sonod_logo) . '">
                                   </td>
                                   <td style="text-align: center;" width="40%">
                                       <div class="signature text-center position-relative" style="color:'.$color.'">
