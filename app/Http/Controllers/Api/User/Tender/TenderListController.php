@@ -587,10 +587,7 @@ $style = '';
               <table width="100%" style="border-collapse: collapse;" border="0">
                   <tr>
                       <td style="text-align: center;" width="20%">
-					  <span style="color:#b400ff;"><b>
-					  উন্নয়নের গণতন্ত্র,  <br /> শেখ হাসিনার মূলমন্ত্র </b>
-
-					  </span>
+			
                       </td>
                       <td style="text-align: center;" width="20%">
                           <img width="70px" src="' . base64('backend/bd-logo.png') . '">
@@ -698,51 +695,54 @@ $style = '';
     }
 
 
-    function SeletionTender(Request $request,$tender_id){
+    function selectionTender(Request $request, $tender_id)
+    {
+        $tenderList = TenderList::find($tender_id);
 
+        if (!$tenderList) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Tender List not found.',
+            ], 404);
+        }
 
+        $currentDate = now();
+        $tenderOpenDate = \Carbon\Carbon::parse($tenderList->tender_open);
 
-    $tender_list =  TenderList::find($tender_id);
+        if ($currentDate->lt($tenderOpenDate)) {
+            return response()->json([
+                'status' => 422,
+                'message' => 'টেন্ডার খোলার সময় এখনও হয়নি। এটি খোলা হবে ' . \Carbon\Carbon::parse($tenderList->tender_open)->format('d M Y, h:i A') . ' তারিখে।',
+                'tender_open_date' => $tenderList->tender_open,
+            ], 422);
+        }
 
+        $tenders = Tender::where([
+            'tender_id' => $tender_id,
+            'payment_status' => 'Paid',
+        ])->orderBy('DorAmount', 'desc')->get();
 
+        if ($tenders->isEmpty()) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'No valid tenders found for selection.',
+            ], 404);
+        }
 
+        $highestDorAmount = $tenders->first()->DorAmount;
+        $selectedTenders = $tenders->where('DorAmount', $highestDorAmount);
 
-    $currentDate = strtotime(date("d-m-Y H:i:s"));
-    $tender_open = strtotime(date("d-m-Y H:i:s",strtotime($tender_list->tender_open)));
-    if($currentDate<$tender_open){
-        $result =  [
-            "messages"=>"tender Open date : $tender_list->tender_open",
-            "status"=>422,
-        ];
-        return response()->json([$result],422);
-    }
+        foreach ($selectedTenders as $tender) {
+            $tender->update(['status' => 'Selected']);
+        }
 
+        $tenderList->update(['status' => 'Completed']);
 
-     $tendersCount = Tender::where(['tender_id'=>$tender_id,'payment_status'=>'Paid'])->orderBy('DorAmount','desc')->count();
-    if($tendersCount<1){
-       $result =  [
-           "messages"=>"Cant find Tender",
-           "status"=>404,
-       ];
-       return response()->json([$result],404);
-    }
-    $tendersDorAmount = Tender::where(['tender_id'=>$tender_id,'payment_status'=>'Paid'])->orderBy('DorAmount','desc')->first()->DorAmount;
-    $tenders = Tender::where(['DorAmount'=>$tendersDorAmount,'payment_status'=>'Paid'])->orderBy('DorAmount','desc')->get();
-
-    foreach ($tenders as $value) {
-        $value->update(['status'=>'Selected']);
-    }
-    $tender_list->update(['status'=>'Completed']);
-    $result =  [
-        "data"=>$tenders,
-        "messages"=>"found Tender",
-        "status"=>200,
-    ];
-    return response()->json([$result],200);
-
-
-
-
+        return response()->json([
+            'status' => 200,
+            'message' => 'Tender selection successful.',
+            'selected_tenders' => $selectedTenders->values(), // reindexing
+        ], 200);
     }
 
 

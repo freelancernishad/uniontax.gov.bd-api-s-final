@@ -18,7 +18,7 @@ Route::resources([
 	'tenderform' => TenderFormBuyController::class,
 ]);
 
-Route::post('tender/selection/{tender_id}', [TenderListController::class,'SeletionTender']);
+Route::post('tender/selection/{tender_id}', [TenderListController::class,'selectionTender']);
 
     Route::post('committe/update/{id}', function (Request $request,$id) {
 
@@ -75,6 +75,17 @@ Route::post('tender/selection/{tender_id}', [TenderListController::class,'Seleti
         ]);
 
     });
+
+
+Route::get('get/all/aplications/{tender_id}', function (Request $request,$tender_id) {
+
+    $status = $request->status;
+    if($status){
+        return Tender::where(['tender_id'=>$tender_id,'status'=>$status,'payment_status'=>'Paid'])->get();
+    }else{
+        return Tender::where(['tender_id'=>$tender_id,'payment_status'=>'Paid'])->orderBy('DorAmount','asc')->get();
+    }
+  });
 
 
     Route::get('get/all/tender/list', function (Request $request) {
