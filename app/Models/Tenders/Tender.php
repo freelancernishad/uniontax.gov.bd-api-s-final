@@ -2,8 +2,9 @@
 
 namespace App\Models\Tenders;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Tender extends Model
 {
@@ -40,5 +41,36 @@ class Tender extends Model
             }
         });
     }
+
+
+
+    /**
+     * Upload bank draft image to S3 and return the URL
+     *
+     * @param \Illuminate\Http\UploadedFile $file
+     * @param int|string $tenderId
+     * @return string|null
+     */
+    public static function uploadBankDraftImage($file, $tenderId)
+    {
+        $dateFolder = date('Y-m-d');
+        $filePath = "tenders/bank_draft/{$tenderId}/{$dateFolder}";
+
+        $fileName = 'draft-' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+
+        // Assume you have helper function uploadDocumentsToS3($file, $filePath, $dateFolder, $id = null)
+        $url = uploadDocumentsToS3($file, $filePath, $dateFolder, $tenderId, $fileName);
+
+        return $url ?: null;
+    }
+
+    /**
+     * Accessor for bank_draft_image to return full URL from S3
+     */
+    public function getBankDraftImageAttribute($value)
+    {
+        return $value ? getUploadDocumentsToS3($value) : null;
+    }
+
 
 }
