@@ -728,10 +728,23 @@ $style = '';
         ], 422);
     }
 
+    // ✅ Check if already selected
+    $alreadySelected = Tender::where('tender_id', $tender_id)
+        ->where('status', 'Selected')
+        ->first();
+
+    if ($alreadySelected) {
+        return response()->json([
+            'status' => 409,
+            'message' => 'এই টেন্ডারের জন্য ইতোমধ্যে একটি আবেদন নির্বাচিত হয়েছে।',
+            'selected_tender' => $alreadySelected,
+        ], 409);
+    }
+
     $tenders = Tender::where([
         'tender_id' => $tender_id,
         'payment_status' => 'Paid',
-    ])->orderBy('DorAmount', 'asc')->get();
+    ])->orderBy('DorAmount', 'desc')->get();
 
     if ($tenders->isEmpty()) {
         return response()->json([
@@ -740,15 +753,15 @@ $style = '';
         ], 404);
     }
 
-    // Step 1: Reset all to "Rejected" or "Pending"
+    // Step 1: Reset all to "Rejected"
     Tender::where('tender_id', $tender_id)
-        ->update(['status' => 'Rejected']); // or 'Pending' based on your logic
+        ->update(['status' => 'Rejected']);
 
-    // Step 2: Get the lowest DorAmount
-    $lowestDorAmount = $tenders->first()->DorAmount;
+    // Step 2: Get the highest DorAmount
+    $highestDorAmount = $tenders->last()->DorAmount;
 
-    // Step 3: Select first tender with lowest amount
-    $selectedTender = $tenders->firstWhere('DorAmount', $lowestDorAmount);
+    // Step 3: Select first tender with highest amount
+    $selectedTender = $tenders->firstWhere('DorAmount', $highestDorAmount);
 
     if ($selectedTender) {
         $selectedTender->update(['status' => 'Selected']);
@@ -763,6 +776,7 @@ $style = '';
         'selected_tender' => $selectedTender,
     ]);
 }
+
 
 
     function PaymentCreate($id) {
