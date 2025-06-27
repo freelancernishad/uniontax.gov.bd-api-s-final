@@ -273,3 +273,6 @@ Route::get('/pdf/sder/download/{tender_id}', function ($tender_id) {
 */
 
 Route::match(['get', 'post'], '/tenders/{tender_id}', [TenderListController::class, 'TenderForm']);
+
+
+Route::post('tenderlist/{id}/update-permit-details', [TenderListController::class, 'updatePermitDetials']);

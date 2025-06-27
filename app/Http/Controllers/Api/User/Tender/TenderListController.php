@@ -928,4 +928,39 @@ function TenderForm(Request $request, $tender_id)
 
 
 
+  public function updatePermitDetials(Request $request, $id)
+    {
+        $tenderList = TenderList::find($id);
+
+        if (!$tenderList) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tender List not found.',
+            ], 404);
+        }
+
+        // Validate incoming data
+        $validated = $request->validate([
+            'bankName' => 'nullable|string|max:255',
+            'bankCheck' => 'nullable|string|max:255',
+            'daysOfDepositeAmount' => 'nullable|integer|min:0',
+            'permitDetials' => 'nullable|string|max:1000',
+        ]);
+
+        // Update the fields
+        $tenderList->bankName = $validated['bankName'] ?? $tenderList->bankName;
+        $tenderList->bankCheck = $validated['bankCheck'] ?? $tenderList->bankCheck;
+        $tenderList->daysOfDepositeAmount = $validated['daysOfDepositeAmount'] ?? $tenderList->daysOfDepositeAmount;
+        $tenderList->permitDetials = $validated['permitDetials'] ?? $tenderList->permitDetials;
+
+        $tenderList->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Bank information updated successfully.',
+            'data' => $tenderList,
+        ]);
+    }
+
+
 }
