@@ -706,55 +706,63 @@ $style = '';
     }
 
 
-    function selectionTender(Request $request, $tender_id)
-    {
-        $tenderList = TenderList::find($tender_id);
+   public function selectionTender(Request $request, $tender_id)
+{
+    $tenderList = TenderList::find($tender_id);
 
-        if (!$tenderList) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Tender List not found.',
-            ], 404);
-        }
-
-        $currentDate = now();
-        $tenderOpenDate = \Carbon\Carbon::parse($tenderList->tender_open);
-
-        if ($currentDate->lt($tenderOpenDate)) {
-            return response()->json([
-                'status' => 422,
-                'message' => 'টেন্ডার খোলার সময় এখনও হয়নি। এটি খোলা হবে ' . \Carbon\Carbon::parse($tenderList->tender_open)->format('d M Y, h:i A') . ' তারিখে।',
-                'tender_open_date' => $tenderList->tender_open,
-            ], 422);
-        }
-
-        $tenders = Tender::where([
-            'tender_id' => $tender_id,
-            'payment_status' => 'Paid',
-        ])->orderBy('DorAmount', 'desc')->get();
-
-        if ($tenders->isEmpty()) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'No valid tenders found for selection.',
-            ], 404);
-        }
-
-        $highestDorAmount = $tenders->first()->DorAmount;
-        $selectedTenders = $tenders->where('DorAmount', $highestDorAmount);
-
-        foreach ($selectedTenders as $tender) {
-            $tender->update(['status' => 'Selected']);
-        }
-
-        $tenderList->update(['status' => 'Completed']);
-
+    if (!$tenderList) {
         return response()->json([
-            'status' => 200,
-            'message' => 'Tender selection successful.',
-            'selected_tenders' => $selectedTenders->values(), // reindexing
-        ], 200);
+            'status' => 404,
+            'message' => 'Tender List not found.',
+        ], 404);
     }
+
+    $currentDate = now();
+    $tenderOpenDate = \Carbon\Carbon::parse($tenderList->tender_open);
+
+    if ($currentDate->lt($tenderOpenDate)) {
+        return response()->json([
+            'status' => 422,
+            'message' => 'টেন্ডার খোলার সময় এখনও হয়নি। এটি খোলা হবে ' . $tenderOpenDate->format('d M Y, h:i A') . ' তারিখে।',
+            'tender_open_date' => $tenderList->tender_open,
+        ], 422);
+    }
+
+    $tenders = Tender::where([
+        'tender_id' => $tender_id,
+        'payment_status' => 'Paid',
+    ])->orderBy('DorAmount', 'asc')->get();
+
+    if ($tenders->isEmpty()) {
+        return response()->json([
+            'status' => 404,
+            'message' => 'No valid tenders found for selection.',
+        ], 404);
+    }
+
+    // Step 1: Reset all to "Rejected" or "Pending"
+    Tender::where('tender_id', $tender_id)
+        ->update(['status' => 'Rejected']); // or 'Pending' based on your logic
+
+    // Step 2: Get the lowest DorAmount
+    $lowestDorAmount = $tenders->first()->DorAmount;
+
+    // Step 3: Select first tender with lowest amount
+    $selectedTender = $tenders->firstWhere('DorAmount', $lowestDorAmount);
+
+    if ($selectedTender) {
+        $selectedTender->update(['status' => 'Selected']);
+    }
+
+    // Step 4: Update the tender list as completed
+    $tenderList->update(['status' => 'Completed']);
+
+    return response()->json([
+        'status' => 200,
+        'message' => 'Tender selection successful.',
+        'selected_tender' => $selectedTender,
+    ]);
+}
 
 
     function PaymentCreate($id) {
