@@ -30,6 +30,7 @@
             ঠিকানা: গ্রাম - $row->vill, ডাকঘর - $row->postoffice,
             থানা - $row->thana, জেলা - $row->distric<br>
             মোবাইল: ". int_en_to_bn($row->mobile) ."
+            দর আইডি: ". int_en_to_bn($row->dorId) ."
         </p>
 
         <h4 style='margin-top:20px;'>সিডিউল ফর্ম ফি</h4>
