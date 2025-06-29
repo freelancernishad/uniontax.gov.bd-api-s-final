@@ -306,7 +306,7 @@ function generatePaymentUrl($amount, $payerReference = "01700000000", $callbackU
         ])
         ->post("$baseUrl/create", [
             "mode" => "0011",
-            "payerReference" => $payerReference,
+            "payerReference" => $payerReference == 'no-number' ? "-" : $payerReference,
             "callbackURL" => $callbackURL,
             "amount" => $amount,
             "currency" => "BDT",

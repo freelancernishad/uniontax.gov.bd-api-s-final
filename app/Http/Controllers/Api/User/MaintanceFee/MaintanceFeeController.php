@@ -38,7 +38,7 @@ public function store(Request $request)
     $unionInfo = Uniouninfo::where('short_name_e', $userUnion)->firstOrFail();
     $amount = ($unionInfo->maintance_fee ?? 0);
     $type = $unionInfo->maintance_fee_type ?? 'monthly';
-    $mobile = $unionInfo->chairman_phone ?? "01700000000"; // fallback
+    $mobile =  "no-number"; // fallback
 
     // Determine the period
     if ($type === 'monthly') {
