@@ -29,11 +29,10 @@
             পিতা: $row->applicant_org_fatherName<br>
             ঠিকানা: গ্রাম - $row->vill, ডাকঘর - $row->postoffice,
             থানা - $row->thana, জেলা - $row->distric<br>
-            মোবাইল: ". int_en_to_bn($row->mobile) ."
-            দর আইডি: ". int_en_to_bn($row->dorId) ."
+            মোবাইল: ". int_en_to_bn($row->mobile) ." <br>
+           <h2> দর আইডি: ". int_en_to_bn($row->dorId) ." </h2>
         </p>
 
-        <h4 style='margin-top:20px;'>সিডিউল ফর্ম ফি</h4>
 
         <table>
             <thead>
