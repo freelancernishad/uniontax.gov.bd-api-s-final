@@ -27,6 +27,46 @@ class TenderListController extends Controller
 
 
 
+    public function invoice(Request $request, $id)
+    {
+        // 1. টেন্ডার খুঁজে বের করো
+        $row = Tender::find($id);
+
+        if (!$row) {
+            return response()->json(['error' => 'Tender not found.'], 404);
+        }
+
+
+         $tender_list = TenderList::find($row->tender_id);
+
+
+
+
+        // 2. ইউনিয়নের তথ্য আনো (ঠিক মতো)
+        $uniouninfo = Uniouninfo::where('short_name_e', $tender_list->union_name)->first();
+
+        if (!$uniouninfo) {
+            return response()->json(['error' => 'Union info not found.'], 404);
+        }
+
+        // 3. Payment খুঁজে আনো (type + id)
+         $TaxInvoice = Payment::where('sonod_type', 'Tenders_form')
+            ->where('sonodId', $row->id)
+            ->latest()
+            ->first();
+
+        // 4. Blade view render
+        $htmlView = view('Invoice.TenderFormInvoice', compact('row', 'uniouninfo', 'TaxInvoice'))->render();
+
+        // 5. PDF ফাইল বানাও
+        $filename = "TenderInvoice-$row->id.pdf";
+        generatePdf($htmlView, null, null, $filename);
+    }
+
+
+
+
+
     public function index(Request $request)
     {
 

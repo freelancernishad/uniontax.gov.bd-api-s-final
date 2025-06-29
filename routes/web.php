@@ -1,22 +1,23 @@
 <?php
 
 use Aws\S3\S3Client;
+use App\Models\Sonod;
 use App\Mail\TestMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\Api\Global\Sonod\SonodController;
 use App\Http\Controllers\Api\Admin\Reports\ReportsController;
 use App\Http\Controllers\Api\Global\Sonod\SonodPdfController;
+use App\Http\Controllers\Api\User\Tender\TenderListController;
 use App\Http\Controllers\Api\Global\Sonod\InvoicePdfController;
 use App\Http\Controllers\Api\Global\Sonod\DocumentPdfController;
 use App\Http\Controllers\Api\User\Reports\PaymentReportsController;
 use App\Http\Controllers\Api\SystemSettings\SystemSettingController;
 use App\Http\Controllers\Api\Global\HoldingTax\HoldingTaxPdfController;
 use App\Http\Controllers\Api\User\Holdingtax\HoldingPdfReportController;
-use App\Models\Sonod;
-use Illuminate\Support\Facades\View;
 
 Route::get('create/payment', [SonodController::class,'creatingEkpayUrl']);
 
@@ -143,6 +144,8 @@ Route::get('/document/d/{id}', [DocumentPdfController::class,'userDocument']);
 Route::get('/applicant/copy/download/{id}', [DocumentPdfController::class,'userDocument']);
 
 Route::get('/sonod/invoice/download/{id}', [InvoicePdfController::class,'invoice']);
+
+Route::get('/tender/invoice/download/{id}', [TenderListController::class,'invoice']);
 
 Route::get('payment/report/download', [PaymentReportsController::class,'PaymentReports']);
 
