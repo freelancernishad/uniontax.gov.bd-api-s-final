@@ -29,7 +29,7 @@
             পিতা: $row->applicant_org_fatherName<br>
             ঠিকানা: গ্রাম - $row->vill, ডাকঘর - $row->postoffice,
             থানা - $row->thana, জেলা - $row->distric<br>
-            মোবাইল: $row->mobile
+            মোবাইল: ". int_en_to_bn($row->mobile) ."
         </p>
 
         <h4 style='margin-top:20px;'>সিডিউল ফর্ম ফি</h4>
