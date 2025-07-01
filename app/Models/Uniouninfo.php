@@ -59,7 +59,22 @@ class Uniouninfo extends Model
         'maintance_fee',
         'maintance_fee_type',
         'maintance_fee_option',
+        'maintance_fee_payment_last_date',
+        'maintance_fee_notice_date',
         'profile_steps',
+    ];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+        'AKPAY_MER_REG_ID',
+        'AKPAY_MER_PASS_KEY',
+        'maintance_fee_payment_last_date',
+        'maintance_fee_notice_date',
+    ];
+    protected $casts = [
+        // 'maintance_fee_payment_last_date' => 'date',
     ];
 
     protected $appends = ['is_popup','has_bank_account'];
@@ -126,6 +141,23 @@ class Uniouninfo extends Model
     {
         return $this->hasMany(PostOffice::class, 'unioninfo_id');
     }
+
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->maintance_fee_payment_last_date)) {
+                $model->maintance_fee_payment_last_date = 20;
+            }
+            if (empty($model->maintance_fee_notice_date)) {
+                $model->maintance_fee_notice_date = 15;
+            }
+        });
+    }
+
+
 
 
 }

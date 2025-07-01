@@ -60,6 +60,9 @@ class UserUniouninfoController extends Controller
                                    'udc_phone',
                                    'user_phone',
                                    'maintance_fee_type',
+                                   'maintance_fee_option',
+                                   'maintance_fee_payment_last_date',
+                                   'maintance_fee_notice_date',
                                ) // Only select the specified columns
                                ->first();
 
@@ -88,7 +91,18 @@ class UserUniouninfoController extends Controller
         }
 
 
-        $unionInfo->has_paid_maintance_fee = getHasPaidMaintanceFee($user->unioun, $unionInfo->maintance_fee_type);
+
+
+
+        $unionInfo->has_paid_maintance_fee = getHasPaidMaintanceFee($user->unioun, $unionInfo->maintance_fee_type,$unionInfo->maintance_fee_notice_date);
+
+
+$paymentLastDate = (int) ($unionInfo->maintance_fee_payment_last_date ?? 20);
+$today = now()->day;
+
+$unionInfo->maintance_fee_option = $today >= $paymentLastDate
+    ? 'required'
+    : $unionInfo->maintance_fee_option;
 
 
         // Return the response with the Union information and updated file URLs

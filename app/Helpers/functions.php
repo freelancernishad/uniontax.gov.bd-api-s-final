@@ -335,23 +335,35 @@ function generatePaymentUrl($amount, $payerReference = "01700000000", $callbackU
 }
 
 
-    function getHasPaidMaintanceFee($union,$type="monthly")
-    {
 
-           if ($type === 'Free Trial') {
-                return true;
-            }
-        // return $type;
-        if ($type === 'yearly') {
-            $period = CurrentOrthoBochor(); // implement below
-        } else {
-            $period = now()->format('Y-m');
-        }
 
-        return MaintanceFee::where('union', $union)
-            ->where('type', $type)
-            ->where('period', $period)
-            ->where('status', 'paid')
-            ->exists();
+ function getHasPaidMaintanceFee($union, $type = "monthly", $noticeDate = 20)
+{
+    // ১. ফ্রি ট্রায়াল হলে সবসময় true
+    if ($type === 'Free Trial') {
+        return true;
     }
+
+    // ২. MaintanceFee টেবিল চেক
+    $period = $type === 'yearly' ? CurrentOrthoBochor() : now()->format('Y-m');
+
+    $hasPaid = MaintanceFee::where('union', $union)
+        ->where('type', $type)
+        ->where('period', $period)
+        ->where('status', 'paid')
+        ->exists();
+
+    if ($hasPaid) {
+        return true;
+    }
+
+    // ৩. notice_date অনুযায়ী check করা হবে
+    $noticeDay = (int) ($noticeDate ?? 20);
+    $today = now()->day;
+
+    // আজকের দিন যদি notice তারিখের আগে হয়, তাহলে valid
+    return $today < $noticeDay;
+}
+
+
 

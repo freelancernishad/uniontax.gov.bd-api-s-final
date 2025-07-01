@@ -261,6 +261,22 @@ class AuthUserController extends Controller
 
             // Retrieve Uniouninfo details (assuming the user has a 'unioun' relationship)
             $uniouninfo = Uniouninfo::where('short_name_e', $user->unioun)->first();
+
+
+
+
+        $has_paid_maintance_fee = getHasPaidMaintanceFee($user->unioun, $uniouninfo->maintance_fee_type,$uniouninfo->maintance_fee_notice_date);
+
+
+        $paymentLastDate = (int) ($uniouninfo->maintance_fee_payment_last_date ?? 20);
+        $today = now()->day;
+
+        $maintance_fee_option = $today >= $paymentLastDate
+            ? 'required'
+            : $uniouninfo->maintance_fee_option;
+
+
+
             $payload = [
                 'unioun' => $user->unioun,
                 'email' => $user->email,
@@ -272,11 +288,13 @@ class AuthUserController extends Controller
                 'email_verified' => $user->hasVerifiedEmail(), // Checks verification status
                 'is_popup' => $uniouninfo ? $uniouninfo->is_popup : false, // Check if Uniouninfo exists
                 'has_bank_account' => $uniouninfo ? $uniouninfo->has_bank_account : false, // Check if Uniouninfo exists
-                'has_paid_maintance_fee' => getHasPaidMaintanceFee($user->unioun, $uniouninfo->maintance_fee_type),
+                'has_paid_maintance_fee' => $has_paid_maintance_fee,
                 'maintance_fee_type' => $uniouninfo->maintance_fee_type,
                 'maintance_fee' => $uniouninfo->maintance_fee,
-                'maintance_fee_option' => $uniouninfo->maintance_fee_option,
+                'maintance_fee_option' => $maintance_fee_option,
                 'profile_steps' => is_numeric($uniouninfo->profile_steps) ? (int)$uniouninfo->profile_steps : 0,
+
+
             ];
 
             return response()->json(['message' => 'Token is valid.','user'=>$payload], 200);

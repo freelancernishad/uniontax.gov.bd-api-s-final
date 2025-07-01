@@ -766,7 +766,13 @@ class SonodController extends Controller
             );
             // return response()->json($isRenewable);
             // Set renew_able flag
-            $results->renew_able = ($isNotCurrentOrthoBchor && $isRenewable);
+
+            if($results->sonod_name=='ট্রেড লাইসেন্স'){
+                $results->renew_able = ($isNotCurrentOrthoBchor && $isRenewable);
+            }else{
+                $results->renew_able = false;
+            }
+
 
             // Initialize download URLs
             $results->download_url = '';
