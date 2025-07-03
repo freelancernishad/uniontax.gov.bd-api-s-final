@@ -91,7 +91,17 @@
                         <div class="signature text-center position-relative" style="color:black">
                             <img width="170px" style="{{ $style }}" src="{{ $row->socib_signture }}"><br/>
                             <b><span style="color:{{ $C_color }};font-size:{{ $C_size }};">{{ $row->socib_name }}</span><br/></b>
-                            <span style="font-size:16px;">Administrative Officer</span><br/>
+
+
+                                                            @if(isUnion())
+                                     <span style="font-size:16px;">Administrative Officer</span><br/>
+                                     @else
+                                      </b><span style="font-size:16px;">Municipal Executive Officer</span><br />
+                                     @endif
+
+
+
+
                             {{ $uniouninfo->full_name_en }}<br> {{ $uniouninfo->thana_en }}, {{ $uniouninfo->district_en }}.<br>
                         </div>
                     </td>
