@@ -33,16 +33,21 @@ class ReportsController extends Controller
             $sonod_name = $sonodName . ' এর';
         }
 
+        if(isUnion()){
+            $unionOrPourosova = "ইউনিয়নের";
+        }else{
+             $unionOrPourosova = "পৌরসভার";
+        }
 
         // Generate the title dynamically
         if (!empty($unionName)) {
-            $reportTitle = UnionenBnName($unionName) . " ইউনিয়নের $sonod_name প্রতিবেদন";
+            $reportTitle = UnionenBnName($unionName) . " $unionOrPourosova $sonod_name প্রতিবেদন";
         } elseif (!empty($upazilaName)) {
-            $reportTitle = addressEnToBn($upazilaName,"upazila") . " উপজেলার সকল ইউনিয়নের $sonod_name প্রতিবেদন";
+            $reportTitle = addressEnToBn($upazilaName,"upazila") . " উপজেলার সকল $unionOrPourosova $sonod_name প্রতিবেদন";
         } elseif (!empty($districtName)) {
-            $reportTitle = addressEnToBn($districtName,"district") . " জেলার সকল ইউনিয়নের $sonod_name প্রতিবেদন";
+            $reportTitle = addressEnToBn($districtName,"district") . " জেলার সকল $unionOrPourosova $sonod_name প্রতিবেদন";
         } elseif (!empty($divisionName)) {
-            $reportTitle = addressEnToBn($divisionName,"division") . " বিভাগের সকল ইউনিয়নের $sonod_name প্রতিবেদন";
+            $reportTitle = addressEnToBn($divisionName,"division") . " বিভাগের সকল $unionOrPourosova $sonod_name প্রতিবেদন";
         } else {
             $reportTitle = " $sonod_name প্রতিবেদন";
         }
