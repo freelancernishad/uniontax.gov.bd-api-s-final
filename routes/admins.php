@@ -46,6 +46,7 @@ Route::prefix('admin')->group(function () {
 
 
         Route::get('holding-tax/Renew', [HoldingtaxController::class, 'RenewHoldingTax']);
+        Route::post('holding-tax/Renew', [HoldingtaxController::class, 'RenewHoldingTax']);
 
 
 

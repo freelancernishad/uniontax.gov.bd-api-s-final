@@ -91,6 +91,11 @@ Route::prefix('user')->group(function () {
         Route::post('/holdingtax/{holdingTaxId}/bokeya', [HoldingtaxController::class, 'addNewBokeya']);
 
 
+        Route::get('holding-tax/Renew', [HoldingtaxController::class, 'RenewHoldingTax']);
+        Route::post('holding-tax/Renew', [HoldingtaxController::class, 'RenewHoldingTax']);
+
+
+
 
 
         Route::prefix('holding')->group(function () {
