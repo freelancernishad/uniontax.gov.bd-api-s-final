@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\Admin\Package\AdminPurchasedHistoryController;
 use App\Http\Controllers\Api\Admin\PackageAddon\AdminPackageAddonController;
 use App\Http\Controllers\Api\Admin\SocialMedia\AdminSocialMediaLinkController;
 use App\Http\Controllers\Api\Admin\SupportTicket\AdminSupportTicketApiController;
+use App\Http\Controllers\Api\User\Holdingtax\HoldingtaxController;
 
 Route::prefix('auth/admin')->group(function () {
     Route::post('login', [AdminAuthController::class, 'login'])->name('admin.login');
@@ -40,6 +41,11 @@ Route::prefix('auth/admin')->group(function () {
 Route::prefix('admin')->group(function () {
     Route::middleware(AuthenticateAdmin::class)->group(function () { // Applying admin middleware
 
+
+
+
+
+        Route::get('holding-tax/Renew', [HoldingtaxController::class, 'RenewHoldingTax']);
 
 
 

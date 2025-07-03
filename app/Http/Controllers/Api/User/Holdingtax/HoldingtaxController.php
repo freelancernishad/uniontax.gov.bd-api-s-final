@@ -841,4 +841,67 @@ public function sendHoldingTaxSMS(Request $request)
 
 
 
+public function RenewHoldingTax(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'unioun' => 'required|string',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
+    }
+
+    $union = $request->input('unioun');
+    $currentOrthoBochor = CurrentOrthoBochor(1);
+    $previousOrthoBochor = PreviousOrthoBochor(1);
+
+    $holdings = Holdingtax::where('unioun', $union)->get();
+
+    foreach ($holdings as $holding) {
+        $hasCurrent = $holding->holdingBokeyas()
+            ->where('year', $currentOrthoBochor)
+            ->where('price', '>', 0)
+            ->exists();
+
+        if ($hasCurrent) continue;
+
+        $previousBokeyas = $holding->holdingBokeyas()
+            ->where('year', $previousOrthoBochor)
+            ->where('price', '>', 0)
+            ->get();
+
+        if ($previousBokeyas->isEmpty()) continue;
+
+        $source = null;
+
+        if ($previousBokeyas->count() === 1) {
+            $source = $previousBokeyas->first();
+        } else {
+            $source = $previousBokeyas->where('status', 'Paid')->first() ??
+                      $previousBokeyas->sortByDesc('id')->first();
+        }
+
+        if ($source) {
+            HoldingBokeya::create([
+                'holdingTax_id' => $holding->id,
+                'year' => $currentOrthoBochor,
+                'price' => $source->price,
+                'payYear' => null,
+                'payOB' => null,
+                'status' => 'Unpaid',
+            ]);
+        }
+    }
+
+    return response()->json(['message' => 'Renew process completed successfully.']);
 }
+
+
+
+
+
+}
+
+
+
+

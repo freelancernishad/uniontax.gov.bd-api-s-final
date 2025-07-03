@@ -486,6 +486,18 @@ function age($dateOf = '2001-08-25', $en = false) {
         return $full ? "{$startYear}-{$endYear}" : "{$startYear}-" . substr($endYear, -2);
     }
 
+    function PreviousOrthoBochor($full = 0, $month = '', $year = '')
+    {
+        $year = $year ?: date('Y');
+        $month = $month ?: date('m');
+
+        // Move one year back from the current ortho bochor
+        $startYear = $month < 7 ? $year - 2 : $year - 1;
+        $endYear = $month < 7 ? $year - 1 : $year;
+
+        return $full ? "{$startYear}-{$endYear}" : "{$startYear}-" . substr($endYear, -2);
+    }
+
     function changeSonodName($name){
         if($name=='ওয়ারিশান সনদ'){
             return 'ওয়ারিশ সনদ';
