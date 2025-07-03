@@ -857,6 +857,8 @@ public function RenewHoldingTax(Request $request)
 
     $holdings = Holdingtax::where('unioun', $union)->get();
 
+    $createdCount = 0;
+
     foreach ($holdings as $holding) {
         $hasCurrent = $holding->holdingBokeyas()
             ->where('year', $currentOrthoBochor)
@@ -890,11 +892,17 @@ public function RenewHoldingTax(Request $request)
                 'payOB' => null,
                 'status' => 'Unpaid',
             ]);
+            $createdCount++;
         }
     }
 
-    return response()->json(['message' => 'Renew process completed successfully.']);
+    if ($createdCount === 0) {
+        return response()->json(['message' => 'সবগুলোর জন্য আগেই Renew হয়ে গেছে।']);
+    } else {
+        return response()->json(['message' => "সফলভাবে {$createdCount} টি Renew সম্পন্ন হয়েছে।"]);
+    }
 }
+
 
 
 
