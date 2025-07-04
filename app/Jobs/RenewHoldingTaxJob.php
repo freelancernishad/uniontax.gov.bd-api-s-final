@@ -10,18 +10,31 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 
 class RenewHoldingTaxJob implements ShouldQueue
 {
-    use InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * Set a practically unlimited timeout (in seconds).
+     * Laravel 10+ supports $timeout = 0 as unlimited.
+     */
+    public $timeout = 999999;
 
     protected $union;
 
+    /**
+     * Create a new job instance.
+     */
     public function __construct($union)
     {
         $this->union = $union;
     }
 
+    /**
+     * Execute the job.
+     */
     public function handle()
     {
         try {
@@ -67,34 +80,48 @@ class RenewHoldingTaxJob implements ShouldQueue
                 }
             }
 
-            // ✅ Success log
+            // ✅ Success log to DB
             JobStatusLog::create([
                 'job_name' => 'RenewHoldingTaxJob',
                 'status' => 'success',
-                'message' => "{$createdCount} bokeya created for union {$this->union}"
+                'message' => "{$createdCount} bokeya created for union {$this->union}",
             ]);
 
+            // ✅ Laravel log
+            Log::info("RenewHoldingTaxJob succeeded for union: {$this->union} with {$createdCount} new bokeya");
+
         } catch (\Exception $e) {
-            // এইখানে না রাখলেও হবে, কারণ নিচে `failed()` আছে
+            // fallback in case failed() doesn't fire
+            $this->logFailure($e);
             throw $e;
         }
     }
 
-    // 🔴 ব্যর্থ হলে এই মেথড অটো কল হয়
+    /**
+     * Handle job failure.
+     */
     public function failed(\Throwable $exception)
+    {
+        $this->logFailure($exception);
+    }
+
+    /**
+     * Common method to log failures.
+     */
+    private function logFailure(\Throwable $exception)
     {
         $message = "Union: {$this->union} | Error: " . $exception->getMessage();
 
-        // ✅ Database Log
+        // ✅ Database log
         JobStatusLog::create([
             'job_name' => 'RenewHoldingTaxJob',
             'status' => 'failed',
-            'message' => $message . "\n\nTrace:\n" . $exception->getTraceAsString()
+            'message' => $message . "\n\nTrace:\n" . $exception->getTraceAsString(),
         ]);
 
-        // ✅ Laravel storage log এও লিখুন
+        // ✅ Laravel error log
         Log::error('[RenewHoldingTaxJob Failed] ' . $message, [
-            'trace' => $exception->getTrace()
+            'trace' => $exception->getTrace(),
         ]);
     }
 }
