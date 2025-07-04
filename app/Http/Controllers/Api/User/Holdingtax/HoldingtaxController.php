@@ -843,34 +843,21 @@ public function sendHoldingTaxSMS(Request $request)
 
 public function RenewHoldingTax(Request $request)
 {
-    // if (auth()->guard('admin')->check()) {
-    //     $validator = Validator::make($request->all(), [
-    //         'unioun' => 'required|string',
-    //     ]);
-    //     if ($validator->fails()) {
-    //         return response()->json(['errors' => $validator->errors()], 422);
-    //     }
-    //     $union = $request->input('unioun');
-    // } elseif (auth()->guard('user')->check()) {
-    //     $user = auth()->guard('user')->user();
-    //     $union = $user->unioun;
-    // } else {
-    //     return response()->json(['error' => 'Unauthorized.'], 401);
-    // }
+    $validator = Validator::make($request->all(), [
+        'unioun' => 'required|string',
+    ]);
 
-
-        $validator = Validator::make($request->all(), [
-            'unioun' => 'required|string',
-        ]);
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
+    }
 
     $union = $request->input('unioun');
     $currentOrthoBochor = CurrentOrthoBochor(1);
     $previousOrthoBochor = PreviousOrthoBochor(1);
 
-    $holdings = Holdingtax::where('unioun', $union)->get();
+    $holdings = Holdingtax::select('id', 'unioun', 'holding_no', 'owner_name')
+        ->where('unioun', $union)
+        ->get();
 
     $createdCount = 0;
 
@@ -916,14 +903,8 @@ public function RenewHoldingTax(Request $request)
     } else {
         return response()->json(['message' => "সফলভাবে {$createdCount} টি Renew সম্পন্ন হয়েছে।"]);
     }
-
-
-
-
-
-
-
 }
+
 
 
 
