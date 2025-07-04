@@ -6,6 +6,7 @@ use App\Models\Holdingtax;
 use App\Models\JobStatusLog;
 use App\Models\HoldingBokeya;
 use Illuminate\Bus\Queueable;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -82,10 +83,18 @@ class RenewHoldingTaxJob implements ShouldQueue
     // 🔴 ব্যর্থ হলে এই মেথড অটো কল হয়
     public function failed(\Throwable $exception)
     {
+        $message = "Union: {$this->union} | Error: " . $exception->getMessage();
+
+        // ✅ Database Log
         JobStatusLog::create([
             'job_name' => 'RenewHoldingTaxJob',
             'status' => 'failed',
-            'message' => "Union: {$this->union} | Error: " . $exception->getMessage()
+            'message' => $message . "\n\nTrace:\n" . $exception->getTraceAsString()
+        ]);
+
+        // ✅ Laravel storage log এও লিখুন
+        Log::error('[RenewHoldingTaxJob Failed] ' . $message, [
+            'trace' => $exception->getTrace()
         ]);
     }
 }
