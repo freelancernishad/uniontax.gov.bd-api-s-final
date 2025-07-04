@@ -8,6 +8,7 @@ use App\Models\Uniouninfo;
 use Illuminate\Http\Request;
 use App\Helpers\SmsNocHelper;
 use App\Models\HoldingBokeya;
+use App\Jobs\RenewHoldingTaxJob;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -851,58 +852,10 @@ public function RenewHoldingTax(Request $request)
         return response()->json(['errors' => $validator->errors()], 422);
     }
 
-    $union = $request->input('unioun');
-    $currentOrthoBochor = CurrentOrthoBochor(1);
-    $previousOrthoBochor = PreviousOrthoBochor(1);
+    // ✅ Correct way to dispatch a job
+    dispatch(new RenewHoldingTaxJob($request->input('unioun')));
 
-    $holdings = Holdingtax::select('id', 'unioun', 'holding_no')
-        ->where('unioun', $union)
-        ->get();
-
-    $createdCount = 0;
-
-    foreach ($holdings as $holding) {
-        $hasCurrent = $holding->holdingBokeyas()
-            ->where('year', $currentOrthoBochor)
-            ->where('price', '>', 0)
-            ->exists();
-
-        if ($hasCurrent) continue;
-
-        $previousBokeyas = $holding->holdingBokeyas()
-            ->where('year', $previousOrthoBochor)
-            ->where('price', '>', 0)
-            ->get();
-
-        if ($previousBokeyas->isEmpty()) continue;
-
-        $source = null;
-
-        if ($previousBokeyas->count() === 1) {
-            $source = $previousBokeyas->first();
-        } else {
-            $source = $previousBokeyas->where('status', 'Paid')->first() ??
-                      $previousBokeyas->sortByDesc('id')->first();
-        }
-
-        if ($source) {
-            HoldingBokeya::create([
-                'holdingTax_id' => $holding->id,
-                'year' => $currentOrthoBochor,
-                'price' => $source->price,
-                'payYear' => null,
-                'payOB' => null,
-                'status' => 'Unpaid',
-            ]);
-            $createdCount++;
-        }
-    }
-
-    if ($createdCount === 0) {
-        return response()->json(['message' => 'সবগুলোর জন্য আগেই Renew হয়ে গেছে।']);
-    } else {
-        return response()->json(['message' => "সফলভাবে {$createdCount} টি Renew সম্পন্ন হয়েছে।"]);
-    }
+    return response()->json(['message' => 'Renew process শুরু হয়েছে। কিছু সময় পর আবার চেক করুন।']);
 }
 
 
