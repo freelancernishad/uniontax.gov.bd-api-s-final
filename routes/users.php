@@ -27,6 +27,7 @@ use App\Http\Controllers\Api\User\Package\UserPurchasedHistoryController;
 use App\Http\Controllers\Api\User\Dashboard\UserDashboardMatricsController;
 use App\Http\Controllers\Api\User\SupportTicket\SupportTicketApiController;
 use App\Http\Controllers\Api\User\SocialMedia\UserSocialMediaLinkController;
+use App\Http\Controllers\Api\User\BusinessDirectory\BusinessDirectoryController;
 use App\Http\Controllers\Api\Admin\SupportTicket\AdminSupportTicketApiController;
 
 
@@ -191,6 +192,14 @@ Route::prefix('user')->group(function () {
             Route::get('/get/by/union', [EkpayPaymentReportController::class, 'getByUnion']);
         });
 
+
+
+        Route::get('/business-directories', [BusinessDirectoryController::class, 'index']);        // তালিকা দেখাবে
+        Route::get('/business-directories/{id}', [BusinessDirectoryController::class, 'show']);    // একক রেকর্ড দেখাবে
+        Route::post('/business-directories', [BusinessDirectoryController::class, 'store']);       // নতুন রেকর্ড তৈরি করবে
+        Route::put('/business-directories/{id}', [BusinessDirectoryController::class, 'update']);  // রেকর্ড সম্পাদনা করবে
+        Route::patch('/business-directories/{id}', [BusinessDirectoryController::class, 'update']); // আংশিক আপডেট (PUT এর বিকল্প)
+        Route::delete('/business-directories/{id}', [BusinessDirectoryController::class, 'destroy']); // রেকর্ড মুছে দেবে
 
 
 
