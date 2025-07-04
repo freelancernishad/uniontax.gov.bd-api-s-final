@@ -855,7 +855,7 @@ public function RenewHoldingTax(Request $request)
     $currentOrthoBochor = CurrentOrthoBochor(1);
     $previousOrthoBochor = PreviousOrthoBochor(1);
 
-    $holdings = Holdingtax::select('id', 'unioun', 'holding_no', 'owner_name')
+    $holdings = Holdingtax::select('id', 'unioun', 'holding_no')
         ->where('unioun', $union)
         ->get();
 
