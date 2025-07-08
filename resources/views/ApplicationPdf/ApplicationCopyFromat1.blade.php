@@ -159,11 +159,19 @@
             <td>:</td>
             <td>{{ $row->applicant_father_name }}</td>
         </tr>
+
+        <tr>
+            <td>বাসিন্দার ধরণ</td>
+            <td>:</td>
+            <td>{{ $row->applicant_resident_status }}</td>
+        </tr>
+
         <tr>
             <td>বর্তমান ঠিকানা</td>
             <td>:</td>
             <td>হোল্ডিং নং- {{ $row->applicant_holding_tax_number }}, গ্রাম: {{ $row->applicant_present_village }}, ডাকঘর: {{ $row->applicant_present_post_office }}, উপজেলা: {{ $row->applicant_present_Upazila }}, জেলা: {{ $row->applicant_present_district }}</td>
         </tr>
+
 
         @if ($row->sonod_name == 'বিবিধ প্রত্যয়নপত্র')
             <tr>

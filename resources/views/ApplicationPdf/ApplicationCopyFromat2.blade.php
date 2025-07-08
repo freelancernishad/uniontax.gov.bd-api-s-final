@@ -148,6 +148,13 @@
                         <td>:</td>
                         <td>{{ $row->ut_father_name }}</td>
                     </tr>
+
+                    <tr>
+                        <td>বাসিন্দার ধরণ</td>
+                        <td>:</td>
+                        <td>{{ $row->applicant_resident_status }}</td>
+                    </tr>
+
                     <tr>
                         <td>বর্তমান ঠিকানা</td>
                         <td>:</td>
@@ -160,6 +167,14 @@
                         <td>:</td>
                         <td>{{ $row->applicant_father_name }}</td>
                     </tr>
+
+
+                    <tr>
+                        <td>বাসিন্দার ধরণ</td>
+                        <td>:</td>
+                        <td>{{ $row->applicant_resident_status }}</td>
+                    </tr>
+
                     <tr>
                         <td>বর্তমান ঠিকানা</td>
                         <td>:</td>
