@@ -125,6 +125,46 @@ class EkpayController extends Controller
     // Update Sonod Fee payment status
     private function updateSonodFeeStatus($sonod, &$Insertdata)
     {
+
+        if ($sonod->stutus == 'approved' && $sonod->payment_status == 'Paid') {
+            $amount_deails = json_decode($sonod->amount_deails, true);
+
+            $pesaKor = isset($amount_deails['pesaKor']) ? (float)$amount_deails['pesaKor'] : 0;
+            $total_amount = isset($amount_deails['total_amount']) ? (float)$amount_deails['total_amount'] : 0;
+            $vatAykor = isset($amount_deails['vatAykor']) ? (float)$amount_deails['vatAykor'] : 0;
+            $currently_paid_money = isset($amount_deails['currently_paid_money']) ? (float)$amount_deails['currently_paid_money'] : 0;
+            $bokeya = isset($sonod->bokeya) ? (float)$sonod->bokeya : 0;
+
+            // 15% VAT হিসাব
+            $extraVat = $bokeya * 0.15;
+
+            // Updated values
+            $updatedPesaKor = $pesaKor + $bokeya;
+            $updatedVatAykor = $vatAykor + $extraVat;
+            $updatedTotalAmount = $total_amount + $bokeya + $extraVat;
+            $updatedPaidMoney = $currently_paid_money + $bokeya + $extraVat;
+
+            $amountDetails = json_encode([
+                'total_amount' => $updatedTotalAmount,
+                'pesaKor' => (string)$updatedPesaKor,
+                'tredeLisenceFee' => (string)($amount_deails['tredeLisenceFee'] ?? 0),
+                'vatAykor' => (string)$updatedVatAykor,
+                'khat' => null,
+                'signboard_fee' => (int)($amount_deails['signboard_fee'] ?? 0),
+                'last_years_money' => (string)($amount_deails['last_years_money'] ?? 0),
+                'currently_paid_money' => (string)$updatedPaidMoney,
+            ]);
+
+            $sonod->update([
+                'bokeya' => 0,
+                'amount_deails' => $amountDetails
+            ]);
+
+            return;
+        }
+
+
+
         // Check for existing renewal
         $existingSonodCount = Sonod::where('renewed_id', $sonod->id)->count();
         if ($existingSonodCount > 0) {
@@ -136,7 +176,9 @@ class EkpayController extends Controller
 
         $description = "Congratulations! Your application $sonod->sonod_Id has been submitted. Wait for approval.";
        $result =  SmsNocHelper::sendSms($description, $sonod->applicant_mobile, $sonod->unioun_name);  // Send SMS notification
-       Log::info('SMS sent result: ' . json_encode($result));  // Log the SMS result
+
+
+
     }
 
 

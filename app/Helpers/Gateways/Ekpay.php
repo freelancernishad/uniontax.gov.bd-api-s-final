@@ -195,6 +195,10 @@ function sonodpayment($id, $urls, $hasEnData = false,$uddoktaId=null)
 
 
 
+    if ($sonod->bokeya > 0) {
+        $vat = $sonod->bokeya * 0.15;
+        $total_amount = $sonod->bokeya + $vat;
+    }
 
 
 

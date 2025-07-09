@@ -81,6 +81,7 @@ class Sonod extends Model
         'last_years_money',
         'currently_paid_money',
         'total_amount',
+        'bokeya', // Add this line
         'amount_deails',
         'the_amount_of_money_in_words',
         'applicant_mobile',

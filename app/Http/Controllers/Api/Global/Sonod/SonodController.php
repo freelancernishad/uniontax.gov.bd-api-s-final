@@ -699,6 +699,10 @@ class SonodController extends Controller
             'sonod_name',
             'applicant_national_id_number',
             'applicant_birth_certificate_number',
+                    'applicant_type_of_businessKhat',
+        'applicant_type_of_businessKhatAmount',
+        'amount_deails',
+        'bokeya',
             'applicant_name',
             'applicant_date_of_birth',
             'applicant_gender',
@@ -736,6 +740,9 @@ class SonodController extends Controller
 
 
 
+
+
+
         // Check if results are empty and return a message if no data is found
         if (!$results) {
             return response()->json([
@@ -743,6 +750,19 @@ class SonodController extends Controller
                 'data' => null
             ], 404);  // 404 Not Found HTTP status code
         }
+
+        $amount_deails = json_decode($results->amount_deails, true);
+        $pesaKor = $amount_deails['pesaKor'] ?? 0;
+        $khat_fees = TradeLicenseKhatFee::where('khat_id_1', $results->applicant_type_of_businessKhat)
+            ->where('khat_id_2', $results->applicant_type_of_businessKhatAmount)
+            ->first()->fee ?? 0;
+
+        if($pesaKor!=$khat_fees){
+            $bokeya = $khat_fees - $pesaKor;
+
+            $results->update(['bokeya'=>$bokeya]);
+        }
+
 
         if ($results) {
             // Calculate the current orthoBchor
@@ -775,11 +795,28 @@ class SonodController extends Controller
 
 
             // Initialize download URLs
+            $results->bokeya_payment_url = '';
             $results->download_url = '';
             $results->download_url_en = '';
 
+
+            if($results->bokeya > 0){
+                $url = url('/bokeya/payment');
+                // Generate bokeya payment URL
+                $bokeyaPaymentUrl =  $redirectUrl= asset("/create/payment?sonod_id=$results->id&s_uri=$url&f_uri=$url&c_uri=$url");;
+                $results->bokeya_payment_url = $bokeyaPaymentUrl;
+            }
+
+
+
+
             // Check if the Sonod is approved and paid
-            if ($results->stutus === 'approved' && $results->payment_status === 'Paid') {
+            if ($results->stutus === 'approved' && $results->payment_status === 'Paid' &&           (
+                    $results->bokeya === null ||
+                    $results->bokeya === 0 ||
+                    $results->bokeya === '0' ||
+                    $results->bokeya <= 1
+                )) {
                 // Generate the download URL
                 if ($results->renew_able) {
                     // If renew_able is true, generate the download URL for the renewed Sonod (if applicable)
@@ -797,6 +834,12 @@ class SonodController extends Controller
                     }
                 }
             }
+
+
+
+
+
+
 
             return response()->json($results);
         }
