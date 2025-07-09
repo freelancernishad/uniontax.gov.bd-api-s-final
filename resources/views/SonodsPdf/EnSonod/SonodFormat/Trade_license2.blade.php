@@ -111,9 +111,21 @@ $orthoBchor = explode('-', $row->orthoBchor);
     $totalAmount = $currentlyPaid + $lastYearsMoney + $vatAykor + $aykorAndUtssoKor;
 
 
-        if (isUnion()) {
-            $totalAmount -= $vatAykor;
+
+       if($row->hasEnData==1){
+
+        if(isUnion()){
+            $totalAmount =  (int)$totalAmount - (int)$vatAykor;
         }
+    }else{
+        if(isUnion()){
+            $totalAmount =  (int)$totalAmount - (int)$vatAykor;
+        }
+    }
+
+        // if (isUnion()) {
+        //     $totalAmount -= $vatAykor;
+        // }
 
 @endphp
 
