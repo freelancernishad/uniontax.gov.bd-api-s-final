@@ -97,8 +97,8 @@ $orthoBchor = explode('-', $row->orthoBchor);
         $aykorAndUtssoKor = $amount_details->aykorAndUtssoKor ?? 1000;
 
 
-        $signboard_feeVatAykor = isset($amount_deails->vatAykor) ? ($signboard_fee * $amount_deails->vatAykor) / 100 : 0;
-        // $aykorAndUtssoKorVatAykor = isset($amount_deails->vatAykor) ? ($aykorAndUtssoKor * $amount_deails->vatAykor) / 100 : 0;
+        $signboard_feeVatAykor = isset($amount_details->vatAykor) ? ($signboard_fee * $amount_details->vatAykor) / 100 : 0;
+        // $aykorAndUtssoKorVatAykor = isset($amount_details->vatAykor) ? ($aykorAndUtssoKor * $amount_details->vatAykor) / 100 : 0;
         $vatAykor = $vatAykor + $signboard_feeVatAykor;
     }
 
