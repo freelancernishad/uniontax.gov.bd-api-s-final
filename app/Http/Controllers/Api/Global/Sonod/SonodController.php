@@ -803,7 +803,7 @@ class SonodController extends Controller
             if($results->bokeya > 0){
                 $url = url('/bokeya/payment');
                 // Generate bokeya payment URL
-                $bokeyaPaymentUrl =  $redirectUrl= asset("/create/payment?sonod_id=$results->id&s_uri=$url&f_uri=$url&c_uri=$url");;
+                $bokeyaPaymentUrl =  $redirectUrl= asset("/create/payment?sonod_id=$results->id");;
                 $results->bokeya_payment_url = $bokeyaPaymentUrl;
             }
 
