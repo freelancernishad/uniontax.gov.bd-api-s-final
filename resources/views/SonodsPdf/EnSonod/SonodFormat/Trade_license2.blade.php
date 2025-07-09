@@ -88,21 +88,25 @@ $orthoBchor = explode('-', $row->orthoBchor);
     $pesaKor = $amount_details->pesaKor ?? 0;
     $signboard_fee = property_exists($amount_details, 'signboard_fee') ? $amount_details->signboard_fee : 0;
 
-    if (isUnion()) {
-        $vatAykor = isset($amount_details->vatAykor) ? ($tredeLisenceFee * $amount_details->vatAykor) / 100 : 0;
+     if(isUnion()){
+
+        $vatAykor = isset($amount_deails->vatAykor) ? ($tredeLisenceFee * $amount_deails->vatAykor) / 100 : 0;
         $aykorAndUtssoKor = 0;
-    } else {
-        $vatAykor = isset($amount_details->vatAykor) ? ($pesaKor * $amount_details->vatAykor) / 100 : 0;
-        $aykorAndUtssoKor = $amount_details->aykorAndUtssoKor ?? 1000;
+    }else{
+
+        $vatAykor = isset($amount_deails->vatAykor) ? ($pesaKor * $amount_deails->vatAykor) / 100 : 0;
 
 
+        \Log::info("vatAykor: $vatAykor");
+        $aykorAndUtssoKor = isset($amount_deails->aykorAndUtssoKor) ? $amount_deails->aykorAndUtssoKor : 1000;
 
 
-        $signboard_feeVatAykor = isset($amount_deails->vatAykor) ? ($signboard_fee * $amount_deails->vatAykor) / 100 : 0;
+      $signboard_feeVatAykor = isset($amount_deails->vatAykor) ? ($signboard_fee * $amount_deails->vatAykor) / 100 : 0;
         // $aykorAndUtssoKorVatAykor = isset($amount_deails->vatAykor) ? ($aykorAndUtssoKor * $amount_deails->vatAykor) / 100 : 0;
 
 
         $vatAykor = $vatAykor + $signboard_feeVatAykor;
+
     }
 
     $currentlyPaid = $amount_details->currently_paid_money ?? 0;
