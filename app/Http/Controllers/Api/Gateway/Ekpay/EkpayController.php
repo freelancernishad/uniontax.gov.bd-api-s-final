@@ -126,7 +126,7 @@ class EkpayController extends Controller
     private function updateSonodFeeStatus($sonod, &$Insertdata)
     {
 
-        if ($sonod->stutus == 'approved' && $sonod->payment_status == 'Paid') {
+        if ($sonod->payment_status == 'Paid') {
             $amount_deails = json_decode($sonod->amount_deails, true);
 
             $pesaKor = isset($amount_deails['pesaKor']) ? (float)$amount_deails['pesaKor'] : 0;
