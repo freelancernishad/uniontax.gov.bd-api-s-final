@@ -758,6 +758,10 @@ class SonodController extends Controller
             ->first()->fee ?? 0;
 
         if($pesaKor!=$khat_fees){
+
+            Log::info($pesaKor);
+            Log::info($khat_fees);
+
             $bokeya = $khat_fees - $pesaKor;
 
             $results->update(['bokeya'=>$bokeya]);
