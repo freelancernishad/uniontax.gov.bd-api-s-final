@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class UserSonodController extends Controller
@@ -603,7 +604,7 @@ $sonod->applicant_birth_certificate_attachment = !empty($sonod->applicant_birth_
 
         DB::beginTransaction();
         try {
-            
+
             $sonodName = $sonod->sonod_name;
             $sonodEnName = Sonodnamelist::where('bnname', $sonodName)->first();
             $filePath = str_replace(' ', '_', $sonodEnName->enname);
@@ -629,6 +630,42 @@ $sonod->applicant_birth_certificate_attachment = !empty($sonod->applicant_birth_
         }
     }
 
+
+
+    public function updateKhat(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'applicant_type_of_businessKhat' => 'nullable|max:255',
+            'applicant_type_of_businessKhatAmount' => 'nullable',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $sonod = Sonod::find($id);
+
+        if (!$sonod) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sonod not found',
+            ], 404);
+        }
+
+        $sonod->applicant_type_of_businessKhat = $request->input('applicant_type_of_businessKhat');
+        $sonod->applicant_type_of_businessKhatAmount = $request->input('applicant_type_of_businessKhatAmount');
+        $sonod->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Sonod khat information updated successfully',
+            'data' => $sonod
+        ]);
+    }
 
 
 
