@@ -757,10 +757,12 @@ class SonodController extends Controller
             ->where('khat_id_2', $results->applicant_type_of_businessKhatAmount)
             ->first()->fee ?? 0;
 
+        Log::info($pesaKor);
+        Log::info($khat_fees);
+
         if($pesaKor!=$khat_fees){
 
-            Log::info($pesaKor);
-            Log::info($khat_fees);
+
 
             $bokeya = $khat_fees - $pesaKor;
 
