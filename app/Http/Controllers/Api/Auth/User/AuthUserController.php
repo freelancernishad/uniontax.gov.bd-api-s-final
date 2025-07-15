@@ -292,6 +292,7 @@ class AuthUserController extends Controller
                 'maintance_fee_type' => $uniouninfo->maintance_fee_type,
                 'maintance_fee' => $uniouninfo->maintance_fee,
                 'maintance_fee_option' => $maintance_fee_option,
+                'payment_last_date' => $paymentLastDate,
                 'profile_steps' => is_numeric($uniouninfo->profile_steps) ? (int)$uniouninfo->profile_steps : 0,
 
 
