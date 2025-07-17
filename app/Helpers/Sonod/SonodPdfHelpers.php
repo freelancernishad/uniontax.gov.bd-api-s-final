@@ -297,7 +297,7 @@ function sonodView_Inheritance_certificate_english($id) {
         }
 
         $nagoriinfo .= '
-            <p style="margin-top:0px;margin-bottom:5px;font-size:11px;text-align:justify">&nbsp; &nbsp; &nbsp; This is to certify that ' . $deathStatus . ' ' . $row->utname . ', Father/Husband- ' . $row->ut_father_name . ', Mother- ' . $row->ut_mother_name . ', Village- ' . $row->ut_grame . ', Post Office- ' . $row->ut_post . ', Upazila: ' . $row->ut_thana . ', District- ' . $row->ut_district . '. He was a resident of Ward No. ' . int_en_to_bn($row->ut_word) . ' of this union as a ' . $row->applicant_resident_status . '. At the time of death, he left behind the following heirs. Below are the names and relationships of his heir/heirs.<br>
+            <p style="margin-top:0px;margin-bottom:5px;font-size:11px;text-align:justify">&nbsp; &nbsp; &nbsp; This is to certify that ' . $deathStatus . ' ' . $row->utname . ', Father/Husband- ' . $row->ut_father_name . ', Mother- ' . $row->ut_mother_name . ', Village- ' . $row->ut_grame . ', Post Office- ' . $row->ut_post . ', Upazila: ' . $row->ut_thana . ', District- ' . $row->ut_district . '. He was a resident of Ward No. ' . ($row->ut_word) . ' of this union as a ' . $row->applicant_resident_status . '. At the time of death, he left behind the following heirs. Below are the names and relationships of his heir/heirs.<br>
             <br>
             &nbsp; &nbsp; &nbsp; I pray for the salvation of the departed soul of ' . $deathStatus2 . '.
             </p>
@@ -305,7 +305,7 @@ function sonodView_Inheritance_certificate_english($id) {
         ';
     } else {
         $nagoriinfo .= '
-            <p style="margin-top:0px;margin-bottom:5px;font-size:11px;text-align:justify">&nbsp; &nbsp; &nbsp; This is to certify that Mr. ' . $row->utname . ', Father/Husband- ' . $row->ut_father_name . ', Mother- ' . $row->ut_mother_name . ', Village- ' . $row->ut_grame . ', Post Office- ' . $row->ut_post . ', Upazila: ' . $row->ut_thana . ', District- ' . $row->ut_district . '. He is a resident of Ward No. ' . int_en_to_bn($row->ut_word) . ' of this union as a ' . $row->applicant_resident_status . '. Below are the names and relationships of his successor/successors.<br>
+            <p style="margin-top:0px;margin-bottom:5px;font-size:11px;text-align:justify">&nbsp; &nbsp; &nbsp; This is to certify that Mr. ' . $row->utname . ', Father/Husband- ' . $row->ut_father_name . ', Mother- ' . $row->ut_mother_name . ', Village- ' . $row->ut_grame . ', Post Office- ' . $row->ut_post . ', Upazila: ' . $row->ut_thana . ', District- ' . $row->ut_district . '. He is a resident of Ward No. ' . ($row->ut_word) . ' of this union as a ' . $row->applicant_resident_status . '. Below are the names and relationships of his successor/successors.<br>
             <br>
             </p>
             <p style="margin: 0;font-size:11px;">Note: All responsibilities of this successor certificate lie with the concerned UP member/verifier.</p>

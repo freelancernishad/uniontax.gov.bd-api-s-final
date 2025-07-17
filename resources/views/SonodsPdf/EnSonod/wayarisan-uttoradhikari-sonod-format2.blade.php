@@ -106,7 +106,7 @@
                 $color = 'black';
                 $style = '';
                 $w_list = json_decode($row->successor_list);
-                $margin_top = 300 - (count($w_list) * 15);
+                $margin_top = 300 - (count($w_list) * 14);
                 $marginTop = "margin-top:$margin_top";
             @endphp
 
