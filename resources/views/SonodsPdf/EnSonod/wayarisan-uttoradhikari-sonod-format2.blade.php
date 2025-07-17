@@ -107,7 +107,7 @@
                 $style = '';
                 $w_list = json_decode($row->successor_list);
                 $margin_top = 300;
-                $marginTop = "margin-top:$margin_top px";
+                $marginTop = "margin-top:$margin_top";
             @endphp
 
             <table width="100%" style="border-collapse: collapse;{{ $marginTop }}" border="0">
