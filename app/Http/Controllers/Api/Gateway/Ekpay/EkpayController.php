@@ -65,6 +65,8 @@ class EkpayController extends Controller
                 $this->updateTenderFormStatus($payment, $Insertdata, $data);
             } elseif ($payment->sonod_type == 'tender-deposit') {
                 $this->updateTenderDepositStatus($payment, $Insertdata);
+            } elseif ($payment->sonod_type == 'AutoBikeRegistration') {
+                $this->updateAutoBikeRegistrationStatus($payment, $Insertdata);
             } else {
 
                 $this->updateSonodFeeStatus($sonod, $Insertdata,$payment->hasEnData);
@@ -121,6 +123,30 @@ class EkpayController extends Controller
 
         $description = "Your Tender has been successfully submitted.";
         // SmsNocHelper::sendSms($description, $TenderFormBuy->mobile, $unioun_name);  // Send SMS notification
+    }
+
+
+
+    private function updateAutoBikeRegistrationStatus($payment, &$Insertdata)
+    {
+        // AutoBikeRegistration মডেল থেকে রেকর্ড নাও
+        $autoBike = \App\Models\AutoBikeRegistration::find($payment->sonodId);
+        if (!$autoBike) {
+            Log::error("AutoBikeRegistration record not found for payment ID: " . $payment->id);
+            return;
+        }
+
+        // Payment সফল হলে status আপডেট করো
+        $autoBike->update([
+            'status' => 'Applied',
+        ]);
+
+        // Payment টেবিলেও status আপডেট
+        $Insertdata['status'] = 'Paid';
+
+        // SMS নোটিফিকেশন পাঠাতে চাইলে এখানে লিখতে পারো
+        $description = "Your Auto Bike Registration with ID {$autoBike->id} has been successfully Applied.";
+        \App\Helpers\SmsNocHelper::sendSms($description, $autoBike->applicant_mobile, $autoBike->union_name);
     }
 
     // Update Sonod Fee payment status

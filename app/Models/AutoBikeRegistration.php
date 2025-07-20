@@ -11,6 +11,7 @@ class AutoBikeRegistration extends Model
     use HasFactory;
 
     protected $fillable = [
+        'application_id',
         'fiscal_year',
         'application_type',
         'applicant_name_bn',
@@ -43,6 +44,58 @@ class AutoBikeRegistration extends Model
         'union_name',     // NEW
     ];
 
+
+
+
+     // Model boot method to auto-generate application_id
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->application_id)) {
+                $model->application_id = $model->generateApplicationId();
+            }
+        });
+    }
+
+    public function generateApplicationId()
+    {
+        $union = $this->union_name;
+        $year = $this->getFiscalYear();
+
+        $unionInfo = Uniouninfo::where('short_name_e', $union)->latest()->first();
+        if (!$unionInfo) {
+            // fallback or throw error
+            return null;
+        }
+
+        // get count of existing applications this year for this union
+        $count = self::where('union_name', $union)
+            ->whereYear('created_at', $year)
+            ->count();
+
+        // serial starts at 1 + count
+        $serial = $count + 1;
+
+        $serialStr = str_pad($serial, 4, '0', STR_PAD_LEFT);  // 4 digit serial, e.g. 0001
+
+        // application_id = u_code + year (2 digits) + serial
+        $yearShort = substr($year, 2, 2);  // e.g. 2025 -> 25
+        return $unionInfo->u_code . $yearShort . $serialStr;
+    }
+
+    // Get current fiscal year based on date
+    protected function getFiscalYear()
+    {
+        $month = date('m');
+        $year = date('Y');
+        if ($month < 7) {
+            // If before July, fiscal year is previous year
+            return $year - 1;
+        }
+        return $year;
+    }
 
 
     /**
