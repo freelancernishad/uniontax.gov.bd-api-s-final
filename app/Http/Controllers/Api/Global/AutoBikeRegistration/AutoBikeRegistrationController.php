@@ -40,11 +40,11 @@ class AutoBikeRegistrationController extends Controller
             'auto_bike_supplier_address' => 'required|string|max:500',
             'auto_bike_supplier_mobile' => 'required|string|max:20',
 
-            'passport_photo' => 'nullable|string',
-            'national_id_copy' => 'nullable|string',
-            'auto_bike_receipt' => 'nullable|string',
-            'previous_license_copy' => 'nullable|string',
-            'affidavit_copy' => 'nullable|string',
+            'passport_photo' => 'nullable|file|mimes:jpg,jpeg,png,pdf',
+            'national_id_copy' => 'nullable|file|mimes:jpg,jpeg,png,pdf',
+            'auto_bike_receipt' => 'nullable|file|mimes:jpg,jpeg,png,pdf',
+            'previous_license_copy' => 'nullable|file|mimes:jpg,jpeg,png,pdf',
+            'affidavit_copy' => 'nullable|file|mimes:jpg,jpeg,png,pdf',
 
             'union_name' => 'required|string|max:255', // NEW
             'c_uri' => 'required|string',
@@ -60,20 +60,32 @@ class AutoBikeRegistrationController extends Controller
             ], 422);
         }
 
-        $registration = AutoBikeRegistration::create($validator->validated());
 
+        $data = $validator->validated();
+
+        // ফাইল আপলোড এবং path আপডেট
+        $fileFields = ['passport_photo', 'national_id_copy', 'auto_bike_receipt', 'previous_license_copy', 'affidavit_copy'];
+
+        foreach ($fileFields as $field) {
+            if ($request->hasFile($field)) {
+                $file = $request->file($field);
+                // তোমার uploadDocumentsToS3() হেল্পার ইউজ করে আপলোড করো
+                $url = uploadDocumentsToS3($file, 'auto_bike_registration', now()->format('Y-m-d'), null);
+                if ($url) {
+                    $data[$field] = $url;
+                }
+            }
+        }
+
+        $registration = AutoBikeRegistration::create($data);
 
         $urls = [
             'c_uri' => $request->input('c_uri'),
             'f_uri' => $request->input('f_uri'),
             's_uri' => $request->input('s_uri'),
         ];
-        // Build redirect_url with all provided URIs as query parameters
-        $query = http_build_query([
-            'c_uri' => $urls['c_uri'],
-            'f_uri' => $urls['f_uri'],
-            's_uri' => $urls['s_uri'],
-        ]);
+
+        $query = http_build_query($urls);
         $redirectUrl = route('auto_bike_registration.payment', ['id' => $registration->id]) . '?' . $query;
 
         return response()->json([
