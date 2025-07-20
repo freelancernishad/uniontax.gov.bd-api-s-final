@@ -66,7 +66,8 @@ class EkpayController extends Controller
             } elseif ($payment->sonod_type == 'tender-deposit') {
                 $this->updateTenderDepositStatus($payment, $Insertdata);
             } else {
-                $this->updateSonodFeeStatus($sonod, $Insertdata);
+
+                $this->updateSonodFeeStatus($sonod, $Insertdata,$payment->hasEnData);
             }
 
         } else {
@@ -123,7 +124,7 @@ class EkpayController extends Controller
     }
 
     // Update Sonod Fee payment status
-    private function updateSonodFeeStatus($sonod, &$Insertdata)
+    private function updateSonodFeeStatus($sonod, &$Insertdata,$hasEnData=false)
     {
 
         if ($sonod->payment_status == 'Paid') {
@@ -155,12 +156,16 @@ class EkpayController extends Controller
                 'currently_paid_money' => (string)$updatedPaidMoney,
             ]);
 
+
             $sonod->update([
                 'bokeya' => 0,
-                'amount_deails' => $amountDetails
+                'amount_deails' => $amountDetails,
+                'hasEnData' => $hasEnData,
             ]);
 
             return;
+
+
         }
 
 

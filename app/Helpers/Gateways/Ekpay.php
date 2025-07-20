@@ -95,7 +95,7 @@ $AKPAY_MER_PASS_KEY = $uniounDetials->AKPAY_MER_PASS_KEY;
 
 
 
-function sonodpayment($id, $urls, $hasEnData = false,$uddoktaId=null)
+function sonodpayment($id, $urls, $hasEnData = false,$uddoktaId=null,$only_english=false)
 {
     $sonod = Sonod::findOrFail($id);
 

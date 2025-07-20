@@ -68,7 +68,12 @@ class SonodController extends Controller
                 $f_uri = $bnData['f_uri'] ?? $enData['f_uri'];
                 $c_uri = $bnData['c_uri'] ?? $enData['c_uri'];
 
-            $redirectUrl= asset("/create/payment?sonod_id=$sonod->id&s_uri=$s_uri&f_uri=$f_uri&c_uri=$c_uri&hasEnData=$hasEnData&uddoktaId=$uddoktaId");
+                $onlyEnglish = false;
+                if($request->has('sonod_id') && $request->sonod_id){
+                    $onlyEnglish = true;
+                }
+
+            $redirectUrl= asset("/create/payment?sonod_id=$sonod->id&s_uri=$s_uri&f_uri=$f_uri&c_uri=$c_uri&hasEnData=$hasEnData&uddoktaId=$uddoktaId&only_english=$onlyEnglish");
 
 
 
@@ -680,6 +685,7 @@ protected function createSonod($bnData, $enData, $holdingData, $request)
         $cUri = $request->query('c_uri');       // Get c_uri from the URL query string
         $hasEnData = $request->query('hasEnData') ?? 0; // Get hasEnData from the URL query string
         $uddoktaId = $request->query('uddoktaId'); // Get uddoktaId from the URL query string
+        $only_english = $request->query('only_english');
 
         // Prepare the URLs array
         $urls = [
@@ -689,7 +695,7 @@ protected function createSonod($bnData, $enData, $holdingData, $request)
         ];
 
         // Generate the redirect URL using the sonodpayment function
-        $redirectUrl = sonodpayment($sonodId, $urls, $hasEnData, $uddoktaId);
+        $redirectUrl = sonodpayment($sonodId, $urls, $hasEnData, $uddoktaId,$only_english);
 
 
         return redirect($redirectUrl);
