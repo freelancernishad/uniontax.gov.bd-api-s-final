@@ -39,11 +39,13 @@ class AutoBikeRegistrationController extends Controller
             'auto_bike_supplier_name' => 'required|string|max:255',
             'auto_bike_supplier_address' => 'required|string|max:500',
             'auto_bike_supplier_mobile' => 'required|string|max:20',
-            'passport_photo' => 'required|string',
-            'national_id_copy' => 'required|string',
-            'auto_bike_receipt' => 'required|string',
+
+            'passport_photo' => 'nullable|string',
+            'national_id_copy' => 'nullable|string',
+            'auto_bike_receipt' => 'nullable|string',
             'previous_license_copy' => 'nullable|string',
             'affidavit_copy' => 'nullable|string',
+
             'union_name' => 'required|string|max:255', // NEW
             'c_uri' => 'required|string',
             'f_uri' => 'required|string',
