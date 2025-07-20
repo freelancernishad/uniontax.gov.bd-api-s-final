@@ -40,6 +40,20 @@ class AutoBikeRegistrationController extends Controller
             'auto_bike_supplier_address' => 'required|string|max:500',
             'auto_bike_supplier_mobile' => 'required|string|max:20',
 
+
+            // Newly added location-related fields
+            'current_division' => 'nullable|string|max:255',
+            'applicant_present_district' => 'nullable|string|max:255',
+            'applicant_present_Upazila' => 'nullable|string|max:255',
+            'applicant_present_union' => 'nullable|string|max:255',
+            'permanent_address' => 'nullable|string|max:500',
+            'applicant_permanent_division' => 'nullable|string|max:255',
+            'applicant_permanent_district' => 'nullable|string|max:255',
+            'applicant_permanent_Upazila' => 'nullable|string|max:255',
+            'applicant_permanent_union' => 'nullable|string|max:255',
+
+
+
             'passport_photo' => 'nullable|file|mimes:jpg,jpeg,png,pdf',
             'national_id_copy' => 'nullable|file|mimes:jpg,jpeg,png,pdf',
             'auto_bike_receipt' => 'nullable|file|mimes:jpg,jpeg,png,pdf',

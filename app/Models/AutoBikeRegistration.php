@@ -42,6 +42,18 @@ class AutoBikeRegistration extends Model
         'affidavit_copy',
         'status',         // NEW
         'union_name',     // NEW
+
+
+            // 👇 Add these newly found missing fields
+        'current_division',
+        'applicant_present_district',
+        'applicant_present_Upazila',
+        'applicant_present_union',
+        'permanent_address',
+        'applicant_permanent_division',
+        'applicant_permanent_district',
+        'applicant_permanent_Upazila',
+        'applicant_permanent_union',
     ];
 
 
