@@ -105,7 +105,7 @@ class AutoBikeRegistrationController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Auto bike registration created successfully',
-            'data' => $registration,
+            // 'data' => $registration,
             'redirect_url' => $redirectUrl,
         ], 201);
     }
