@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\User\Holdingtax\HoldingtaxController;
 use App\Http\Controllers\Api\User\Uniouninfo\PostOfficeController;
 use App\Http\Controllers\Api\Auth\Uddokta\CitizenInformationController;
 use App\Http\Controllers\Api\User\PackageAddon\UserPackageAddonController;
+use App\Http\Controllers\Api\Global\AutoBikeRegistration\AutoBikeRegistrationController;
 
 // Load users and admins route files
 if (file_exists($userRoutes = __DIR__.'/example.php')) {
@@ -108,6 +109,11 @@ Route::get('holdingtax/search', [HoldingtaxController::class, 'holdingSearch']);
 Route::get('holdingtax/boketas/{id}', [HoldingtaxController::class, 'getSingleHoldingTaxWithBokeyas']);
 
 Route::post('/pay/holding/tax/{id}', [HoldingtaxController::class,'holding_tax_pay_Online']);
+
+
+
+Route::post('bike-registration', [AutoBikeRegistrationController::class, 'store']);
+Route::get('/auto-bike-registration/{id}/payment', [AutoBikeRegistrationController::class, 'payment'])->name('auto_bike_registration.payment');
 
 
 
