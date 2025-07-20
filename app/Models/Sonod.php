@@ -47,6 +47,7 @@ class Sonod extends Model
         'applicant_owner_type',
         'applicant_name_of_the_organization',
         'organization_address',
+        'organization_word_no',
         'applicant_name',
         'utname',
         'ut_religion',

@@ -18,9 +18,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
-use App\Services\SonodCreatorService;
 use Illuminate\Support\Facades\Storage;
-use App\Services\EnglishSonodCreatorService;
 use Devfaysal\BangladeshGeocode\Models\Upazila;
 use Devfaysal\BangladeshGeocode\Models\District;
 
@@ -64,9 +62,9 @@ class SonodController extends Controller
 
 
 
-                $s_uri = $bnData['s_uri'] ?? $enData['s_uri'];
-                $f_uri = $bnData['f_uri'] ?? $enData['f_uri'];
-                $c_uri = $bnData['c_uri'] ?? $enData['c_uri'];
+                $s_uri = $bnData['s_uri'];
+                $f_uri = $bnData['f_uri'];
+                $c_uri = $bnData['c_uri'];
 
             $redirectUrl= asset("/create/payment?sonod_id=$sonod->id&s_uri=$s_uri&f_uri=$f_uri&c_uri=$c_uri&hasEnData=$hasEnData&uddoktaId=$uddoktaId");
 
@@ -91,52 +89,388 @@ class SonodController extends Controller
     }
 
 
-protected function createSonod($bnData, $enData, $holdingData, $request)
-{
-    $sonodCreator = new SonodCreatorService();
-    $englishSonodCreator = new EnglishSonodCreatorService();
+    protected function createSonod($bnData, $enData,$holdingData, $request)
+    {
 
-    $sonod = null;
+          if (!empty($bnData)) {
 
-    // যদি শুধু ইংরেজি ডাটা থাকে, বাংলা ডাটা না থাকে
-    if (empty($bnData) && !empty($enData)) {
-        // প্রথমে sonod_id দিয়ে খুঁজে দেখুন
-        $sonod = null;
-        if ($request->has('sonod_id') && $request->sonod_id) {
-            $sonod = Sonod::find($request->sonod_id);
+        // Process successor_list for bnData
+        $successorListFormatted = $bnData['successor_list'] ?? [];
+        $successor_list = json_encode($successorListFormatted);
+
+        // Process successor_list for enData
+        $enSuccessorListFormatted = $enData['successor_list'] ?? [];
+        $enSuccessorList = json_encode($enSuccessorListFormatted);
+
+        // Fetch the English name of the Sonod
+        $sonodName = $bnData['sonod_name'];
+        $sonodEnName = Sonodnamelist::where('bnname', $sonodName)->first();
+        if (!$sonodEnName) {
+            throw new Exception('No data found for the given Sonod name.');
         }
-        // না পেলে নতুন করে তৈরি করুন
-        if (!$sonod) {
-            $sonod = $sonodCreator->create($enData, [], $holdingData, $request);
-        }
-        // তারপর ইংরেজি সনদ তৈরি বা আপডেট করুন
-        $englishSonodCreator->createOrUpdate($sonod, $enData,'only_en', $request);
 
-        return $sonod;
+        $filePath = str_replace(' ', '_', $sonodEnName->enname);
+        $dateFolder = date("Y/m/d");
+
+        // Generate unique key if not provided
+        $unionName = $bnData['unioun_name'];
+        do {
+            $uniqueKey = md5(uniqid($unionName . $sonodName . microtime(), true));
+            $existingSonod = Sonod::where('uniqeKey', $uniqueKey)->first();
+        } while ($existingSonod);
+
+        $sonodId = $request->has('sonod_id')
+            ? $request->sonod_id
+            : (string) sonodId($unionName, $sonodName, getOrthoBchorYear());
+
+        // Prepare data for insertion for Sonod (bnData)
+        $insertData = array_merge($bnData, [
+            'applicant_type_of_businessKhat' => $bnData['applicant_type_of_businessKhat'] ?? null,
+            'applicant_type_of_businessKhatAmount' => $bnData['applicant_type_of_businessKhatAmount'] ?? 0,
+            'uniqeKey' => $uniqueKey,
+            'khat' => "সনদ ফি",
+            'stutus' => "Pepaid",
+            'payment_status' => "Unpaid",
+            'year' => date('Y'),
+            'hasEnData' => !empty($enData), // Set hasEnData based on whether enData is present
+        ]);
+
+        $insertData = array_merge($insertData, $this->prepareSonodData($request, $sonodName, $successor_list, $unionName, $sonodId));
+
+        // Handle file uploads securely
+        handleFileUploads($request, $insertData, $filePath, $dateFolder, $sonodId);
+
+        // Check if annual income is provided and process accordingly
+        if (isset($bnData['Annual_income'])) {
+            $insertData['Annual_income'] = $bnData['Annual_income'];
+            $insertData['Annual_income_text'] = convertAnnualIncomeToText($bnData['Annual_income']);
+        }
+
+        // Handle the status and charges
+        $this->handleCharges($bnData, $enData, $sonodEnName, $insertData);
+
+
+            // Handle base64 image upload
+        if (isset($bnData['image']) && $bnData['image']) {
+            $insertData['image'] = uploadBase64Image(
+                $bnData['image'],
+                $filePath,
+                $dateFolder,
+                $sonodId
+            );
+        }
+
+
+        if (isset($bnData['applicant_date_of_birth']) && !empty($bnData['applicant_date_of_birth'])) {
+            $insertData['applicant_date_of_birth'] = convertToMySQLDate(int_bn_to_en($bnData['applicant_date_of_birth']));
+        }
+
+
+        $sonodData = Arr::except($insertData, ['holding_owner_name', 'holding_owner_mobile', 'holding_owner_relationship']);
+
+
+        // Save the Sonod entry
+        $sonod = Sonod::create($sonodData);
+
+        // Handle file uploads securely
+        handleSonodFileUploads($request, $filePath, $dateFolder,$sonod->id);
+
+
+        if (
+            !empty($insertData['holding_owner_name']) &&
+            !empty($insertData['holding_owner_mobile']) &&
+            !empty($insertData['holding_owner_relationship'])
+        ) {
+            $holdingData['sonod_id'] = $sonod->id;
+            $holdingData['holding_no'] = $insertData['applicant_holding_tax_number'] ?? null;
+            $holdingData['name'] = $insertData['holding_owner_name'] ?? null;
+            $holdingData['mobile'] = $insertData['holding_owner_mobile'] ?? null;
+            $holdingData['relationship'] = $insertData['holding_owner_relationship'] ?? null;
+
+            SonodHoldingOwner::create($holdingData);
+        }
+
     }
 
-    // বাংলা সনদ তৈরি / আপডেট
-    if (!empty($bnData)) {
-        $sonod = $sonodCreator->create($bnData, $enData, $holdingData, $request);
-    }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // ইংরেজি সনদ তৈরি / আপডেট
-    if (!empty($enData)) {
-        if (!$sonod) {
+
+
+
+
+
+        // Create EnglishSonod only if enData is not empty
+        if (!empty($enData)) {
+
+
             if ($request->has('sonod_id') && $request->sonod_id) {
+                $sonod = Sonod::find($sonod->id);
+            }else{
                 $sonod = Sonod::find($request->sonod_id);
-                if (!$sonod) {
-                    throw new \Exception("Sonod not found for given sonod_id.");
-                }
-            } else {
-                throw new \Exception("Sonod ID missing to create EnglishSonod.");
             }
+
+
+                 if (empty($bnData)) {
+                    // Sonod create koro using English data only and then sonod load koro
+                 }
+
+
+
+            // Prepare data for insertion for EnglishSonod (enData)
+            $englishSonodData = array_merge($enData, [
+
+
+                'applicant_gender' => $sonod->applicant_gender == 'পুরুষ' ? 'Male' : ($sonod->applicant_gender == 'মহিলা' ? 'Female' : ''),
+
+                'applicant_national_id_number' => int_bn_to_en($sonod->applicant_national_id_number),
+                'applicant_birth_certificate_number' => int_bn_to_en($sonod->applicant_birth_certificate_number),
+                'applicant_holding_tax_number' => int_bn_to_en($sonod->applicant_holding_tax_number),
+                'applicant_mobile' => int_bn_to_en($sonod->applicant_mobile),
+                'applicant_date_of_birth' => convertToMySQLDate(int_bn_to_en($sonod->applicant_date_of_birth)),
+                'image' => $sonod->image,
+                'applicant_owner_type' => $sonod->applicant_owner_type == 'ব্যক্তি মালিকানাধীন' ? 'Individual Ownership' :
+                ($sonod->applicant_owner_type == 'যৌথ মালিকানা' ? 'Joint Ownership' :
+                ($sonod->applicant_owner_type == 'কোম্পানী' ? 'Company' : '')),
+
+                'applicant_vat_id_number' => $sonod->applicant_vat_id_number,
+                'applicant_tax_id_number' => $sonod->applicant_tax_id_number,
+                'applicant_type_of_businessKhat' => $sonod->applicant_type_of_businessKhat,
+                'applicant_type_of_businessKhatAmount' => $sonod->applicant_type_of_businessKhatAmount,
+                'last_years_money' => $sonod->last_years_money,
+                'orthoBchor' => int_bn_to_en($sonod->orthoBchor),
+                'applicant_email' => $sonod->applicant_email,
+
+                'applicant_resident_status' => $sonod->applicant_resident_status == 'স্থায়ী' ? 'Permanent' : ($sonod->applicant_resident_status == 'অস্থায়ী' ? 'Temporary' : ''),
+
+
+
+              'applicant_present_district' => ($district = District::where('bn_name', $sonod->applicant_present_district)->first()) ? $district->name : '',
+                'applicant_present_Upazila' => ($upazila = Upazila::where('bn_name', $sonod->applicant_present_Upazila)->first()) ? $upazila->name : '',
+                'applicant_present_word_number' => int_bn_to_en($sonod->applicant_present_word_number),
+
+
+                // 'applicant_present_post_office' => $sonod->applicant_present_post_office,
+                // 'applicant_present_village' => $sonod->applicant_present_village,
+
+
+                'applicant_permanent_district' => ($district = District::where('bn_name', $sonod->applicant_permanent_district)->first()) ? $district->name : '',
+                'applicant_permanent_Upazila' => ($upazila = Upazila::where('bn_name', $sonod->applicant_permanent_Upazila)->first()) ? $upazila->name : '',
+                'applicant_permanent_word_number' => int_bn_to_en($sonod->applicant_permanent_word_number),
+
+
+                // 'applicant_permanent_post_office' => $sonod->applicant_permanent_post_office,
+                // 'applicant_permanent_village' => $sonod->applicant_permanent_village,
+
+
+
+
+
+
+
+
+
+
+
+
+                'alive_status' => $sonod->alive_status,
+                'format' => $sonod->format,
+                'sonod_Id' => $sonod->id,
+                'uniqeKey' => $uniqueKey,
+                'khat' => "সনদ ফি",
+                'stutus' => "Pepaid",
+                'payment_status' => "Unpaid",
+                'year' => date('Y'),
+                'successor_list' => $enSuccessorList,
+            ]);
+
+
+
+
+
+
+
+
+
+            // Check if EnglishSonod already exists for this Sonod
+            $existingEnglishSonod = EnglishSonod::where('sonod_Id', $sonod->id)->first();
+
+            if ($existingEnglishSonod) {
+                $existingEnglishSonod->update($englishSonodData);
+            } else {
+                EnglishSonod::create($englishSonodData);
+            }
+
+            // Double the price if both Sonod and EnglishSonod are created
+            $this->doublePriceForBoth($sonod);
         }
-        $englishSonodCreator->createOrUpdate($sonod, $enData,'both', $request);
+
+        return $sonod; // Return only the sonod entry
     }
 
-    return $sonod;
-}
+
+    private function prepareSonodData($request, $sonodName, $successor_list, $unionName, $sonodId)
+    {
+        $insertData = [];
+
+        // Specific adjustments based on sonod name
+        if ($sonodName == 'একই নামের প্রত্যয়ন' || $sonodName == 'বিবিধ প্রত্যয়নপত্র') {
+            $insertData['sameNameNew'] = 1;
+        }
+
+        // Set the orthoBchor based on current year/month
+        $insertData['orthoBchor'] = getOrthoBchorYear();
+
+        // Set additional fields from the union info
+        $unionInfo = Uniouninfo::where('short_name_e', $unionName)->latest()->first();
+        $insertData['chaireman_name'] = $unionInfo->c_name;
+        $insertData['c_email'] = $unionInfo->c_email;
+        $insertData['chaireman_sign'] = $unionInfo->c_signture;
+        $insertData['chaireman_type'] = $unionInfo->c_type;
+
+        // Add successor list
+        $insertData['successor_list'] = $successor_list;
+
+        // Set union chairman and secretary info
+        $insertData['socib_name'] = $unionInfo->socib_name;
+        $insertData['socib_email'] = $unionInfo->socib_email;
+        $insertData['socib_signture'] = $unionInfo->socib_signture;
+        $insertData['sonod_Id'] = $sonodId;
+
+        return $insertData;
+    }
+
+
+
+
+
+    private function handleCharges($bnData, $enData, $sonodnamelist, &$insertData)
+    {
+        $tradeVat = 15;
+
+        // Fetch last_years_money from bnData or enData
+        $lastYearsMoney = $bnData['last_years_money'] ?? $enData['last_years_money'] ?? 0;
+
+        // Fetch sonod_name and unioun_name from bnData or enData
+        $sonodName = $bnData['sonod_name'] ?? $enData['sonod_name'] ?? null;
+        $uniounName = $bnData['unioun_name'] ?? $enData['unioun_name'] ?? null;
+
+        if (!$sonodName || !$uniounName) {
+            throw new Exception('Sonod name or union name is missing.');
+        }
+
+        // Fetch the corresponding sonod fee from the SonodFee table
+        $sonodFeeRecord = SonodFee::where([
+            'service_id' => $sonodnamelist->service_id,
+            'unioun' => $uniounName
+        ])->first();
+
+        if (!$sonodFeeRecord) {
+            throw new Exception('Sonod fee not found.');
+        }
+
+        $sonodFee = $sonodFeeRecord->fees;
+        $signboard_fee = 0;
+        // Check if it's a 'ট্রেড লাইসেন্স' and retrieve the PesaKor fee
+        if ($sonodName == 'ট্রেড লাইসেন্স') {
+            $khat_id_1 = $bnData['applicant_type_of_businessKhat'] ?? $enData['applicant_type_of_businessKhat'] ?? null;
+            $khat_id_2 = $bnData['applicant_type_of_businessKhatAmount'] ?? $enData['applicant_type_of_businessKhatAmount'] ?? 0;
+
+            $pesaKorFee = TradeLicenseKhatFee::where([
+                'khat_id_1' => $khat_id_1,
+                'khat_id_2' => $khat_id_2
+            ])->first();
+
+            $pesaKor = $pesaKorFee ? $pesaKorFee->fee : 0;
+
+
+            $isUnion = isUnion();
+            if($isUnion){
+                $tradeVatAmount = ($sonodFee * $tradeVat) / 100;
+            }else{
+                // $tradeVatAmount = ($pesaKor * $tradeVat) / 100;
+                $tradeVatAmount = 0;
+
+
+                $signboard_type = $bnData['signboard_type'] ?? $enData['signboard_type'] ?? 'normal';
+                $signboard_size_square_fit = $bnData['signboard_size_square_fit'] ?? $enData['signboard_size_square_fit'] ?? 0;
+                $signboard_size_square_fit = (float) $signboard_size_square_fit; // Ensure numeric value
+
+                $signboard_fee = 0;
+                if ($signboard_type == 'normal') {
+                    $signboard_fee = $signboard_size_square_fit * 100;
+                } elseif ($signboard_type == 'digital_led') {
+                    $signboard_fee = $signboard_size_square_fit * 150;
+                }
+
+            }
+        } else {
+            $pesaKor = 0;
+            $tradeVatAmount = 0;
+            $signboard_fee = 0;
+        }
+
+        // Calculate total amount and currently paid money
+        $totalAmount = $sonodFee + $tradeVatAmount + $pesaKor + $signboard_fee;
+
+
+
+        $currentlyPaidMoney = (int)$totalAmount;
+
+        // Prepare amount details for JSON encoding
+        $amountDetails = json_encode([
+            'total_amount' => $currentlyPaidMoney + (int)$lastYearsMoney,
+            'pesaKor' => (string)$pesaKor,
+            'tredeLisenceFee' => (string)$sonodFee,
+            'vatAykor' => (string)$tradeVat,
+            'khat' => null,
+            'signboard_fee' => (int)$signboard_fee,
+            'last_years_money' => (string)$lastYearsMoney,
+            'currently_paid_money' => (string)$currentlyPaidMoney
+        ]);
+
+        // Update insertData with calculated values
+        $insertData['last_years_money'] = $lastYearsMoney;
+        $insertData['currently_paid_money'] = $currentlyPaidMoney;
+        $insertData['total_amount'] = $currentlyPaidMoney + (int)$lastYearsMoney;
+        $insertData['the_amount_of_money_in_words'] = convertAnnualIncomeToText($currentlyPaidMoney + (int)$lastYearsMoney);
+        $insertData['amount_deails'] = $amountDetails;
+    }
+
+    private function doublePriceForBoth($sonod)
+    {
+        // Decode the amount_details JSON
+        $amountDetails = json_decode($sonod->amount_deails, true);
+
+        // Check if the sonod_name is 'ট্রেড লাইসেন্স'
+        if ($sonod->sonod_name == 'ট্রেড লাইসেন্স') {
+
+
+            $isUnion = isUnion();
+            if($isUnion){
+                            // Get the trade license fee and calculate 15% VAT
+                $tredeLisenceFee = (float)$amountDetails['tredeLisenceFee'];
+                $vatAykor = $tredeLisenceFee * 0.15; // 15% VAT
+
+                // Add the trade license fee and VAT to the total amount
+                $amountDetails['total_amount'] = (string)((float)$amountDetails['total_amount'] + $tredeLisenceFee + $vatAykor);
+
+
+
+
+                // Update the total amount and currently paid money in the sonod model
+                $sonod->total_amount = (float)$amountDetails['total_amount'];
+                $sonod->currently_paid_money = (float)$amountDetails['currently_paid_money'];
+            }else{
+
+
+                $tredeLisenceFee = (float)$amountDetails['tredeLisenceFee'];
+
+                $amountDetails['total_amount'] = (string)((float)$amountDetails['total_amount'] + $tredeLisenceFee);
+
+                $sonod->total_amount = (float)$amountDetails['total_amount'];
+                $sonod->currently_paid_money = (float)$amountDetails['currently_paid_money'];
+
+            }
 
 
 
@@ -145,34 +479,50 @@ protected function createSonod($bnData, $enData, $holdingData, $request)
 
 
 
+        } else {
+            // For other sonod types, double the total amount and currently paid money
+            $sonod->total_amount *= 2;
+            $sonod->currently_paid_money *= 2;
 
+            // Update the amount_details JSON for other sonod types
+            $amountDetails['total_amount'] = (string)($amountDetails['total_amount'] * 2);
+            $amountDetails['currently_paid_money'] = (string)($amountDetails['currently_paid_money'] * 2);
+        }
 
+        // Save the updated amount_details JSON
+        $sonod->amount_deails = json_encode($amountDetails);
 
+        // Update the amount in words
+        $sonod->the_amount_of_money_in_words = convertAnnualIncomeToText($amountDetails['total_amount']);
 
-    // private function sendNotification($sonod)
-    // {
-    //     // Send notification to the union's secretary
-    //     $notificationData = [
-    //         'union' => $sonod->unioun_name,
-    //         'roles' => 'Secretary'
-    //     ];
+        // Save the sonod model
+        $sonod->save();
+    }
 
-    //     $notificationCount = Notifications::where($notificationData)->count();
-    //     if ($notificationCount > 0) {
-    //         $actionUrl = makeshorturl(url('/secretary/approve/' . $sonod->id));
-    //         $notification = Notifications::where($notificationData)->latest()->first();
-    //         $data = json_encode([
-    //             'to' => $notification->key,
-    //             'notification' => [
-    //                 'body' => $sonod->applicant_name . ' একটি ' . $sonod->sonod_name . ' এর নুতুন আবেদন করেছে',
-    //                 'title' => 'সনদ নং ' . int_en_to_bn($sonod->sonod_Id),
-    //                 'icon' => asset('assets/img/bangladesh-govt.png'),
-    //                 'click_action' => $actionUrl
-    //             ]
-    //         ]);
-    //         pushNotification($data);
-    //     }
-    // }
+    private function sendNotification($sonod)
+    {
+        // Send notification to the union's secretary
+        $notificationData = [
+            'union' => $sonod->unioun_name,
+            'roles' => 'Secretary'
+        ];
+
+        $notificationCount = Notifications::where($notificationData)->count();
+        if ($notificationCount > 0) {
+            $actionUrl = makeshorturl(url('/secretary/approve/' . $sonod->id));
+            $notification = Notifications::where($notificationData)->latest()->first();
+            $data = json_encode([
+                'to' => $notification->key,
+                'notification' => [
+                    'body' => $sonod->applicant_name . ' একটি ' . $sonod->sonod_name . ' এর নুতুন আবেদন করেছে',
+                    'title' => 'সনদ নং ' . int_en_to_bn($sonod->sonod_Id),
+                    'icon' => asset('assets/img/bangladesh-govt.png'),
+                    'click_action' => $actionUrl
+                ]
+            ]);
+            pushNotification($data);
+        }
+    }
 
     function callSonodApi($sonodId, $sonodName = 'নাগরিকত্ব সনদ')
     {
