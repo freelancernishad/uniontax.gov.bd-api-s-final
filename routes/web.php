@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\Api\Global\Sonod\SonodController;
+
 use App\Http\Controllers\Api\Admin\Reports\ReportsController;
 use App\Http\Controllers\Api\Global\Sonod\SonodPdfController;
 use App\Http\Controllers\Api\User\Tender\TenderListController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\Api\User\Reports\PaymentReportsController;
 use App\Http\Controllers\Api\SystemSettings\SystemSettingController;
 use App\Http\Controllers\Api\Global\HoldingTax\HoldingTaxPdfController;
 use App\Http\Controllers\Api\User\Holdingtax\HoldingPdfReportController;
+use App\Http\Controllers\Api\Global\AutoBike\AutoBikeDocumentPdfController;
 
 Route::get('create/payment', [SonodController::class,'creatingEkpayUrl']);
 
@@ -142,6 +144,11 @@ Route::get('/verification/sonod/{id}', [SonodPdfController::class,'sonodVerify']
 
 Route::get('/document/d/{id}', [DocumentPdfController::class,'userDocument']);
 Route::get('/applicant/copy/download/{id}', [DocumentPdfController::class,'userDocument']);
+
+
+Route::get('/auto/bike/applicant/copy/download/{id}', [AutoBikeDocumentPdfController::class,'userDocument']);
+
+
 
 Route::get('/sonod/invoice/download/{id}', [InvoicePdfController::class,'invoice']);
 

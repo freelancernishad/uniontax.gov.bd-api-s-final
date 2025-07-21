@@ -40,9 +40,12 @@ class SonodCreatorService
             $existingSonod = Sonod::where('uniqeKey', $uniqueKey)->first();
         } while ($existingSonod);
 
-        $sonodId = $request->has('sonod_id')
-            ? $request->sonod_id
-            : (string) sonodId($unionName, $sonodName, getOrthoBchorYear());
+
+
+
+
+
+
 
         $insertData = array_merge($bnData, [
             'applicant_type_of_businessKhat' => $bnData['applicant_type_of_businessKhat'] ?? null,
@@ -55,6 +58,11 @@ class SonodCreatorService
             'year' => date('Y'),
             'hasEnData' => !empty($enData),
         ]);
+
+
+        $sonodId =  (string) sonodId($unionName, $sonodName, getOrthoBchorYear());
+        $insertData['sonod_Id'] =  $sonodId;
+
 
         $insertData = array_merge($insertData, $this->prepareSonodData($request, $sonodName, $successor_list, $unionName, $sonodId));
 
