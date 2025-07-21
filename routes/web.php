@@ -147,6 +147,7 @@ Route::get('/applicant/copy/download/{id}', [DocumentPdfController::class,'userD
 
 
 Route::get('/auto/bike/applicant/copy/download/{id}', [AutoBikeDocumentPdfController::class,'userDocument']);
+Route::get('/auto/bike/applicant/invoice/download/{id}', [AutoBikeDocumentPdfController::class,'userDocument']);
 
 
 
