@@ -215,7 +215,7 @@ Log::info('orthoBchor', ['orthoBchor' => $orthoBchor]);
 
     <hr>
 
-    <table width='100%' style="font-size: 10px;margin-top:5px">
+    <table width='100%' style="font-size: 10px;margin-top:0px">
         <tr>
             <td width='50%'>
 
