@@ -7,13 +7,13 @@ $orthoBchor = explode('-', $row->orthoBchor);
 
 @if(isUnion())
 
-<p style="margin-bottom: 10px;font-size:12px;text-align:justify">
+<p style="margin-bottom: 9px;font-size:12px;text-align:justify">
     Under the authority granted by Section 66 of the Local Government (Union Parishad) Act, 2009 (Act No. 61 of 2009), and in accordance with Sections 6 and 17 of the Standard Tax Schedule, 2013, issued by the government for the purpose of collecting taxes imposed on businesses, professions, trades, or industrial establishments, this Trade License is issued to the following individual/establishment under the specified conditions: <br>
 </p>
 
 @else
 
-<p style="margin-bottom: 10px;font-size:12px;text-align:justify">
+<p style="margin-bottom: 9px;font-size:12px;text-align:justify">
     This license is issued to the undermentioned person/institution for the collection of imposed tax according to Schedule 6 of the Model Tax Schedule 2014, enacted for municipalities by the government under Section 98 of the Local Government (Municipality) Act 2009.
 </p>
 @endif
@@ -23,7 +23,7 @@ $orthoBchor = explode('-', $row->orthoBchor);
 
 
 
-<table width="100%" style="margin-top:0px;font-size:12px">
+<table width="100%" style="margin-top:0px;font-size:11px">
     <tr>
         <td width="30%">Name of the Establishment</td><td>: {{ $row->applicant_name_of_the_organization }}</td>
     </tr>
@@ -66,7 +66,7 @@ $orthoBchor = explode('-', $row->orthoBchor);
     </tr>
 </table>
 
-<table width='100%' style="font-size: 12px">
+<table width='100%' style="font-size: 11px">
     <tr>
         <td width='50%'>
             <p style='border-bottom:2px solid black;'>Current Address of the Owner/Proprietor</p>
@@ -136,7 +136,7 @@ $orthoBchor = explode('-', $row->orthoBchor);
 
 @endphp
 
-<table width='100%' style="font-size: 12px;margin-top:10px">
+<table width='100%' style="font-size: 11px;margin-top:10px">
     <tr>
         <td width='50%'>
             <ul style='list-style:none'>
