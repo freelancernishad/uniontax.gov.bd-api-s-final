@@ -55,7 +55,17 @@ $orthoBchor = explode('-',$row->orthoBchor);
         </tr>
 
         <tr>
-            <td width="30%">ওয়ার্ড নং</td><td>: {{ int_en_to_bn($row->applicant_present_word_number) }}</td>
+            <td width="30%">ওয়ার্ড নং</td>
+            <td>:
+                {{ int_en_to_bn($row->organization_word_no ?? $row->applicant_present_word_number) }}
+            </td>
+        </tr>
+
+        <tr>
+            <td width="30%">মোবাইল</td>
+            <td>:
+                {{ int_en_to_bn($row->applicant_mobile) }}
+            </td>
         </tr>
 
         <tr>
