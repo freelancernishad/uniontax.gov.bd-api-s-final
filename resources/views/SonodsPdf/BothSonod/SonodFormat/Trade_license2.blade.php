@@ -93,11 +93,19 @@ $orthoBchor = explode('-',$row->orthoBchor);
             <td>{{ $rowbn->organization_address }}</td>
             <td><span style="font-size: 9px;">{{ $row->organization_address }}</span></td>
         </tr>
+
         <tr>
             <td>ওয়ার্ড নং / <span style="font-size: 9px;">Word No.</span></td>
-            <td>{{ int_en_to_bn($rowbn->applicant_present_word_number) }}</td>
-            <td><span style="font-size: 9px;">{{ $row->applicant_present_word_number }}</span></td>
+            <td>{{ int_en_to_bn($row->organization_word_no ?? $row->applicant_present_word_number) }}</td>
+            <td><span style="font-size: 9px;">{{ ($row->organization_word_no ?? $row->applicant_present_word_number) }}</span></td>
         </tr>
+
+        <tr>
+            <td>মোবাইল / <span style="font-size: 9px;">Mobile Number</span></td>
+            <td>{{ int_en_to_bn($row->applicant_mobile) }}</td>
+            <td><span style="font-size: 9px;">{{ ($row->applicant_mobile) }}</span></td>
+        </tr>
+
         <tr>
             <td>জাতীয় পরিচয়পত্র নং / <span style="font-size: 9px;">NID No.</span></td>
             <td>{{ int_en_to_bn($rowbn->applicant_national_id_number) }}</td>
