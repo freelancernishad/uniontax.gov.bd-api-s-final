@@ -24,19 +24,6 @@
             padding: 4px 10px;
         }
 
-        /* Left and right columns */
-        table.main-layout td.left-col,
-        table.main-layout td.right-col {
-            width: 49%;
-        }
-
-        /* Middle vertical line */
-        table.main-layout td.divider {
-            width: 2%;
-            border-left: 2px solid #333;
-        }
-
-        /* Inner tables for data */
         table.inner-table {
             width: 100%;
             border-collapse: collapse;
@@ -53,7 +40,6 @@
             text-decoration: underline;
         }
 
-        /* Footer */
         .footer {
             background: #787878;
             color: white;
@@ -62,6 +48,7 @@
             font-size: 14px;
             margin-top: 40px;
         }
+
         .application-id {
             text-align: center;
             margin-bottom: 15px;
@@ -69,46 +56,41 @@
             font-weight: bold;
             color: #333;
         }
+
+        .notice {
+            margin-top: 30px;
+            font-size: 14px;
+            background: #f9f9f9;
+            padding: 10px;
+
+        }
     </style>
 </head>
 <body>
 
-
-        <div class="application-id">
+    <!-- আবেদন নম্বর -->
+    <div class="application-id">
         আবেদন নম্বর: {{ int_en_to_bn($row->application_id) }}
     </div>
 
-
+    <!-- আবেদনকারীর তথ্য -->
     <table class="main-layout">
         <tr>
-            <!-- Left Column -->
-            <td class="left-col">
+            <td>
                 <table class="inner-table">
-
-                    <tr><td>আবেদনের তারিখ</td><td>:</td><td>{{ int_en_to_bn(date('d/m/Y', strtotime($row->created_at))) }}</td></tr>
-                    <tr><td>আবেদনকারীর নাম</td><td>:</td><td>{{ $row->applicant_name_bn }} ({{ $row->applicant_name_en }})</td></tr>
-                    <tr><td>পিতার নাম</td><td>:</td><td>{{ $row->applicant_father_name }}</td></tr>
-                    <tr><td>মাতার নাম</td><td>:</td><td>{{ $row->applicant_mother_name }}</td></tr>
-                    <tr><td>লিঙ্গ</td><td>:</td><td>{{ $row->applicant_gender }}</td></tr>
-                    <tr><td>জন্ম তারিখ</td><td>:</td><td>{{ int_en_to_bn($row->applicant_date_of_birth) }}</td></tr>
-                    <tr><td>ধর্ম</td><td>:</td><td>{{ $row->applicant_religion }}</td></tr>
-                    <tr><td>জাতীয়তা</td><td>:</td><td>{{ $row->nationality }}</td></tr>
-                    <tr><td>রক্তের গ্রুপ</td><td>:</td><td>{{ $row->blood_group }}</td></tr>
-                    <tr><td>পেশা</td><td>:</td><td>{{ $row->profession }}</td></tr>
-                    <tr><td>বৈবাহিক অবস্থা</td><td>:</td><td>{{ $row->marital_status }}</td></tr>
-                    <tr><td>জাতীয় পরিচয়পত্র</td><td>:</td><td>{{ int_en_to_bn($row->applicant_nid_no) }}</td></tr>
-                    <tr><td>মোবাইল</td><td>:</td><td>{{ int_en_to_bn($row->applicant_mobile) }}</td></tr>
-                </table>
-            </td>
-
-            <!-- Middle Divider (Vertical Line) -->
-            <td class="divider"></td>
-
-            <!-- Right Column -->
-            <td class="right-col">
-                <table class="inner-table">
+      
                     <tr>
-                        <td>বর্তমান ঠিকানা</td>
+                        <td>আবেদনকারীর নাম</td>
+                        <td>:</td>
+                        <td>{{ $row->applicant_name_bn }} ({{ $row->applicant_name_en }})</td>
+                    </tr>
+                    <tr>
+                        <td>পিতা/স্বামী নাম</td>
+                        <td>:</td>
+                        <td>{{ $row->applicant_father_name }}</td>
+                    </tr>
+                    <tr>
+                        <td>ঠিকানা</td>
                         <td>:</td>
                         <td>
                             {{ $row->applicant_address }},
@@ -118,34 +100,56 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>স্থায়ী ঠিকানা</td>
+                        <td>হোল্ডিং নম্বর</td>
+                        <td>:</td>
+                        <td>{{ $row->holding_number ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td>যোগাযোগ নম্বর</td>
+                        <td>:</td>
+                        <td>{{ int_en_to_bn($row->applicant_mobile) }}</td>
+                    </tr>
+                    <tr>
+                        <td>আবেদন প্রকার</td>
+                        <td>:</td>
+                        <td>{{ $row->application_type == 'new' ? 'নতুন নিবন্ধন' : 'নিবন্ধন নবায়ন' }}</td>
+                    </tr>
+                    <tr>
+                        <td>ফি জমার তারিখ</td>
                         <td>:</td>
                         <td>
-                            {{ $row->permanent_address }},
-                            উপজেলা: {{ $row->applicant_permanent_Upazila }},
-                            জেলা: {{ $row->applicant_permanent_district }},
-                            বিভাগ: {{ $row->applicant_permanent_division }}
+                            {{ isset($row->created_at) ? int_en_to_bn(date('d/m/Y', strtotime($row->created_at))) : '--/--/----' }},
+
                         </td>
                     </tr>
-                    <tr><td>বাইক ক্রয়ের তারিখ</td><td>:</td><td>{{ int_en_to_bn($row->auto_bike_purchase_date) }}</td></tr>
-                    <tr><td>শেষ নবায়ন</td><td>:</td><td>{{ int_en_to_bn($row->auto_bike_last_renew_date) }}</td></tr>
-                    <tr><td>সরবরাহকারীর নাম</td><td>:</td><td>{{ $row->auto_bike_supplier_name }}</td></tr>
-                    <tr><td>সরবরাহকারীর মোবাইল</td><td>:</td><td>{{ int_en_to_bn($row->auto_bike_supplier_mobile) }}</td></tr>
-                    <tr><td>সরবরাহকারীর ঠিকানা</td><td>:</td><td>{{ $row->auto_bike_supplier_address }}</td></tr>
-                    <tr><td>রেজিস্ট্রেশন গ্রহণ স্থান</td><td>:</td><td>{{ $row->registration_place }}</td></tr>
+                    {{-- <tr>
+                        <td>জমা দেওয়া নথি</td>
+                        <td>:</td>
+                        <td>
+                            @php
+                                $documents = explode(',', $row->submitted_documents ?? 'জাতীয় পরিচয়পত্র, ফর্ম-৬, ছবি');
+                            @endphp
+                            <ul>
+                                @foreach ($documents as $doc)
+                                    <li>{{ trim($doc) }}</li>
+                                @endforeach
+                            </ul>
+                        </td>
+                    </tr> --}}
                 </table>
+
+                <!-- বিঃদ্রঃ -->
+                <div class="notice">
+                    <strong>বি.দ্রঃ</strong>
+                    <ul style="margin: 10px 0 0 20px; padding: 0; font-size: 14px;">
+                        <li>এই স্বীকার পত্রটি গ্রহণযোগ্য পদচিহ্ন হিসেবে থাকবে আপনার আবেদন প্রক্রিয়া সম্পন্ন না হওয়া পর্যন্ত।</li>
+                        <li>প্রয়োজনে এই কপি অন্য কাউকে জমা বা উপস্থাপন করতে পারবেন।</li>
+                        <li>অনুগ্রহ করে এটি সংরক্ষণ করুন।</li>
+                    </ul>
+                </div>
             </td>
         </tr>
     </table>
-
-    <div class="section-title">জরুরি যোগাযোগ</div>
-    <table class="inner-table" style="width: 100%; margin-top: 10px;">
-        <tr><td>নাম</td><td>:</td><td>{{ $row->emergency_contact_name }}</td></tr>
-        <tr><td>মোবাইল</td><td>:</td><td>{{ int_en_to_bn($row->emergency_contact_phone) }}</td></tr>
-        <tr><td>সম্পর্ক</td><td>:</td><td>{{ $row->emergency_contact_relation }}</td></tr>
-        <tr><td>জাতীয় পরিচয়পত্র</td><td>:</td><td>{{ int_en_to_bn($row->emergency_contact_national_id_number) }}</td></tr>
-    </table>
-
 
 </body>
 </html>
