@@ -557,27 +557,28 @@ protected function createSonod($bnData, $enData, $holdingData, $request)
                 if ($existingSonod->renewed) {
                     // If both renewed_id and renewed are true, return a message
                     return response()->json(['message' => 'Sonod has already been renewed.'], 200);
-                } else {
-                    // If renewed_id exists but renewed is false, generate payment URL using renewed_id
-                    $renewedSonod = Sonod::find($existingSonod->renewed_id);
-
-                    if ($renewedSonod) {
-                        $uddoktaId = null;
-                        if (Auth::guard('uddokta')->check()) {
-                            $uddoktaId = Auth::guard('uddokta')->id();
-                        }
-
-                        // Generate payment URL directly using renewed_id
-                        $redirectUrl = sonodpayment($renewedSonod->id, $urls, $renewedSonod->hasEnData, $uddoktaId);
-
-                        return response()->json([
-                            'message' => 'Sonod renewal pending. Redirecting to payment for the renewed Sonod.',
-                            'redirect_url' => $redirectUrl,
-                        ], 200);
-                    } else {
-                        return response()->json(['error' => 'Renewed Sonod not found'], 404);
-                    }
                 }
+                //else {
+                    // If renewed_id exists but renewed is false, generate payment URL using renewed_id
+                    // $renewedSonod = Sonod::find($existingSonod->renewed_id);
+
+                    // if ($renewedSonod) {
+                    //     $uddoktaId = null;
+                    //     if (Auth::guard('uddokta')->check()) {
+                    //         $uddoktaId = Auth::guard('uddokta')->id();
+                    //     }
+
+                    //     // Generate payment URL directly using renewed_id
+                    //     $redirectUrl = sonodpayment($renewedSonod->id, $urls, $renewedSonod->hasEnData, $uddoktaId);
+
+                    //     return response()->json([
+                    //         'message' => 'Sonod renewal pending. Redirecting to payment for the renewed Sonod.',
+                    //         'redirect_url' => $redirectUrl,
+                    //     ], 200);
+                    // } else {
+                    //     return response()->json(['error' => 'Renewed Sonod not found'], 404);
+                    // }
+                //}
             }
 
             // If both renewed_id and renewed are false, proceed with the normal renewal process
