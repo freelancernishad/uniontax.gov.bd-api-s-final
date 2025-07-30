@@ -82,21 +82,35 @@ class AutoBikeRegistrationController extends Controller
 
         $data = $validator->validated();
 
-        // ফাইল আপলোড এবং path আপডেট
-        $fileFields = ['passport_photo', 'national_id_copy', 'auto_bike_receipt', 'previous_license_copy', 'affidavit_copy'];
+
+
+        $registration = AutoBikeRegistration::create($data);
+
+
+            // ✅ Step 2: Upload and Save file fields
+        $fileFields = [
+            'passport_photo',
+            'national_id_copy',
+            'auto_bike_receipt',
+            'previous_license_copy',
+            'affidavit_copy',
+        ];
 
         foreach ($fileFields as $field) {
             if ($request->hasFile($field)) {
                 $file = $request->file($field);
-                // তোমার uploadDocumentsToS3() হেল্পার ইউজ করে আপলোড করো
-                $url = uploadDocumentsToS3($file, 'auto_bike_registration', now()->format('Y-m-d'), null);
-                if ($url) {
-                    $data[$field] = $url;
-                }
+
+                // ✅ Use model's static uploadAndSaveFile method
+                AutoBikeRegistration::uploadAndSaveFile(
+                    $file,
+                    $field,
+                    'auto_bike_registration',
+                    now()->format('Y-m-d'),
+                    $registration->id
+                );
             }
         }
 
-        $registration = AutoBikeRegistration::create($data);
 
         $urls = [
             'c_uri' => $request->input('c_uri'),
