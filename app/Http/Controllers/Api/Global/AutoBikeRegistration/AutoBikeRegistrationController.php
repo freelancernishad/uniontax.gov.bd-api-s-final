@@ -65,6 +65,11 @@ class AutoBikeRegistrationController extends Controller
             'f_uri' => 'required|string',
             's_uri' => 'required|string',
 
+            'holding_owner_name' => 'required|string|max:255',
+            'holding_owner_relationship' => 'required|string|max:100',
+            'holding_owner_mobile' => 'required|string|max:20',
+            'auto_bike_last_regi_no' => 'required|string|max:50',
+
         ]);
 
         if ($validator->fails()) {

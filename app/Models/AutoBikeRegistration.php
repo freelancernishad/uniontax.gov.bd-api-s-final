@@ -44,6 +44,9 @@ class AutoBikeRegistration extends Model
         'union_name',     // NEW
 
 
+
+
+
             // 👇 Add these newly found missing fields
         'current_division',
         'applicant_present_district',
@@ -54,6 +57,13 @@ class AutoBikeRegistration extends Model
         'applicant_permanent_district',
         'applicant_permanent_Upazila',
         'applicant_permanent_union',
+
+        'holding_owner_name',              // হোল্ডিং মালিকের নাম
+        'holding_owner_relationship',      // হোল্ডিং মালিকের সাথে সম্পর্ক
+        'holding_owner_mobile',            // হোল্ডিং মালিকের মোবাইল নম্বর
+        'auto_bike_last_regi_no'
+
+
     ];
 
 

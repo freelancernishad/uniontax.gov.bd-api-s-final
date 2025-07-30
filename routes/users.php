@@ -29,6 +29,7 @@ use App\Http\Controllers\Api\User\SupportTicket\SupportTicketApiController;
 use App\Http\Controllers\Api\User\SocialMedia\UserSocialMediaLinkController;
 use App\Http\Controllers\Api\User\BusinessDirectory\BusinessDirectoryController;
 use App\Http\Controllers\Api\Admin\SupportTicket\AdminSupportTicketApiController;
+use App\Http\Controllers\Api\User\AutoBikeRegistration\UserAutoBikeRegistrationController;
 
 
 
@@ -209,10 +210,26 @@ Route::prefix('user')->group(function () {
 
 
 
+        Route::prefix('/auto-bike-registration')->group(function () {
+        Route::get('/', [UserAutoBikeRegistrationController::class, 'index']);
+        Route::get('/{id}', [UserAutoBikeRegistrationController::class, 'show']);
+        Route::get('/{id}/file/{field}', [UserAutoBikeRegistrationController::class, 'file']);
+        Route::post('/{id}/status', [UserAutoBikeRegistrationController::class, 'updateStatus']);
+    });
+
+
+
+
 
 
 
     });
+
+
+
+
+
+
 
 });
 
