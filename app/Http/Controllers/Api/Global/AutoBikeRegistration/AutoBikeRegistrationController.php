@@ -82,12 +82,14 @@ class AutoBikeRegistrationController extends Controller
 
         $data = $validator->validated();
 
+        // ফাইল আপলোড এবং path আপডেট
+        $fileFields = ['passport_photo', 'national_id_copy', 'auto_bike_receipt', 'previous_license_copy', 'affidavit_copy'];
 
 
         $registration = AutoBikeRegistration::create($data);
 
 
-            // ✅ Step 2: Upload and Save file fields
+              // ✅ Step 2: Upload and Save file fields
         $fileFields = [
             'passport_photo',
             'national_id_copy',
@@ -100,7 +102,7 @@ class AutoBikeRegistrationController extends Controller
             if ($request->hasFile($field)) {
                 $file = $request->file($field);
 
-                // ✅ Use model's static uploadAndSaveFile method
+
                 AutoBikeRegistration::uploadAndSaveFile(
                     $file,
                     $field,
@@ -110,6 +112,8 @@ class AutoBikeRegistrationController extends Controller
                 );
             }
         }
+
+
 
 
         $urls = [
