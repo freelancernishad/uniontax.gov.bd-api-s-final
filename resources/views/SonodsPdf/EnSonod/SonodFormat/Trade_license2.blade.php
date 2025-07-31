@@ -46,7 +46,7 @@ $orthoBchor = explode('-', $row->orthoBchor);
         <td width="30%">Address of the Establishment</td><td>: {{ $row->organization_address }}</td>
     </tr>
     <tr>
-        <td width="30%">Ward No.</td><td>: {{ ($row->organization_word_no ?? $row->applicant_present_word_number) }}</td>
+        <td width="30%">Ward No.</td><td>: {{ int_bn_to_en($organization_word_no ?? $row->applicant_present_word_number) }}</td>
     </tr>
 
 

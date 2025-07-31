@@ -65,10 +65,11 @@ function sonodView_trade2($id,$en=false,$rowbn=[]){
     if($en){
 
         $row = EnglishSonod::with(['sonod' => function ($query) {
-            $query->select('id', 'sonod_id','amount_deails'); // Select only 'id' and 'sonod_id' from the sonod table
+            $query->select('id', 'sonod_id','amount_deails','organization_word_no'); // Select only 'id' and 'sonod_id' from the sonod table
         }])->find($id);
         $sonod_id = $row->sonod->sonod_id;
         $amount_details = $row->sonod->amount_deails;
+        $organization_word_no = $row->sonod->organization_word_no;
 
 
         if($en==='both'){
@@ -88,6 +89,7 @@ function sonodView_trade2($id,$en=false,$rowbn=[]){
         $row = Sonod::find($id);
         $sonod_id = $row->sonod_id;
         $amount_details = $row->amount_deails;
+        $organization_word_no = $row->organization_word_no;
     }
 
 
@@ -99,7 +101,7 @@ function sonodView_trade2($id,$en=false,$rowbn=[]){
     $sonod = Sonodnamelist::where('bnname',$row->sonod_name)->first();
     $uniouninfo = Uniouninfo::where('short_name_e',$row->unioun_name)->first();
     $blade = 'Trade_license2';
-    return view("SonodsPdf.$bladeType.SonodFormat.".$blade,compact('row','sonod','uniouninfo','sonod_id','amount_details','rowbn'));
+    return view("SonodsPdf.$bladeType.SonodFormat.".$blade,compact('row','sonod','uniouninfo','sonod_id','amount_details','rowbn','organization_word_no'));
 
 };
 
