@@ -59,6 +59,7 @@ class AutoBikeRegistrationController extends Controller
             'auto_bike_receipt' => 'nullable|file|mimes:jpg,jpeg,png,pdf',
             'previous_license_copy' => 'nullable|file|mimes:jpg,jpeg,png,pdf',
             'affidavit_copy' => 'nullable|file|mimes:jpg,jpeg,png,pdf',
+            'holding_tax_promanok' => 'nullable|file|mimes:jpg,jpeg,png,pdf',
 
             'union_name' => 'required|string|max:255', // NEW
             'c_uri' => 'required|string',
@@ -69,6 +70,7 @@ class AutoBikeRegistrationController extends Controller
             'holding_owner_relationship' => 'required|string|max:100',
             'holding_owner_mobile' => 'required|string|max:20',
             'auto_bike_last_regi_no' => 'required|string|max:50',
+            'applicant_holding_tax_number' => 'nullable|string|max:100',
 
         ]);
 
@@ -82,8 +84,7 @@ class AutoBikeRegistrationController extends Controller
 
         $data = $validator->validated();
 
-        // ফাইল আপলোড এবং path আপডেট
-        $fileFields = ['passport_photo', 'national_id_copy', 'auto_bike_receipt', 'previous_license_copy', 'affidavit_copy'];
+
 
 
         $registration = AutoBikeRegistration::create($data);
@@ -96,6 +97,7 @@ class AutoBikeRegistrationController extends Controller
             'auto_bike_receipt',
             'previous_license_copy',
             'affidavit_copy',
+            'holding_tax_promanok',
         ];
 
         foreach ($fileFields as $field) {

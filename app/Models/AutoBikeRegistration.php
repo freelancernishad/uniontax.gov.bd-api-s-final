@@ -61,7 +61,9 @@ class AutoBikeRegistration extends Model
         'holding_owner_name',              // হোল্ডিং মালিকের নাম
         'holding_owner_relationship',      // হোল্ডিং মালিকের সাথে সম্পর্ক
         'holding_owner_mobile',            // হোল্ডিং মালিকের মোবাইল নম্বর
-        'auto_bike_last_regi_no'
+        'auto_bike_last_regi_no',
+        'applicant_holding_tax_number',
+        'holding_tax_promanok',
 
 
     ];
