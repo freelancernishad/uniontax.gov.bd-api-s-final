@@ -159,7 +159,7 @@ class AutoBikeRegistrationController extends Controller
         }
 
         $applicant_mobile = $autoBike->applicant_mobile;
-        $total_amount = 200; // তোমার পেমেন্ট এমাউন্ট (ডায়নামিক করতে পারো)
+        $total_amount = 150; // তোমার পেমেন্ট এমাউন্ট (ডায়নামিক করতে পারো)
 
         $trnx_id = $uniouninfo->u_code . '-' . time();
 
