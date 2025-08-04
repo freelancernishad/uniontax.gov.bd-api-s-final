@@ -46,6 +46,24 @@ class HoldingtaxController extends Controller
            'bokeya' => 'array',
            'image' => 'nullable|string',
            'busnessName' => 'nullable|string',
+
+
+            // New fields
+            'date_of_birth' => 'nullable|date',
+            'mother_name' => 'nullable|string',
+            'profession' => 'nullable|string',
+            'religion' => 'nullable|string',
+            'house_type' => 'nullable|string',
+            'social_facility' => 'nullable|string',
+            'sanitary_condition' => 'nullable|boolean',
+            'number_of_sons' => 'nullable|integer',
+            'number_of_daughters' => 'nullable|integer',
+            'house_loan' => 'nullable|string',
+            'land_amount' => 'nullable|numeric',
+            'homestead_amount' => 'nullable|numeric',
+            'business_capital' => 'nullable|numeric',
+            'socioeconomic_status' => 'nullable|string',
+
        ]);
 
         // Check for validation failure

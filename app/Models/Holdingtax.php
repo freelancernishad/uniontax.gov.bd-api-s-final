@@ -37,6 +37,25 @@ class Holdingtax extends Model
         'total_bokeya',
         'image',
         'busnessName',
+
+        ///////////////////////////////////
+        'date_of_birth',
+        'mother_name',
+        'profession',
+        'religion',
+        'house_type',
+        'social_facility',
+        'sanitary_condition',
+        'number_of_sons',
+        'number_of_daughters',
+        'house_loan',
+        'land_amount',
+        'homestead_amount',
+        'business_capital',
+        'socioeconomic_status',
+
+
+
     ];
 
     public function holdingTax()
