@@ -15,7 +15,7 @@ class AddExtraFieldsToHoldingtaxesTable extends Migration
             $table->string('religion')->nullable()->after('profession');
             $table->string('house_type')->nullable()->after('religion');
             $table->string('social_facility')->nullable()->after('house_type');
-            $table->boolean('sanitary_condition')->nullable()->after('social_facility');
+            $table->string('sanitary_condition')->nullable()->after('social_facility');
             $table->integer('number_of_sons')->nullable()->after('sanitary_condition');
             $table->integer('number_of_daughters')->nullable()->after('number_of_sons');
             $table->string('house_loan')->nullable()->after('number_of_daughters');

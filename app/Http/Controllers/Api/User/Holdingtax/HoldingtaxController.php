@@ -55,7 +55,7 @@ class HoldingtaxController extends Controller
             'religion' => 'nullable|string',
             'house_type' => 'nullable|string',
             'social_facility' => 'nullable|string',
-            'sanitary_condition' => 'nullable|boolean',
+            'sanitary_condition' => 'nullable|string',
             'number_of_sons' => 'nullable|integer',
             'number_of_daughters' => 'nullable|integer',
             'house_loan' => 'nullable|string',
