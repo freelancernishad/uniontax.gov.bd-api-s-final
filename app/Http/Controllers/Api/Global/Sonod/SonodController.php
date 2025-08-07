@@ -394,6 +394,7 @@ protected function createSonod($bnData, $enData, $holdingData, $request)
             $results = Sonod::select($columns)
                 ->where('sonod_Id', $sonodId)
                 ->where('sonod_name', $sonodName)
+                ->orderBy('id', 'desc')
                 ->first();
 
         }
