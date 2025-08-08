@@ -128,6 +128,7 @@ Route::get('/sonod/s/{id}', function ($id) {
 
 
 
+
 Route::get('/sonod/d/{id}', [SonodPdfController::class,'sonodDownload']);
 Route::get('/sonod/download/{id}', [SonodPdfController::class,'sonodDownload']);
 

@@ -121,6 +121,7 @@ class EnglishSonodCreatorService
                 // Update the total amount and currently paid money in the sonod model
                 $sonod->total_amount = (float)$amountDetails['total_amount'];
                 $sonod->currently_paid_money = (float)$amountDetails['currently_paid_money'];
+
             }else{
 
 

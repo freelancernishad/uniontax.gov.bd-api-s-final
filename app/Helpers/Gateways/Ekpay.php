@@ -205,6 +205,10 @@ function sonodpayment($id, $urls, $hasEnData = false,$uddoktaId=null,$only_engli
 
 
 
+    if($only_english){
+        $total_amount = $sonod_fee; // Double the amount for English Sonod
+    }
+
 
 
 
