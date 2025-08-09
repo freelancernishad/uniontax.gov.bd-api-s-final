@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Global\AutoBikeRegistration;
 use App\Models\Payment;
 use App\Models\Uniouninfo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\AutoBikeRegistration;
 use Illuminate\Support\Facades\Validator;
@@ -85,7 +86,8 @@ class AutoBikeRegistrationController extends Controller
         $data = $validator->validated();
 
         $last_application_id = AutoBikeRegistration::latest()->value('application_id');
-        $data['application_id'] = $last_application_id ? $last_application_id + 1 : 7734985250001; // Start from 1 if no records exist
+        Log::info('Last application ID: ' . $last_application_id);
+        $data['application_id'] = $last_application_id ? (int)$last_application_id + 1 : 7734985250001; // Start from 1 if no records exist
 
 
 

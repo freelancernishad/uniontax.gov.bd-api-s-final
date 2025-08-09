@@ -72,16 +72,16 @@ class AutoBikeRegistration extends Model
 
 
      // Model boot method to auto-generate application_id
-    protected static function boot()
-    {
-        parent::boot();
+    // protected static function boot()
+    // {
+    //     parent::boot();
 
-        static::creating(function ($model) {
-            if (empty($model->application_id)) {
-                $model->application_id = $model->generateApplicationId();
-            }
-        });
-    }
+    //     static::creating(function ($model) {
+    //         if (empty($model->application_id)) {
+    //             $model->application_id = $model->generateApplicationId();
+    //         }
+    //     });
+    // }
 
     public function generateApplicationId()
     {
