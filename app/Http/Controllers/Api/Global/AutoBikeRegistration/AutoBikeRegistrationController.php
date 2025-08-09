@@ -84,6 +84,8 @@ class AutoBikeRegistrationController extends Controller
 
         $data = $validator->validated();
 
+        $last_application_id = AutoBikeRegistration::latest()->value('application_id');
+        $data['application_id'] = $last_application_id ? $last_application_id + 1 : 7734985250001; // Start from 1 if no records exist
 
 
 

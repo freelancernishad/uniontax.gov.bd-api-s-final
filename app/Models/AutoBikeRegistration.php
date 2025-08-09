@@ -78,7 +78,7 @@ class AutoBikeRegistration extends Model
 
         static::creating(function ($model) {
             if (empty($model->application_id)) {
-                $last_application_id = self::max('application_id');
+                $last_created_application_id =
                 if ($last_application_id) {
                     $model->application_id = $last_application_id + 1; // Increment last ID
                 } else {
