@@ -78,18 +78,10 @@ class AutoBikeRegistration extends Model
 
         static::creating(function ($model) {
             if (empty($model->application_id)) {
-                $last_created_application_id =
-                if ($last_application_id) {
-                    $model->application_id = $last_application_id + 1; // Increment last ID
-                } else {
-                    $model->application_id = 7734985250001; // Start from 1 if no records exist
-                }
+                $model->application_id = $model->generateApplicationId();
             }
         });
     }
-
-
-
 
     public function generateApplicationId()
     {
@@ -116,8 +108,6 @@ class AutoBikeRegistration extends Model
         $yearShort = substr($year, 2, 2);  // e.g. 2025 -> 25
         return $unionInfo->u_code . $yearShort . $serialStr;
     }
-
-
 
     // Get current fiscal year based on date
     protected function getFiscalYear()
