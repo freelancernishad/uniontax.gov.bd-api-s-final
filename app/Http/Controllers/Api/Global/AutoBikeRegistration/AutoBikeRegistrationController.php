@@ -87,8 +87,9 @@ class AutoBikeRegistrationController extends Controller
 
         $last_application_id = AutoBikeRegistration::latest()->value('application_id');
         Log::info('Last application ID: ' . $last_application_id);
-        $data['application_id'] = $last_application_id ? (int)$last_application_id + 1 : 7734985250001; // Start from 1 if no records exist
+        $data['application_id'] = $last_application_id ? (int)$last_application_id + 1 : 7734985250001;
 
+        Log::info('Generated application ID: ' . $data['application_id']);
 
 
         $registration = AutoBikeRegistration::create($data);
