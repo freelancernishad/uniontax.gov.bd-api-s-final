@@ -66,10 +66,10 @@ class AutoBikeRegistrationController extends Controller
             'f_uri' => 'required|string',
             's_uri' => 'required|string',
 
-            'holding_owner_name' => 'required|string|max:255',
-            'holding_owner_relationship' => 'required|string|max:100',
-            'holding_owner_mobile' => 'required|string|max:20',
-            'auto_bike_last_regi_no' => 'required|string|max:50',
+            'holding_owner_name' => 'nullable|string|max:255',
+            'holding_owner_relationship' => 'nullable|string|max:100',
+            'holding_owner_mobile' => 'nullable|string|max:20',
+            'auto_bike_last_regi_no' => 'nullable|string|max:50',
             'applicant_holding_tax_number' => 'nullable|string|max:100',
 
         ]);
