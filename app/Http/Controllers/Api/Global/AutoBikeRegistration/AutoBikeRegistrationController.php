@@ -87,7 +87,10 @@ class AutoBikeRegistrationController extends Controller
 
         $last_application_id = AutoBikeRegistration::latest()->value('application_id');
         Log::info('Last application ID: ' . $last_application_id);
-        $data['application_id'] = $last_application_id ? (int)$last_application_id + 1 : 7734985250001;
+        $application_id = $last_application_id ? (int)$last_application_id + 1 : 7734985250001;
+
+        $data['application_id'] = (string)$application_id;
+
 
         Log::info('Generated application ID: ' . $data['application_id']);
 
@@ -95,7 +98,7 @@ class AutoBikeRegistrationController extends Controller
         $registration = AutoBikeRegistration::create($data);
 
 
-              // ✅ Step 2: Upload and Save file fields
+        // ✅ Step 2: Upload and Save file fields
         $fileFields = [
             'passport_photo',
             'national_id_copy',
