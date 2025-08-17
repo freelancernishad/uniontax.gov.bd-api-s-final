@@ -101,7 +101,9 @@
 <body>
 
     <div class="text-center mb-4">
-        <img src="{{ base64('backend/bd-logo.png') }}" alt="Government Logo" class="gov-logo">
+        @if(isUnion())
+            <img width="70px" src="{{ base64('backend/bd-logo.png') }}">
+        @endif
         <h1 style="font-size: 25px" class="mt-3">{{ $reportTitle }}</h1>
         <h2 class="footer mt-2">
             রিপোর্ট জেনারেট তারিখ: {{ int_en_to_bn(now()->format('d-m-Y h:i A')) }}
@@ -172,7 +174,7 @@
 
                 @foreach($data['total_report']['sonod_reports'] as $value)
                     @php
-               
+
                         $pendingTotal += $value['pending_count'];
                         $approvedTotal += $value['approved_count'];
                         $cancelTotal += $value['cancel_count'];

@@ -59,12 +59,16 @@
         <tr>
             <td width="20%"></td>
             <td width="20%" class="header-logo">
-                <img width="70px" src="{{ base64('backend/bd-logo.png') }}" alt="Logo">
+            @if(isUnion())
+                <img width="70px" src="{{ base64('backend/bd-logo.png') }}">
+            @endif
             </td>
             <td width="20%"></td>
         </tr>
         <tr>
+            @if(isUnion())
             <td colspan="3" class="govt-text">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</td>
+            @endif
         </tr>
         <tr>
             <td colspan="3" class="union-name">{{ $uniouninfo->full_name }}</td>

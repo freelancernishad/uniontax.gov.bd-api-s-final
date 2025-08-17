@@ -44,7 +44,9 @@
         <tr>
             <td width="20%"></td>
             <td width="20%">
-                <img width="70px" src="{{ base64('backend/bd-logo.png') }}" alt="Logo">
+            @if(isUnion())
+                <img width="70px" src="{{ base64('backend/bd-logo.png') }}">
+            @endif
             </td>
             <td width="20%"></td>
         </tr>
@@ -80,14 +82,18 @@
         <tr>
             <td width="20%"></td>
             <td width="20%">
-                <img width="70px" src="{{ base64('backend/bd-logo.png') }}" alt="Logo">
+                @if(isUnion())
+            <img width="70px" src="{{ base64('backend/bd-logo.png') }}">
+        @endif
             </td>
             <td width="20%"></td>
         </tr>
         <tr>
             <td></td>
             <td style="text-align: center;">
+                @if(isUnion())
                 <p style="font-size: 20px;font-weight: normal;">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</p>
+                @endif
             </td>
             <td></td>
         </tr>

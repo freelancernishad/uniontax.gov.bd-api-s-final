@@ -264,6 +264,14 @@ class SonodPdfController extends Controller
         // Generate QR code URL
         $qrurl = url("/verification/sonod/{$row->id}?sonod_name={$sonod->enname}&sonod_Id={$row->sonod_Id}");
 
+        $bdLogo = "";
+        $topHead = "";
+
+        if(isUnion()){
+            $bdLogo = '<img  width="70px" src="' . base64('backend/bd-logo.png') . '">';
+            $topHead = '<p style="font-size:20px">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</p>';
+        }
+
         // Prepare the HTML output
         $output = '
             <table width="100%" style="border-collapse: collapse;" border="0">
@@ -278,14 +286,16 @@ class SonodPdfController extends Controller
                         </div>
                     </td>
                     <td style="text-align: center;" width="20%">
-                        <img width="70px" src="' . base64('backend/bd-logo.png') . '">
+
+            '.$bdLogo.'
+
                     </td>
                     <td style="text-align: center;" width="20%"></td>
                 </tr>
                 <tr style="margin-top:2px;margin-bottom:2px;">
                     <td></td>
                     <td style="text-align: center;" width="50%">
-                        <p style="font-size:20px">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</p>
+                        '.$topHead.'
                     </td>
                     <td></td>
                 </tr>

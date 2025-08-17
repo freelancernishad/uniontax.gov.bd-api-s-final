@@ -1,7 +1,9 @@
 <div class="container mt-5">
     <!-- Centered Report Title and Date with Government Logo -->
     <div class="text-center mb-4">
-        <img src="{{ base64('backend/bd-logo.png') }}" alt="Government Logo" class="gov-logo">
+        @if(isUnion())
+            <img width="70px" src="{{ base64('backend/bd-logo.png') }}">
+        @endif
         <h1 style="font-size: 25px" class="mt-3">{{ $reportTitle }}</h1>
 
         <h2 class="footer mt-2">
@@ -47,7 +49,7 @@
                         <th class="text-center">{{ int_en_to_bn($data['total_report']['totals']['total_approved']) }}</th>
                         <th class="text-center">{{ int_en_to_bn($data['total_report']['totals']['total_cancel']) }}</th>
                         <th class="text-center">
-   
+
                             {{ int_en_to_bn($data['total_report']['totals']['total_pending'] + $data['total_report']['totals']['total_approved'] + $data['total_report']['totals']['total_cancel']) }}
                         </th>
                     </tr>

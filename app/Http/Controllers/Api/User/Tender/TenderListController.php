@@ -309,7 +309,12 @@ class TenderListController extends Controller
     public function pdfHeader($row,$uniouninfo, $filename)
     {
 
-
+     $bdLogo = "";
+     $topHead = "";
+    if(isUnion()){
+        $bdLogo = '<img  width="70px" src="' . base64('backend/bd-logo.png') . '">';
+         $topHead = '<p style="font-size:20px">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</p>';
+    }
 
 
         $pdfHead = '
@@ -325,7 +330,7 @@ class TenderListController extends Controller
 
                       </td>
                       <td style="text-align: center;" width="20%">
-                          <img width="70px" src="' . base64('backend/bd-logo.png') . '">
+                          '.$bdLogo.'
                       </td>
                       <td style="text-align: center;" width="20%">';
         $output .= '</td>
@@ -334,7 +339,7 @@ class TenderListController extends Controller
                       <td>
                       </td>
                       <td style="text-align: center;" width="50%">
-                          <p style="font-size:20px">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</p>
+                          '.$topHead.'
 
 
                       </td>
@@ -625,7 +630,10 @@ $style = '';
     public function pdfWordHeader($row,$uniouninfo, $filename)
     {
 
-
+        $bdLogo = "";
+        if(isUnion()){
+            $bdLogo = '<img  width="70px" src="' . base64('backend/bd-logo.png') . '">';
+        }
 
 
         $pdfHead = '
@@ -641,7 +649,7 @@ $style = '';
 
                       </td>
                       <td style="text-align: center;" width="20%">
-                          <img width="70px" src="' . base64('backend/bd-logo.png') . '">
+                          '.$bdLogo.'
                       </td>
                       <td style="text-align: center;" width="20%">';
         $output .= '</td>

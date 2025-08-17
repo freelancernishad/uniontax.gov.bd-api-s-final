@@ -47,18 +47,21 @@
 
                     </td>
                     <td style="text-align: center;" width="20%">
+                         @if(isUnion())
                         <img width="70px" src="{{ base64('backend/bd-logo.png') }}">
+                        @endif
                     </td>
                     <td style="text-align: center;" width="20%">
-
-                    <img width="100px" src="{{ $row->image }}">
-               </td>
+                        <img width="100px" src="{{ $row->image }}">
+                    </td>
                 </tr>
                 <tr style="margin-top:2px;margin-bottom:2px;">
                     <td>
                     </td>
                     <td style="text-align: center;" width="50%">
+                        @if(isUnion())
                         <p style="font-size:20px">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার </p>
+                        @endif
                     </td>
                     <td>
                     </td>

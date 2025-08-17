@@ -70,7 +70,10 @@
 
     </td>
     <td style="text-align: center; line-height:1em" width="20%">
-        <img width="70px" style='margin-bottom:7px' src="{{ base64('backend/bd-logo.png') }}">
+        @if(isUnion())
+            <img width="70px" style='margin-bottom:7px' src="{{ base64('backend/bd-logo.png') }}">
+        @endif
+        
 
 
         <div class="nagorik_sonod" style="margin-top:2px;">
