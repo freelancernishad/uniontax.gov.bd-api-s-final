@@ -4,10 +4,11 @@ use App\Models\Sonod;
 use App\Models\Uniouninfo;
 use App\Models\SiteSetting;
 use App\Models\Sonodnamelist;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Rakibhstu\Banglanumber\NumberToBangla;
-use Devfaysal\BangladeshGeocode\Models\Upazila;
 
+use Devfaysal\BangladeshGeocode\Models\Upazila;
 use Devfaysal\BangladeshGeocode\Models\District;
 use Devfaysal\BangladeshGeocode\Models\Division;
 
@@ -139,14 +140,19 @@ function age($dateOf = '2001-08-25', $en = false) {
 
     }
 
-        $Uniouninfo = Uniouninfo::where('short_name_e', $details['union'])->first();
+        $Uniouninfo = Uniouninfo::where('short_name_e', $details['unioun_name'])->first();
+        Log::info('Union Info:', ['union' => $Uniouninfo]);
         $c_type = $Uniouninfo ? $Uniouninfo->c_type : 'চেয়ারম্যান';
+        Log::info('Chairman Type:', ['c_type' => $c_type]);
+
 
 
         $firstText = ',';
         if($c_type=='চেয়ারম্যান'){
             $firstText = 'কে আমি ব্যক্তিগতভাবে চিনি ও জানি।';
         }
+
+        Log::info($firstText);
 
 
 
@@ -159,7 +165,7 @@ function age($dateOf = '2001-08-25', $en = false) {
             $readonly = true;
             $sec_prottoyon = $english ?
                 "{$details['name_title']} {$details['applicant_name']} is personally known to me. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her. Therefore, he/she is granted the {$sonod_name}." :
-                "জনাব {$details['applicant_name']} {$firstText} সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। তাই তাকে {$details['sonod_name']} প্রদান করা হলো ।";
+                "জনাব {$details['applicant_name']} {$firstText} তিনি  জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। তাই তাকে {$details['sonod_name']} প্রদান করা হলো ।";
             break;
 
         case 'ট্রেড লাইসেন্স':
@@ -173,35 +179,35 @@ function age($dateOf = '2001-08-25', $en = false) {
             $readonly = true;
             $sec_prottoyon = $english ?
                 "{$details['name_title']} {$details['applicant_name']} is personally known to me. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her. Therefore, he/she is granted the {$sonod_name}." :
-                "জনাব {$details['applicant_name']} {$firstText} সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। তাই তাকে ওয়ারিশান সনদ প্রদান করা হলো ।";
+                "জনাব {$details['applicant_name']} {$firstText} তিনি  জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। তাই তাকে ওয়ারিশান সনদ প্রদান করা হলো ।";
             break;
 
         case 'উত্তরাধিকারী সনদ':
             $readonly = true;
             $sec_prottoyon = $english ?
                 "{$details['name_title']} {$details['applicant_name']} is personally known to me. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her. Therefore, he/she is granted the {$sonod_name}." :
-                "জনাব {$details['applicant_name']} {$firstText} সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। তাই তাকে উত্তরাধিকারী সনদ প্রদান করা হলো ।";
+                "জনাব {$details['applicant_name']} {$firstText} তিনি  জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। তাই তাকে উত্তরাধিকারী সনদ প্রদান করা হলো ।";
             break;
 
         case 'বিবিধ প্রত্যয়নপত্র':
             $readonly = false;
             $sec_prottoyon = $english ?
                 "Mr. {$details['utname']} is personally known to me. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. {$details['sonodlist']['prottoyon']}" :
-                "জনাব {$details['utname']} {$firstText} সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। {$details['sonodlist']['prottoyon']}";
+                "জনাব {$details['utname']} {$firstText} তিনি  জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। {$details['sonodlist']['prottoyon']}";
             break;
 
         case 'চারিত্রিক সনদ':
             $readonly = true;
             $sec_prottoyon = $english ?
                 "{$details['name_title']} {$details['applicant_name']} is personally known to me. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her. His/Her character is good and he/she is of high moral character. This is true to the best of my knowledge." :
-                "জনাব {$details['applicant_name']} {$firstText} সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। তার স্বভাব চরিত্র ভালো এবং উন্নত চরিত্রের অধিকারী।ইহা আমার জানামতে সত্য ।";
+                "জনাব {$details['applicant_name']} {$firstText} তিনি  জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। তার স্বভাব চরিত্র ভালো এবং উন্নত চরিত্রের অধিকারী।ইহা আমার জানামতে সত্য ।";
             break;
 
         case 'ভূমিহীন সনদ':
             $readonly = true;
             $sec_prottoyon = $english ?
                 "{$details['name_title']} {$details['applicant_name']} is personally known to me. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her. He/She does not own any land for living or cultivation. Therefore, he/she is granted the {$sonod_name}." :
-                "জনাব {$details['applicant_name']} {$firstText} সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। আমার জানা মতে তার থাকার মতো এবং চাষাবাদ করার মত নিজস্ব কোনো জমি নেই । তিনি একজন ভূমিহীন মানুষ তাই তাকে {$details['sonod_name']} প্রদান করা হলো ।";
+                "জনাব {$details['applicant_name']} {$firstText} তিনি  জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। আমার জানা মতে তার থাকার মতো এবং চাষাবাদ করার মত নিজস্ব কোনো জমি নেই । তিনি একজন ভূমিহীন মানুষ তাই তাকে {$details['sonod_name']} প্রদান করা হলো ।";
             break;
 
         case 'পারবারিক সনদ':
@@ -222,7 +228,7 @@ function age($dateOf = '2001-08-25', $en = false) {
             $readonly = true;
             $sec_prottoyon = $english ?
                 "{$details['name_title']} {$details['applicant_name']} is personally known to me. He/She is a married {$details['applicant_gender']} and has not remarried. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her." :
-                "জনাব {$details['applicant_name']} {$firstText} সে একজন বিবাহিত {$details['applicant_gender']} এবং তাহার কোনো পুনঃ বিবাহ হয়নি। সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। ";
+                "জনাব {$details['applicant_name']} {$firstText} তিনি  একজন বিবাহিত {$details['applicant_gender']} এবং তাহার কোনো পুনঃ বিবাহ হয়নি। সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। ";
             break;
 
         case 'বার্ষিক আয়ের প্রত্যয়ন':
@@ -243,7 +249,7 @@ function age($dateOf = '2001-08-25', $en = false) {
             $readonly = false;
             $sec_prottoyon = $english ?
                 "{$details['name_title']} {$details['applicant_name']} is personally known to me. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her. He/She is granted permission for {$details['Subject_to_permission']}." :
-                "জনাব {$details['applicant_name']} {$firstText} সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা।  তাকে {$details['Subject_to_permission']} অনুমতি দেওয়া হল ।";
+                "জনাব {$details['applicant_name']} {$firstText} তিনি  জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা।  তাকে {$details['Subject_to_permission']} অনুমতি দেওয়া হল ।";
             break;
 
         case 'প্রতিবন্ধী সনদপত্র':
@@ -264,7 +270,7 @@ function age($dateOf = '2001-08-25', $en = false) {
             $readonly = true;
             $sec_prottoyon = $english ?
                 "{$details['name_title']} {$details['applicant_name']} is personally known to me. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her. There is currently no tube well in his/her homestead. Therefore, he/she is granted permission to install a shallow tube well." :
-                "জনাব {$details['applicant_name']} {$firstText} সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা।  তার বসতবাড়িতে বর্তমানে কোন টিউবওয়েল নেই । তাই তাকে অগভীর নলকূপ বসানোর অনুমতি দেওয়া হল ।";
+                "জনাব {$details['applicant_name']} {$firstText} তিনি  জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা।  তার বসতবাড়িতে বর্তমানে কোন টিউবওয়েল নেই । তাই তাকে অগভীর নলকূপ বসানোর অনুমতি দেওয়া হল ।";
             break;
 
         case 'অবকাঠামো নির্মাণের অনুমতি পত্র':
@@ -292,14 +298,14 @@ function age($dateOf = '2001-08-25', $en = false) {
             $readonly = true;
             $sec_prottoyon = $english ?
                 "{$details['name_title']} {$details['applicant_name']} is personally known to me. He is a resident of my {$union_oarisader_en}, with a status of {$details['applicant_resident_status']}, and is financially very poor. He is a natural-born citizen of Bangladesh and a resident of this {$union_oarisader_en} council, with a status of {$details['applicant_resident_status']}. To my knowledge, there are no charges of treason against him." :
-                "জনাব {$details['applicant_name']} {$firstText} সে আমার {$unioner} {$details['applicant_resident_status']} বাসিন্দা এবং সে আর্থিকভাবে খুবি অসচ্ছল । সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। ";
+                "জনাব {$details['applicant_name']} {$firstText} তিনি  আমার {$unioner} {$details['applicant_resident_status']} বাসিন্দা এবং সে আর্থিকভাবে খুবি অসচ্ছল । সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। ";
             break;
 
         case 'প্রত্যয়নপত্র':
             $readonly = false;
             $sec_prottoyon = $english ?
                 "{$details['name_title']} {$details['applicant_name']} is personally known to me. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her." :
-                "জনাব {$details['applicant_name']} {$firstText} সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। ";
+                "জনাব {$details['applicant_name']} {$firstText} তিনি  জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। ";
             break;
 
         case 'অস্থায়ীভাবে বসবাসের প্রত্যয়ন পত্র':
@@ -330,7 +336,7 @@ function age($dateOf = '2001-08-25', $en = false) {
             $readonly = true;
             $sec_prottoyon = $english ?
                 "{$details['name_title']} {$details['applicant_name']} is personally known to me. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To my knowledge, he/she was a voter at {$details['applicant_present_village']}, {$details['applicant_present_post_office']}, {$details['applicant_present_Upazila']}, {$details['applicant_present_district']}. Currently he/she is permanently residing at {$details['Name_of_the_transferred_area']}, so I recommend for his/her voter transfer." :
-                "জনাব {$details['applicant_name']} {$firstText} সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। আমার জানামতে, তিনি {$details['applicant_present_village']}, {$details['applicant_present_post_office']}, {$details['applicant_present_Upazila']}, {$details['applicant_present_district']}-এ ভোটার হয়েছেন। বর্তমানে তিনি {$details['Name_of_the_transferred_area']}-এ স্থায়ীভাবে বসবাস করায় তাঁর ভোটার স্তানান্তর করার সুপারিশ করছি।";
+                "জনাব {$details['applicant_name']} {$firstText} তিনি  জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। আমার জানামতে, তিনি {$details['applicant_present_village']}, {$details['applicant_present_post_office']}, {$details['applicant_present_Upazila']}, {$details['applicant_present_district']}-এ ভোটার হয়েছেন। বর্তমানে তিনি {$details['Name_of_the_transferred_area']}-এ স্থায়ীভাবে বসবাস করায় তাঁর ভোটার স্তানান্তর করার সুপারিশ করছি।";
             break;
 
         case 'জাতীয় পরিচয়পত্র সংশোধন প্রত্যয়ন':
@@ -351,7 +357,7 @@ function age($dateOf = '2001-08-25', $en = false) {
             $readonly = false;
             $sec_prottoyon = $english ?
                 "{$details['name_title']} {$details['applicant_name']} is personally known to me. Due to illness, his/her name was not included in the voter list. Request to include his/her name in the voter list. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her." :
-                "জনাব {$details['applicant_name']} {$firstText} সে অসুস্থ থাকার কারণে ভোটার তালিকায় তার নাম অন্তর্ভুক্তি করন করা হয়নি । তার নামটি ভোটার তালিকায় অন্তর্ভুক্ত করার জন্য অনুরোধ করা হলো । সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। ";
+                "জনাব {$details['applicant_name']} {$firstText} তিনি  অসুস্থ থাকার কারণে ভোটার তালিকায় তার নাম অন্তর্ভুক্তি করন করা হয়নি । তার নামটি ভোটার তালিকায় অন্তর্ভুক্ত করার জন্য অনুরোধ করা হলো । সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। ";
             break;
 
         case 'সম্প্রদায় সনদপত্র':
@@ -365,7 +371,7 @@ function age($dateOf = '2001-08-25', $en = false) {
             $readonly = true;
             $sec_prottoyon = $english ?
                 "{$details['name_title']} {$details['applicant_name']} is personally known to me. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her. Therefore, he/she is granted the {$sonod_name}." :
-                "জনাব {$details['applicant_name']} {$firstText} সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। তাই তাকে {$details['sonod_name']} প্রদান করা হলো ।";
+                "জনাব {$details['applicant_name']} {$firstText} তিনি  জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। তাই তাকে {$details['sonod_name']} প্রদান করা হলো ।";
             break;
 
         case 'এতিম সনদপত্র':
@@ -386,42 +392,42 @@ function age($dateOf = '2001-08-25', $en = false) {
             $readonly = true;
             $sec_prottoyon = $english ?
                 "{$details['name_title']} {$details['applicant_name']} is personally known to me. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her. He/She is approved for certificate renewal." :
-                "জনাব {$details['applicant_name']} {$firstText} সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা।  তাকে সনদ রিনিউ করার জন্য অনুমোদন দেওয়া হল ।";
+                "জনাব {$details['applicant_name']} {$firstText} তিনি  জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা।  তাকে সনদ রিনিউ করার জন্য অনুমোদন দেওয়া হল ।";
             break;
 
         case 'বসতবাড়ি হোল্ডিং নিবন্ধন সনদ':
             $readonly = true;
             $sec_prottoyon = $english ?
                 "{$details['name_title']} {$details['applicant_name']} is personally known to me. He/She has taken holding number for his/her homestead. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her." :
-                "জনাব {$details['applicant_name']} {$firstText} সে তার বসত বাড়ির জন্য হোল্ডিং নাম্বার নিয়েছে । সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। ";
+                "জনাব {$details['applicant_name']} {$firstText} তিনি  তার বসত বাড়ির জন্য হোল্ডিং নাম্বার নিয়েছে । সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। ";
             break;
 
         case 'রোহিঙ্গা নয় মর্মে প্রত্যয়ন পত্র':
             $readonly = true;
             $sec_prottoyon = $english ?
                 "{$details['name_title']} {$details['applicant_name']} is personally known to me. He/She is not a Rohingya, but a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her." :
-                "জনাব {$details['applicant_name']} {$firstText} সে রোহিঙ্গা নয়, সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। ";
+                "জনাব {$details['applicant_name']} {$firstText} তিনি  রোহিঙ্গা নয়, সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। ";
             break;
 
         case "{$union} পরিষদ নাগরিক লিস্ট":
             $readonly = true;
             $sec_prottoyon = $english ?
                 "{$details['name_title']} {$details['applicant_name']} is personally known to me. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her. Therefore, he/she is granted the {$sonod_name}." :
-                "জনাব {$details['applicant_name']} {$firstText} সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। তাই তাকে {$details['sonod_name']} প্রদান করা হলো ।";
+                "জনাব {$details['applicant_name']} {$firstText} তিনি  জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। তাই তাকে {$details['sonod_name']} প্রদান করা হলো ।";
             break;
 
         case 'নতুন ভোটারের প্রত্যয়ন পত্র':
             $readonly = true;
             $sec_prottoyon = $english ?
                 "{$details['name_title']} {$details['applicant_name']} is personally known to me. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her. He/She couldn't become a voter during voter list update due to absence/being outside. Therefore, I recommend to include him/her in the new voter list." :
-                "জনাব {$details['applicant_name']} {$firstText} সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। তিনি ভোটার তালিকা হালনাগাদ করার সময় অনুপস্থিত/বাহিরে থাকার কারণে ভোটার হতে পারে নি। তাই তাকে নতুন ভোটার তালিকায় অন্তর্ভুক্ত করার জন্য সুপারিশ করছি ।";
+                "জনাব {$details['applicant_name']} {$firstText} তিনি  জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা। তিনি ভোটার তালিকা হালনাগাদ করার সময় অনুপস্থিত/বাহিরে থাকার কারণে ভোটার হতে পারে নি। তাই তাকে নতুন ভোটার তালিকায় অন্তর্ভুক্ত করার জন্য সুপারিশ করছি ।";
             break;
 
         case 'বেকারত্বের সনদপত্র':
             $readonly = true;
             $sec_prottoyon = $english ?
                 "{$details['name_title']} {$details['applicant_name']} is personally known to me. He/She is a citizen of Bangladesh by birth and a resident of this {$union_oarisader_en}. To the best of my knowledge, there are no charges of sedition against him/her. To my knowledge, he/she is currently unemployed and jobless." :
-                "জনাব {$details['applicant_name']} {$firstText} সে জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা।<br/><br/>&nbsp; &nbsp; &nbsp; আমার জানামতে বর্তমানে সে বেকার ও কর্মহীন ।";
+                "জনাব {$details['applicant_name']} {$firstText} তিনি  জন্মসূত্রে বাংলাদেশের নাগরিক এবং এই {$union_oarisader} {$details['applicant_resident_status']} বাসিন্দা।<br/><br/>&nbsp; &nbsp; &nbsp; আমার জানামতে বর্তমানে সে বেকার ও কর্মহীন ।";
             break;
 
 
