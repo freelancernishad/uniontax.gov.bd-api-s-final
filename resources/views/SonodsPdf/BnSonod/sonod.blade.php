@@ -49,6 +49,10 @@
                     <td style="text-align: center;" width="20%">
                          @if(isUnion())
                         <img width="70px" src="{{ base64('backend/bd-logo.png') }}">
+                        @else
+                            @if($row->unioun_name=='lalmonirhat')
+                                <img width="100px" src="{{ $uniouninfo->sonod_logo }}">
+                            @endif
                         @endif
                     </td>
                     <td style="text-align: center;" width="20%">
@@ -173,7 +177,13 @@ $style = '';
                     @endif
                         </td>
                         <td style="text-align: center; width: 200px;" width="30%">
+
+                            @if($row->unioun_name!='lalmonirhat')
                             <img width="100px" src="{{ $uniouninfo->sonod_logo }}">
+                            @endif
+
+
+
                         </td>
                         <td style="text-align: center;" width="40%">
 
